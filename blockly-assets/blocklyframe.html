@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+
+    <link href="jquery-ui/css/jquery-ui.css" rel="stylesheet" type="text/css">
+
+    <script src="jquery/js/jquery.js" type="text/javascript"></script>
+    <script src="jquery-ui/js/jquery-ui.js" type="text/javascript"></script>
+    <script src="q/q.js" type="text/javascript"></script>
+    <script src="js/dialog-jquery.js" type="text/javascript"></script>
+
+    <script src="blockly/blockly_compressed.js" type="text/javascript"></script>
+    <script src="blockly/blocks_compressed.js" type="text/javascript"></script>
+    <script src="blockly/dart_compressed.js"></script>
+
+    <script src="blockly/msg/en.js"></script>
+    <script src="blockly/msg/js/en.js"></script>
+
+    <script src="blocklyframe.js" type="text/javascript"></script>
+
+    <style>
+      html, body {
+        background-color: #fff;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        height: 100%;
+      }
+      .blocklySvg {
+        height: 100%;
+        width: 100%;
+      }
+    </style>
+
+  </head>
+
+  <xml id="toolbox" style="display: none">
+                 
+      <category id="LED" class="LED"  colour="#873299">
+        <block type="flash_leds"></block>
+        <block type="colour_picker"></block>
+        <block type="colour_picker"><field name="COLOUR">#FF7245</field></block>
+        <block type="colour_picker"><field name="COLOUR">#ff6aa2</field></block>
+        <block type="colour_picker"><field name="COLOUR">#ffe600</field></block>
+        <block type="colour_picker"><field name="COLOUR">#009245</field></block>
+        <block type="colour_picker"><field name="COLOUR">#66d9ff</field></block>
+        <block type="colour_picker"><field name="COLOUR">#1329c3</field></block>
+        <block type="colour_picker"><field name="COLOUR">#9862e6</field></block>
+        <block type="colour_picker"><field name="COLOUR">#FFFFFF</field></block>
+      </category>
+      
+           <sep></sep>
+           
+      <category id="Motion" class="Motion" colour="#0083CC">
+      <block type="onmotiontrigger"></block>
+      <block type="getmotiondata"></block>
+      </category>
+      
+        <sep></sep>     
+    
+    <category id="Hub" class="Hub"  colour="#FFCE00">
+      <block type="on_initialization"></block>
+      <block type="on_regular_event"></block>
+      <block type="getbatterylevel"></block>
+     <block type="getambientlight"></block>
+     <block type="getroster"></block>
+    
+    </category>
+
+     <sep></sep>
+     
+    <category id="catLogic" class="catLogic"  colour="#FF9903"> 
+      <block type="controls_if"></block>  <!--  Definitely need this one -->
+      <block type="logic_compare"></block>
+      <block type="logic_operation"></block>
+      <block type="math_number"></block>
+      <block type="math_arithmetic"></block>  <!-- might want the advanced math block, but we'll see -->
+     
+      <block type="math_random_int"></block>
+      
+      <block type="controls_while"></block>
+      
+      <block type="controls_flow_statements"></block>
+    </category>
+    
+         <sep></sep>
+         
+    <category id="catLists" class="catLists" colour="#33cc66">
+      <!-- <block type="lists_create_empty"></block> -->
+      <block type="lists_create_n">
+        <value name="NUM_ITEMS">
+          <block type="math_number">
+            <field name="NUM">1</field>
+          </block>
+        </value>
+      </block>
+      
+     <block type="lists_getIndex_nonMut">
+        <value name="VALUE">
+          <block type="variables_get">
+            <field name="VAR" class="listVar">...</field>
+          </block>
+        </value>
+      </block> 
+    
+     <block type="lists_setIndex_nonMut">
+        <value name="LIST">
+          <block type="variables_get">
+            <field name="VAR" class="listVar">...</field>
+          </block>
+        </value>
+      </block>
+      
+    <block type="lists_length"></block> 
+    
+    </category>
+    
+         <sep></sep>
+ 
+    <category id="catVariables" class="catVariables" colour="#E81A4B" custom="VARIABLE"></category>
+    
+         <sep></sep>
+         
+    <category id="catFunctions" class="catFunctions"  colour="#0BD7E0" custom="PROCEDURE"></category>
+    
+             <sep></sep>
+  </xml>
+
+  <body onload="init()">
+  </body>
+
+</html>

@@ -1,0 +1,12 @@
+{
+    "name": "linkitz-app",
+    "version": "0.9.0",
+    "dependencies": {
+        "bootstrap": "latest",
+        "angular": "latest",
+    	"angular-animate": "latest",
+    	"angular-resource": "latest",
+        "angular-sanitize": "latest",
+        "angular-bootstrap": "latest"
+    }
+}

@@ -1,0 +1,22 @@
+<div class="modal-header">
+  <button type="button" class="close" ng-click="$dismiss()" aria-hidden="true">&times;</button>
+  <h3 class="modal-title">About</h3>
+</div>
+<div class="modal-body" data-ng-init="getVersions()">
+
+  <div class="row container-fluid">
+    <div class="col-xs-2">
+      <img height="90" src="images/Linkitz_aqua_Web_450x450.png"/>
+    </div>
+    <div class="col-xs-8">
+      <p id="about-version-block"><b>Linkitz</b><br/>Version {{appVersion}}</p>
+    </div>
+    <div class="col-xs-2 text-center">
+      <button type="button" class="btn" ng-class="{'btn-default': !devMode, 'btn-info': devMode}" ng-click="toggleDevMode()">Developer Mode</button>
+    </div>
+  </div>
+
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-default" ng-click="$dismiss()">Close</button>
+</div>

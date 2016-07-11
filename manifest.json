@@ -1,0 +1,39 @@
+{
+  "name": "Linkitz",
+  "version": "0.9.3.1",
+  "manifest_version": 2,
+  "minimum_chrome_version": "46",
+  "description": "Linkitz empowers girls to explore technology and build endless amazing creations.",
+
+  "icons": {
+    "128": "icons/128x128.png"
+  },
+
+  "app": {
+    "background": {
+      "scripts": ["app-entry.js"]
+    }
+  },
+
+  "permissions": [
+    "contextMenus",
+    "webview",
+    "storage",
+    "fileSystem",
+    "clipboardRead",
+    "clipboardWrite",
+    "hid",
+    {
+      "usbDevices": [
+        { "vendorId": 1240, "productId": 60 }
+      ]
+    },
+    "https://stormy-savannah-87206.herokuapp.com/*",
+    "https://polar-hamlet-45060.herokuapp.com/*"
+   ],
+
+  "sandbox": {
+    "pages": ["blocklyframe.html"]
+  }
+
+}
