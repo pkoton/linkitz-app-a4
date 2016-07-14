@@ -19,8 +19,10 @@
  */
 
 /**
- * @fileoverview Generating Dart for variable blocks.
- * @author fraser@google.com (Neil Fraser)
+ * @fileoverview Generating Linkitz assembly code for variable blocks.
+ * This is based on the Dart generator
+ * written by @author fraser@google.com (Neil Fraser)
+ * Modified by lyssa@linkitz.com (Lyssa Neel)
  */
 'use strict';
 
