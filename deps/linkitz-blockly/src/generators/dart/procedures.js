@@ -28,7 +28,6 @@ goog.provide('Blockly.Dart.procedures');
 
 goog.require('Blockly.Dart');
 
-
 Blockly.Dart['procedures_defreturn'] = function(block) {
   // Define a procedure with a return value.
   var funcName = Blockly.Dart.variableDB_.getName(block.getFieldValue('NAME'),
@@ -46,16 +45,21 @@ Blockly.Dart['procedures_defreturn'] = function(block) {
   var returnValue = Blockly.Dart.valueToCode(block, 'RETURN',
       Blockly.Dart.ORDER_NONE) || '';
   if (returnValue) {
-    returnValue = '  return ' + returnValue + ';\n';
+    returnValue = 'syscall return ' + returnValue + ';\n'; // to be written
   }
-  var returnType = returnValue ? 'dynamic' : 'void';
+    else {
+    returnValue = 'syscall return R0\n';  // no returned value, just return R0
+    }
+  var returnType = returnValue ? 'dynamic' : 'void'; // we don't use this ATM
   var args = [];
   for (var x = 0; x < block.arguments_.length; x++) {
     args[x] = Blockly.Dart.variableDB_.getName(block.arguments_[x],
         Blockly.Variables.NAME_TYPE);
   }
-  var code = returnType + ' ' + funcName + '(' + args.join(', ') + ') {\n' +
-      branch + returnValue + '}';
+  // var code = returnType + ' ' + funcName + '(' + args.join(', ') + ') {\n' +
+  //    branch + returnValue + '}';
+    var code = funcName + ':' + args.join(', ') + '\n' +
+        branch + returnValue;
   code = Blockly.Dart.scrub_(block, code);
   Blockly.Dart.definitions_[funcName] = code;
   return null;
@@ -70,11 +74,18 @@ Blockly.Dart['procedures_callreturn'] = function(block) {
   var funcName = Blockly.Dart.variableDB_.getName(block.getFieldValue('NAME'),
       Blockly.Procedures.NAME_TYPE);
   var args = [];
+  if (block.arguments_.length==0) {
+    // called with no args
+    var code = 'fcall ' + funcName + '\n';
+  }
+  else {
   for (var x = 0; x < block.arguments_.length; x++) {
     args[x] = Blockly.Dart.valueToCode(block, 'ARG' + x,
         Blockly.Dart.ORDER_NONE) || 'null';
   }
+  // if there are args they have to be pushed on the stack - to be written!
   var code = funcName + '(' + args.join(', ') + ')';
+  }
   return [code, Blockly.Dart.ORDER_UNARY_POSTFIX];
 };
 
@@ -83,11 +94,18 @@ Blockly.Dart['procedures_callnoreturn'] = function(block) {
   var funcName = Blockly.Dart.variableDB_.getName(block.getFieldValue('NAME'),
       Blockly.Procedures.NAME_TYPE);
   var args = [];
+  if (block.arguments_.length==0) {
+    // called with no args
+    var code = 'fcall ' + funcName + '\n';
+  }
+  else {
   for (var x = 0; x < block.arguments_.length; x++) {
     args[x] = Blockly.Dart.valueToCode(block, 'ARG' + x,
         Blockly.Dart.ORDER_NONE) || 'null';
+    }
+  // if there are args they have to be pushed on the stack - to be written!
+    var code = 'fcall ' + funcName + '(' + args.join(', ') + ');\n';
   }
-  var code = funcName + '(' + args.join(', ') + ');\n';
   return code;
 };
 

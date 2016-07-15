@@ -25,7 +25,7 @@ Blockly.Dart['flash_leds'] = function(block) {
     var t2 = value_color.substr(4,2);
     var t3 = value_color.substr(6,2);
     // construct call to Flash,len len is 3 (just one rgb triplet)
-    var code = 'Set Rh 3\nSet Rh+1 ' + t1 + '\nSet Rh+2 ' + t2 + '\nSet Rh+3 ' + t3 + '\nSyscall Flash Rh\n+Del Rh\n';
+    var code = 'Set Rh 3\nSet Rh+1 ' + t1 + '\nSet Rn+2 ' + t2 + '\nSet Rh+3 ' + t3 + '\nSyscall Flash Rh\n+Del Rh\n';
   }
   else if (value_color.match(/^[0-9\.]+$/)) { // input is any single positive decimal number
     var newcolor = HSVtoRGB(value_color, 0.91 , 0.86); // construct an RBG color using input as H, Linkitz S, Linkitz V
@@ -33,7 +33,7 @@ Blockly.Dart['flash_leds'] = function(block) {
     var t2 = newcolor[1];
     var t3 = newcolor[2];
     // construct call to Flash,len len is 3 (just one rgb triplet)
-    var code = 'Set Rh 3\nSet Rh+1 ' + t1 + '\nSet Rh+2 ' + t2 + '\nSet Rh+3 ' + t3 + '\nSyscall Flash Rh\n';
+    var code = 'Set Rh 3\nSet Rh+1 ' + t1 + '\nSet Rn+2 ' + t2 + '\nSet Rh+3 ' + t3 + '\nSyscall Flash Rh\n';
   }
   else if (value_color.charAt(0) == '[') { // input is a string representing a list 
     // separate the items
@@ -114,7 +114,7 @@ function HSVtoRGB(h, s, v) {
 
 Blockly.Dart['onmotiontrigger'] = function(block) {
   var dothis = Blockly.Dart.statementToCode(block, 'NAME');
-  var code = 'On_motion_trigger:\n' + dothis + '\n' + 'Syscall Exit R0\n';
+  var code = 'On_motion_trigger:\n' + dothis + '\n' + 'Syscall Return R0\n';
   return code;
 };
 
@@ -144,7 +144,7 @@ Blockly.Dart['setmotiontrigger'] = function(block) {
 
 Blockly.Dart['on_microphone_trigger'] = function(block) {
   var statements_name = Blockly.Dart.statementToCode(block, 'NAME');
-  var code = 'On_microphone_trigger:\n' + statements_name + '\n' + 'Syscall Exit R0\n';
+  var code = 'On_microphone_trigger:\n' + statements_name + '\n' + 'Syscall Return R0\n';
   return code;
 };
 
@@ -163,11 +163,11 @@ Blockly.Dart['set_mic_threshold'] = function(block) {
   return code;
 };
 
-Blockly.Dart['read_sound_levels'] = function(block) {
+Blockly.JavaScript['read_sound_levels'] = function(block) {
   // TODO: Assemble JavaScript into code variable.
   var code = '...';
   // TODO: Change ORDER_NONE to the correct strength.
-  return [code, Blockly.Dart.ORDER_NONE];
+  return [code, Blockly.JavaScript.ORDER_NONE];
 };
 
 
@@ -224,7 +224,7 @@ Blockly.Dart['sound_fdv'] = function(block) {
 
 Blockly.Dart['radio_onreceive'] = function(block) {
   var statements_name = Blockly.Dart.statementToCode(block, 'NAME');
-  var code = 'Radio_onreceive:\n' + statements_name + '\n' + 'Syscall Exit R0\n';
+  var code = 'Radio_onreceive:\n' + statements_name + '\n' + 'Syscall Return R0\n';
   return code;
 };
 
@@ -278,11 +278,11 @@ Blockly.Dart['setradioeventtrigger'] = function(block) {
   return code;
 };
 
-Blockly.Dart['getidfromradioatport'] = function(block) {
+Blockly.JavaScript['getidfromradioatport'] = function(block) {
   // TODO: Assemble JavaScript into code variable.
   var code = '...';
   // TODO: Change ORDER_NONE to the correct strength.
-  return [code, Blockly.Dart.ORDER_NONE];
+  return [code, Blockly.JavaScript.ORDER_NONE];
 };
 
 // **************************************************************************************************
@@ -291,13 +291,13 @@ Blockly.Dart['getidfromradioatport'] = function(block) {
 
 Blockly.Dart['on_initialization'] = function(block) {
   var dothis = Blockly.Dart.statementToCode(block, 'NAME');
-  var code = 'On_initialization:\n' + dothis + 'Syscall Exit R0\n';;
+  var code = 'On_initialization:\n' + dothis + 'Syscall Return R0\n';;
   return code;
 };
 
 Blockly.Dart['on_regular_event'] = function(block) {
   var dothis = Blockly.Dart.statementToCode(block, 'NAME');
-  var code = 'OnRegularEvent:\n' + dothis + 'Syscall Exit R0\n';
+  var code = 'OnRegularEvent:\nSyscall ' + dothis + 'Syscall Return R0\n';
   return code;
 };
 
@@ -331,31 +331,31 @@ Blockly.Dart['getroster'] = function(block) {
   return [code, Blockly.Dart.ORDER_NONE];
 };
 
-Blockly.Dart['roster_event']= function(block) {
-  var value_linkroster = Blockly.Dart.valueToCode(block, 'LinkRoster', Blockly.Dart.ORDER_ATOMIC);
-  var statements_script = Blockly.Dart.statementToCode(block, 'Script');
+Blockly.JavaScript['roster_event']= function(block) {
+  var value_linkroster = Blockly.JavaScript.valueToCode(block, 'LinkRoster', Blockly.JavaScript.ORDER_ATOMIC);
+  var statements_script = Blockly.JavaScript.statementToCode(block, 'Script');
   // var priority = 4-length(value_linkroster);
   // TODO: Assemble JavaScript into code variable.
   var code = 'pass // When this list matches the one updated by the hub, use the set of event handlers in statements_script';
   return code;
 };
 
-Blockly.Dart['roster_list'] = function(block) {
-  var value_link1 = Blockly.Dart.valueToCode(block, 'Link1', Blockly.Dart.ORDER_ATOMIC);
-  var value_link2 = Blockly.Dart.valueToCode(block, 'Link2', Blockly.Dart.ORDER_ATOMIC);
-  var value_link3 = Blockly.Dart.valueToCode(block, 'Link3', Blockly.Dart.ORDER_ATOMIC);
-  var statements_rostercode = Blockly.Dart.statementToCode(block, 'Rostercode');
+Blockly.JavaScript['roster_list'] = function(block) {
+  var value_link1 = Blockly.JavaScript.valueToCode(block, 'Link1', Blockly.JavaScript.ORDER_ATOMIC);
+  var value_link2 = Blockly.JavaScript.valueToCode(block, 'Link2', Blockly.JavaScript.ORDER_ATOMIC);
+  var value_link3 = Blockly.JavaScript.valueToCode(block, 'Link3', Blockly.JavaScript.ORDER_ATOMIC);
+  var statements_rostercode = Blockly.JavaScript.statementToCode(block, 'Rostercode');
   // TODO: Assemble JavaScript into code variable.
   var code = '...';
   // TODO: Change ORDER_NONE to the correct strength.
-  return [code, Blockly.Dart.ORDER_NONE];
+  return [code, Blockly.JavaScript.ORDER_NONE];
 };
 
-Blockly.Dart['roster_event_two'] = function(block) {
+Blockly.JavaScript['roster_event_two'] = function(block) {
   var dropdown_link3 = block.getFieldValue('Link3');
   var dropdown_link2 = block.getFieldValue('Link2');
   var dropdown_link1 = block.getFieldValue('Link1');
-  var statements_script = Blockly.Dart.statementToCode(block, 'Script');
+  var statements_script = Blockly.JavaScript.statementToCode(block, 'Script');
   // TODO: Assemble JavaScript into code variable.
   var linkRoster =[]
   // TODO: append non 'None' values to this list
@@ -365,9 +365,9 @@ Blockly.Dart['roster_event_two'] = function(block) {
   return code;
 };
 
-Blockly.Dart['connection_event'] = function(block) {
+Blockly.JavaScript['connection_event'] = function(block) {
   var dropdown_name = block.getFieldValue('NAME');
-  var statements_script = Blockly.Dart.statementToCode(block, 'script');
+  var statements_script = Blockly.JavaScript.statementToCode(block, 'script');
   // TODO: Assemble JavaScript into code variable.
   var code = 'pass  // execute this script once when this link is plugged in';
   return code;
@@ -438,50 +438,6 @@ Blockly.Dart['lists_create_n'] = function(block) {
   var value_num_items = Blockly.Dart.valueToCode(block, 'NUM_ITEMS', Blockly.Dart.ORDER_ATOMIC);
   var code = new Array(value_num_items);
   for (var n = 0; n < value_num_items; n++) {
-    code[n] = Blockly.Dart.valueToCode(block, 'ADD' + n,
-        Blockly.Dart.ORDER_NONE) || 'None';
-  }
-  code = '[' + code.join(', ') + ']';
-  return [code, Blockly.Dart.ORDER_ATOMIC];
-};
-
-Blockly.Dart['lists_create_6'] = function(block) {
-  // Create a list with any number of elements of any type.
-  var code = new Array(6);
-  for (var n = 0; n < 6; n++) {
-    code[n] = Blockly.Dart.valueToCode(block, 'ADD' + n,
-        Blockly.Dart.ORDER_NONE) || 'None';
-  }
-  code = '[' + code.join(', ') + ']';
-  return [code, Blockly.Dart.ORDER_ATOMIC];
-};
-
-Blockly.Dart['lists_create_9'] = function(block) {
-  // Create a list with any number of elements of any type.
-  var code = new Array(9);
-  for (var n = 0; n < 9; n++) {
-    code[n] = Blockly.Dart.valueToCode(block, 'ADD' + n,
-        Blockly.Dart.ORDER_NONE) || 'None';
-  }
-  code = '[' + code.join(', ') + ']';
-  return [code, Blockly.Dart.ORDER_ATOMIC];
-};
-
-Blockly.Dart['lists_create_12'] = function(block) {
-  // Create a list with any number of elements of any type.
-  var code = new Array(12);
-  for (var n = 0; n < 12; n++) {
-    code[n] = Blockly.Dart.valueToCode(block, 'ADD' + n,
-        Blockly.Dart.ORDER_NONE) || 'None';
-  }
-  code = '[' + code.join(', ') + ']';
-  return [code, Blockly.Dart.ORDER_ATOMIC];
-};
-
-Blockly.Dart['lists_create_24'] = function(block) {
-  // Create a list with any number of elements of any type.
-  var code = new Array(24);
-  for (var n = 0; n < 24; n++) {
     code[n] = Blockly.Dart.valueToCode(block, 'ADD' + n,
         Blockly.Dart.ORDER_NONE) || 'None';
   }
