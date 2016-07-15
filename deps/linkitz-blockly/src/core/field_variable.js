@@ -158,39 +158,83 @@ Blockly.FieldVariable.dropdownCreate = function() {
  * @this {!Blockly.FieldVariable}
  */
 Blockly.FieldVariable.dropdownChange = function(text) {
-  function promptName(promptText, defaultText) {
-    Blockly.hideChaff();
-    var newVar = window.prompt(promptText, defaultText);
-    // Merge runs of whitespace.  Strip leading and trailing whitespace.
-    // Beyond this, all names are legal.
+  var workspace = this.sourceBlock_.workspace;
+  var newVarName = Blockly.Variables.generateUniqueName(workspace);
+
+  function renameVariableCallback(newVar) {
     if (newVar) {
       newVar = newVar.replace(/[\s\xa0]+/g, ' ').replace(/^ | $/g, '');
       if (newVar == Blockly.Msg.RENAME_VARIABLE ||
           newVar == Blockly.Msg.NEW_VARIABLE) {
         // Ok, not ALL names are legal...
-        newVar = null;
+        return;
       }
+      Blockly.Variables.renameVariable(oldVar, newVar, workspace);
     }
-    return newVar;
   }
-  var workspace = this.sourceBlock_.workspace;
+
+  function newVariableCallback(newVar) {
+    if (newVar) {
+      newVar = newVar.replace(/[\s\xa0]+/g, ' ').replace(/^ | $/g, '');
+      if (newVar == Blockly.Msg.RENAME_VARIABLE ||
+          newVar == Blockly.Msg.NEW_VARIABLE) {
+        // Ok, not ALL names are legal...
+        return;
+      }
+      Blockly.Variables.renameVariable(newVarName, newVar, workspace);
+    }
+  }
+
   if (text == Blockly.Msg.RENAME_VARIABLE) {
     var oldVar = this.getText();
-    text = promptName(Blockly.Msg.RENAME_VARIABLE_TITLE.replace('%1', oldVar),
-                      oldVar);
-    if (text) {
-      Blockly.Variables.renameVariable(oldVar, text, workspace);
-    }
+    Blockly.hideChaff();
+    promptDialog('Rename Variable', Blockly.Msg.RENAME_VARIABLE_TITLE.replace('%1', oldVar), oldVar, renameVariableCallback);
     return null;
   } else if (text == Blockly.Msg.NEW_VARIABLE) {
-    text = promptName(Blockly.Msg.NEW_VARIABLE_TITLE, '');
-    // Since variables are case-insensitive, ensure that if the new variable
-    // matches with an existing variable, the new case prevails throughout.
-    if (text) {
-      Blockly.Variables.renameVariable(text, text, workspace);
-      return text;
-    }
-    return null;
+    Blockly.hideChaff();
+    promptDialog('New Variable', Blockly.Msg.NEW_VARIABLE_TITLE, newVarName, newVariableCallback);
+    return newVarName;
   }
   return undefined;
 };
+
+function promptDialog(title, message, originalText, closeCallback) {
+  title = title || "Prompt...";
+  var returnValue = "";
+
+  var deferred = Q.defer();
+  $('<div title="' + title + '">' +
+                                    "<p>" + message + "</p>" +
+                                    "<input type=\"text\" name=\"__prompt\" value=" + originalText + ">" +
+                                    '</div>').dialog({
+    modal: true,
+    width: 400,
+    position: {
+      my: "center top",
+      at: "center top",
+      of: window
+    },
+    buttons: [{
+      text: "OK",
+      click: function () {
+        returnValue = $("input:text").val();
+        returnValue = returnValue && returnValue.replace(/[\s\xa0]+/g, ' ').replace(/^ | $/g, '');
+        $(this).dialog("close");
+      }
+    }, {
+      text: "Cancel",
+      click: function () {
+        $(this).dialog("close");
+      }
+    }],
+    close: function (event, ui) {
+      $(this).dialog("destroy").remove();
+      if (deferred.promise.isPending()) {
+        deferred.resolve(false);
+      }
+      closeCallback(returnValue);
+    }
+  });
+
+  return deferred.promise;
+}
