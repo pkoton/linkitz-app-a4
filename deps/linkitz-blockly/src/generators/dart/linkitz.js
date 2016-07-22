@@ -8,7 +8,7 @@
 // LED  LED  LED  LED  LED  LED  LED  LED  LED  LED  LED  LED  LED  LED  LED  LED  LED  LED
 // **************************************************************************************************
 
-// Flash LEDs takes a single color or a list of 1 or more colors, or a number or a list of numbers, 
+// flash LEDs takes a single color or a list of 1 or more colors, or a number or a list of numbers, 
 // and flashes the attached LEDs according to recentness of use (determined in firmware).
 // If no input, it lights up random LEDs (determined in firmware).  Behavior of numbers mod 3 /= 0  are undefined.
 
@@ -18,22 +18,22 @@ Blockly.Dart['flash_leds'] = function(block) {
     // if no color is attached this will flash random colors 
   var value_color = Blockly.Dart.valueToCode(block, 'COLOR', Blockly.Dart.ORDER_ATOMIC) ;
   if (value_color == 'None' || value_color =='') {
-    var code = 'Syscall Flash R0\n';
+    var code = 'syscall flash R0\n';
   }
   else if (value_color.charAt(1) == '#') { // input is a single color in hex, convert to RGB
     var t1 = value_color.substr(2,2);
     var t2 = value_color.substr(4,2);
     var t3 = value_color.substr(6,2);
-    // construct call to Flash,len len is 3 (just one rgb triplet)
-    var code = 'Set Rh 3\nSet Rh+1 ' + t1 + '\nSet Rn+2 ' + t2 + '\nSet Rh+3 ' + t3 + '\nSyscall Flash Rh\n+Del Rh\n';
+    // construct call to flash,len len is 3 (just one rgb triplet)
+    var code = 'Set Rh 3\nSet Rh+1 ' + t1 + '\nSet Rh+2 ' + t2 + '\nSet Rh+3 ' + t3 + '\nsyscall flash Rh\n+Del Rh\n';
   }
   else if (value_color.match(/^[0-9\.]+$/)) { // input is any single positive decimal number
     var newcolor = HSVtoRGB(value_color, 0.91 , 0.86); // construct an RBG color using input as H, Linkitz S, Linkitz V
     var t1 = newcolor[0];
     var t2 = newcolor[1];
     var t3 = newcolor[2];
-    // construct call to Flash,len len is 3 (just one rgb triplet)
-    var code = 'Set Rh 3\nSet Rh+1 ' + t1 + '\nSet Rn+2 ' + t2 + '\nSet Rh+3 ' + t3 + '\nSyscall Flash Rh\n';
+    // construct call to flash,len len is 3 (just one rgb triplet)
+    var code = 'Set Rh 3\nSet Rh+1 ' + t1 + '\nSet Rh+2 ' + t2 + '\nSet Rh+3 ' + t3 + '\nsyscall flash Rh\n';
   }
   else if (value_color.charAt(0) == '[') { // input is a string representing a list 
     // separate the items
@@ -59,16 +59,16 @@ Blockly.Dart['flash_leds'] = function(block) {
         }
       }
     }
-    // construct call to Flash(char len, char colorVals[len])
+    // construct call to flash(char len, char colorVals[len])
     if (colornum == 0) {
-      var code = 'Syscall Flash ()\n';
+      var code = 'syscall flash ()\n';
       }
     else {
-    var code = 'Syscall Flash ' + colornum + ',' + arrayRGB + '\n';
+    var code = 'syscall flash ' + colornum + ',' + arrayRGB + '\n';
     }
   }
   else {// anything else - maybe it's a variable?
-    var code = 'Syscall Flash ' + value_color + '\n';
+    var code = 'syscall flash ' + value_color + '\n';
   }
   return code;
 };
@@ -114,7 +114,7 @@ function HSVtoRGB(h, s, v) {
 
 Blockly.Dart['onmotiontrigger'] = function(block) {
   var dothis = Blockly.Dart.statementToCode(block, 'NAME');
-  var code = 'On_motion_trigger:\n' + dothis + '\n' + 'Syscall Return R0\n';
+  var code = 'On_motion_trigger:\n' + dothis + '\n' + 'syscall return R0\n';
   return code;
 };
 
@@ -144,7 +144,7 @@ Blockly.Dart['setmotiontrigger'] = function(block) {
 
 Blockly.Dart['on_microphone_trigger'] = function(block) {
   var statements_name = Blockly.Dart.statementToCode(block, 'NAME');
-  var code = 'On_microphone_trigger:\n' + statements_name + '\n' + 'Syscall Return R0\n';
+  var code = 'On_microphone_trigger:\n' + statements_name + '\n' + 'syscall return R0\n';
   return code;
 };
 
@@ -183,7 +183,7 @@ Blockly.Dart['speaker_play_sound'] = function(block) {
   var value_name = Blockly.Dart.valueToCode(block, 'NAME', Blockly.Dart.ORDER_ATOMIC);
   
   // TODO: Assemble JavaScript into code variable.
-  var code = 'Syscall Play_sound' + value_name + '\n';
+  var code = 'syscall Play_sound' + value_name + '\n';
   return code;
 };
 
@@ -224,7 +224,7 @@ Blockly.Dart['sound_fdv'] = function(block) {
 
 Blockly.Dart['radio_onreceive'] = function(block) {
   var statements_name = Blockly.Dart.statementToCode(block, 'NAME');
-  var code = 'Radio_onreceive:\n' + statements_name + '\n' + 'Syscall Return R0\n';
+  var code = 'Radio_onreceive:\n' + statements_name + '\n' + 'syscall return R0\n';
   return code;
 };
 
@@ -239,7 +239,7 @@ Blockly.Dart['transmit2'] = function(block) {
   var value_targetid = Blockly.Dart.valueToCode(block, 'targetid', Blockly.Dart.ORDER_ATOMIC) || 0;
   var value_message = Blockly.Dart.valueToCode(block, 'message', Blockly.Dart.ORDER_ATOMIC);
   // var value_range = Blockly.Dart.valueToCode(block, 'range', Blockly.Dart.ORDER_ATOMIC);
-  var code = 'Syscall Transmit' + value_targetid + ', ' + value_message +'\n';
+  var code = 'syscall Transmit' + value_targetid + ', ' + value_message +'\n';
   return code;
 };
 
@@ -291,13 +291,13 @@ Blockly.JavaScript['getidfromradioatport'] = function(block) {
 
 Blockly.Dart['on_initialization'] = function(block) {
   var dothis = Blockly.Dart.statementToCode(block, 'NAME');
-  var code = 'On_initialization:\n' + dothis + 'Syscall Return R0\n';;
+  var code = 'On_initialization:\n' + dothis + 'syscall return R0\n';;
   return code;
 };
 
 Blockly.Dart['on_regular_event'] = function(block) {
   var dothis = Blockly.Dart.statementToCode(block, 'NAME');
-  var code = 'OnRegularEvent:\nSyscall ' + dothis + 'Syscall Return R0\n';
+  var code = 'OnRegularEvent:\n' + dothis + Blockly.Dart.INDENT + 'syscall return R0\n';
   return code;
 };
 
