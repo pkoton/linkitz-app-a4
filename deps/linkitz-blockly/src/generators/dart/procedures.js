@@ -45,10 +45,10 @@ Blockly.Dart['procedures_defreturn'] = function(block) {
   var returnValue = Blockly.Dart.valueToCode(block, 'RETURN',
       Blockly.Dart.ORDER_NONE) || '';
   if (returnValue) {
-    returnValue = 'syscall return ' + returnValue + ';\n'; // to be written
+    returnValue = Blockly.Dart.INDENT + 'syscall return ' + returnValue + ';\n'; // to be written
   }
     else {
-    returnValue = 'syscall return R0\n';  // no returned value, just return R0
+    returnValue = Blockly.Dart.INDENT + 'syscall return R0\n';  // no returned value, just return R0
     }
   var returnType = returnValue ? 'dynamic' : 'void'; // we don't use this ATM
   var args = [];
@@ -96,7 +96,7 @@ Blockly.Dart['procedures_callnoreturn'] = function(block) {
   var args = [];
   if (block.arguments_.length==0) {
     // called with no args
-    var code = 'fcall ' + funcName + '\n';
+    var code = 'syscall fcall ' + funcName + '\n';
   }
   else {
   for (var x = 0; x < block.arguments_.length; x++) {
@@ -104,7 +104,7 @@ Blockly.Dart['procedures_callnoreturn'] = function(block) {
         Blockly.Dart.ORDER_NONE) || 'null';
     }
   // if there are args they have to be pushed on the stack - to be written!
-    var code = 'fcall ' + funcName + '(' + args.join(', ') + ');\n';
+    var code = 'syscall fcall ' + funcName + '(' + args.join(', ') + ');\n';
   }
   return code;
 };
