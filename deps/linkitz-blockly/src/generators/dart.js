@@ -71,6 +71,9 @@ Blockly.Dart.ORDER_CASCADE = 14;       // ..
 Blockly.Dart.ORDER_ASSIGNMENT = 15;    // = *= /= ~/= %= += -= <<= >>= &= ^= |=
 Blockly.Dart.ORDER_NONE = 99;          // (...)
 
+Blockly.Dart.INDENT = '   ';
+Blockly.Dart.STATEMENT_PREFIX = null;
+
 /**
  * Initialise the database of variable names.
  * @param {!Blockly.Workspace} workspace Workspace to generate code from.

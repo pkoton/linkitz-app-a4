@@ -48,7 +48,7 @@ Blockly.Dart['variables_set'] = function(block) {
     var t1 = argument0.substr(2,2);
     var t2 = argument0.substr(4,2);
     var t3 = argument0.substr(6,2);
-    // construct call to Flash,len len is 3 (just one rgb triplet)
+    // construct call to flash,len len is 3 (just one rgb triplet)
     var code = 'Set ' + varName + ' 3\nSet ' + varName + '+1 ' + t1 + '\nSet ' + varName + '+2 ' + t2 + '\nSet ' + varName + '+3 ' + t3 + '\n';
   return code;
   };
