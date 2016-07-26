@@ -163,11 +163,11 @@ Blockly.Dart['set_mic_threshold'] = function(block) {
   return code;
 };
 
-Blockly.JavaScript['read_sound_levels'] = function(block) {
+Blockly.Dart['read_sound_levels'] = function(block) {
   // TODO: Assemble JavaScript into code variable.
   var code = '...';
   // TODO: Change ORDER_NONE to the correct strength.
-  return [code, Blockly.JavaScript.ORDER_NONE];
+  return [code, Blockly.Dart.ORDER_NONE];
 };
 
 
@@ -278,11 +278,11 @@ Blockly.Dart['setradioeventtrigger'] = function(block) {
   return code;
 };
 
-Blockly.JavaScript['getidfromradioatport'] = function(block) {
+Blockly.Dart['getidfromradioatport'] = function(block) {
   // TODO: Assemble JavaScript into code variable.
   var code = '...';
   // TODO: Change ORDER_NONE to the correct strength.
-  return [code, Blockly.JavaScript.ORDER_NONE];
+  return [code, Blockly.Dart.ORDER_NONE];
 };
 
 // **************************************************************************************************
@@ -331,31 +331,31 @@ Blockly.Dart['getroster'] = function(block) {
   return [code, Blockly.Dart.ORDER_NONE];
 };
 
-Blockly.JavaScript['roster_event']= function(block) {
-  var value_linkroster = Blockly.JavaScript.valueToCode(block, 'LinkRoster', Blockly.JavaScript.ORDER_ATOMIC);
-  var statements_script = Blockly.JavaScript.statementToCode(block, 'Script');
+Blockly.Dart['roster_event']= function(block) {
+  var value_linkroster = Blockly.Dart.valueToCode(block, 'LinkRoster', Blockly.Dart.ORDER_ATOMIC);
+  var statements_script = Blockly.Dart.statementToCode(block, 'Script');
   // var priority = 4-length(value_linkroster);
   // TODO: Assemble JavaScript into code variable.
   var code = 'pass // When this list matches the one updated by the hub, use the set of event handlers in statements_script';
   return code;
 };
 
-Blockly.JavaScript['roster_list'] = function(block) {
-  var value_link1 = Blockly.JavaScript.valueToCode(block, 'Link1', Blockly.JavaScript.ORDER_ATOMIC);
-  var value_link2 = Blockly.JavaScript.valueToCode(block, 'Link2', Blockly.JavaScript.ORDER_ATOMIC);
-  var value_link3 = Blockly.JavaScript.valueToCode(block, 'Link3', Blockly.JavaScript.ORDER_ATOMIC);
-  var statements_rostercode = Blockly.JavaScript.statementToCode(block, 'Rostercode');
+Blockly.Dart['roster_list'] = function(block) {
+  var value_link1 = Blockly.Dart.valueToCode(block, 'Link1', Blockly.Dart.ORDER_ATOMIC);
+  var value_link2 = Blockly.Dart.valueToCode(block, 'Link2', Blockly.Dart.ORDER_ATOMIC);
+  var value_link3 = Blockly.Dart.valueToCode(block, 'Link3', Blockly.Dart.ORDER_ATOMIC);
+  var statements_rostercode = Blockly.Dart.statementToCode(block, 'Rostercode');
   // TODO: Assemble JavaScript into code variable.
   var code = '...';
   // TODO: Change ORDER_NONE to the correct strength.
-  return [code, Blockly.JavaScript.ORDER_NONE];
+  return [code, Blockly.Dart.ORDER_NONE];
 };
 
-Blockly.JavaScript['roster_event_two'] = function(block) {
+Blockly.Dart['roster_event_two'] = function(block) {
   var dropdown_link3 = block.getFieldValue('Link3');
   var dropdown_link2 = block.getFieldValue('Link2');
   var dropdown_link1 = block.getFieldValue('Link1');
-  var statements_script = Blockly.JavaScript.statementToCode(block, 'Script');
+  var statements_script = Blockly.Dart.statementToCode(block, 'Script');
   // TODO: Assemble JavaScript into code variable.
   var linkRoster =[]
   // TODO: append non 'None' values to this list
@@ -365,9 +365,9 @@ Blockly.JavaScript['roster_event_two'] = function(block) {
   return code;
 };
 
-Blockly.JavaScript['connection_event'] = function(block) {
+Blockly.Dart['connection_event'] = function(block) {
   var dropdown_name = block.getFieldValue('NAME');
-  var statements_script = Blockly.JavaScript.statementToCode(block, 'script');
+  var statements_script = Blockly.Dart.statementToCode(block, 'script');
   // TODO: Assemble JavaScript into code variable.
   var code = 'pass  // execute this script once when this link is plugged in';
   return code;
