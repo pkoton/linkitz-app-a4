@@ -8,70 +8,33 @@
 // LED  LED  LED  LED  LED  LED  LED  LED  LED  LED  LED  LED  LED  LED  LED  LED  LED  LED
 // **************************************************************************************************
 
-// flash LEDs takes a single color or a list of 1 or more colors, or a number or a list of numbers, 
-// and flashes the attached LEDs according to recentness of use (determined in firmware).
-// If no input, it lights up random LEDs (determined in firmware).  Behavior of numbers mod 3 /= 0  are undefined.
+// flash LEDs takes either
+// - a single color and calls flashRGB
+// - a number which is treated as hue and calls flashHue
+// If no input, treats as Hue = 0
 
 Blockly.Dart['flash_leds'] = function(block) {
-    // valueToCode returns the color/colorlist as a string in single quotes
-    // format '#FFFFFF' single color or ['#ff0000', '#009900', '#3333ff'] color list
-    // if no color is attached this will flash random colors 
   var value_color = Blockly.Dart.valueToCode(block, 'COLOR', Blockly.Dart.ORDER_ATOMIC) ;
-  if (value_color == 'None' || value_color =='') {
-    var code = 'syscall flash R0\n';
+  //alert("input to flash_leds is *" + value_color +'*');
+  if (value_color == 'None' || value_color =='') { // input is blank or null
+    //alert('input is null');
+    var code = 'syscall flashHue R0 \n'; 
   }
-  else if (value_color.charAt(1) == '#') { // input is a single color in hex, convert to RGB
-    var t1 = value_color.substr(2,2);
-    var t2 = value_color.substr(4,2);
-    var t3 = value_color.substr(6,2);
-    // construct call to flash,len len is 3 (just one rgb triplet)
-    var code = 'Set Rh 3\nSet Rh+1 ' + t1 + '\nSet Rh+2 ' + t2 + '\nSet Rh+3 ' + t3 + '\nsyscall flash Rh\n+Del Rh\n';
-  }
-  else if (value_color.match(/^[0-9\.]+$/)) { // input is any single positive decimal number
-    var newcolor = HSVtoRGB(value_color, 0.91 , 0.86); // construct an RBG color using input as H, Linkitz S, Linkitz V
-    var t1 = newcolor[0];
-    var t2 = newcolor[1];
-    var t3 = newcolor[2];
-    // construct call to flash,len len is 3 (just one rgb triplet)
-    var code = 'Set Rh 3\nSet Rh+1 ' + t1 + '\nSet Rh+2 ' + t2 + '\nSet Rh+3 ' + t3 + '\nsyscall flash Rh\n';
-  }
-  else if (value_color.charAt(0) == '[') { // input is a string representing a list 
-    // separate the items
-    var colornum = 0; // we need to count how many items are represented in the list
-    var arrayRGB = new Array();
-    var value_color_items = value_color.slice(1, value_color.length-1); // remove brackets around string colorlist
-    var value_color_array = value_color_items.split(", "); // that space after the comma is important
-    for (var i in value_color_array) {
-      var item = value_color_array[i];
-      if (item != 'None') { // skip blanks in any list
-        if (item.charAt(1) == '#') {
-          var colorhex = item; // convert '#AABBCC' to [r,g,b]
-          arrayRGB = arrayRGB.concat(hexToRGB(colorhex)); // add the triplet to list of colors
-          colornum +=3;
-        }
-        else if (item.match(/^[0-9\.]+$/)) { // convert any positive number to 0-255 and add to list
-          arrayRGB.push(item % 255);
-          colornum +=1;
-        }
-        else {
-          arrayRGB.push(0); // rando stuff just add a zero
-          colornum +=1;
-        }
-      }
+  else {
+    var targetBlock = block.getInputTargetBlock('COLOR');
+    //alert("input to flash_leds is block type " + targetBlock.type);
+   if (targetBlock.type == 'math_number' ) { // input is any single decimal number
+    //alert('got a number');
+     var code = value_color + 'syscall flashHue R1' +  '\n';
+    return code;
     }
-    // construct call to flash(char len, char colorVals[len])
-    if (colornum == 0) {
-      var code = 'syscall flash ()\n';
-      }
-    else {
-    var code = 'syscall flash ' + colornum + ',' + arrayRGB + '\n';
+    else {// assuming it's a single color
+    //alert('input is a color');
+     var code = value_color + 'syscall flashRBG R1' +  '\n';
     }
-  }
-  else {// anything else - maybe it's a variable?
-    var code = 'syscall flash ' + value_color + '\n';
-  }
-  return code;
-};
+  };
+    return code;
+}
 
 // convert a hexidecimal color string to 0..255 R,G,B, remember that first char is ' and second char is #
 // example input: '#ff00cc'
@@ -114,7 +77,7 @@ function HSVtoRGB(h, s, v) {
 
 Blockly.Dart['onmotiontrigger'] = function(block) {
   var dothis = Blockly.Dart.statementToCode(block, 'NAME');
-  var code = 'On_motion_trigger:\n' + dothis + '\n' + 'syscall return R0\n';
+  var code = 'On_motion_trigger:\n' + dothis + '\n' + 'syscall exit R0\n';
   return code;
 };
 
@@ -144,7 +107,7 @@ Blockly.Dart['setmotiontrigger'] = function(block) {
 
 Blockly.Dart['on_microphone_trigger'] = function(block) {
   var statements_name = Blockly.Dart.statementToCode(block, 'NAME');
-  var code = 'On_microphone_trigger:\n' + statements_name + '\n' + 'syscall return R0\n';
+  var code = 'On_microphone_trigger:\n' + statements_name + '\n' + 'syscall exit R0\n';
   return code;
 };
 
@@ -291,13 +254,13 @@ Blockly.JavaScript['getidfromradioatport'] = function(block) {
 
 Blockly.Dart['on_initialization'] = function(block) {
   var dothis = Blockly.Dart.statementToCode(block, 'NAME');
-  var code = 'On_initialization:\n' + dothis + 'syscall return R0\n';;
+  var code = 'On_initialization:\n' + dothis + 'syscall exit R0\n';;
   return code;
 };
 
 Blockly.Dart['on_regular_event'] = function(block) {
   var dothis = Blockly.Dart.statementToCode(block, 'NAME');
-  var code = 'OnRegularEvent:\n' + dothis + Blockly.Dart.INDENT + 'syscall return R0\n';
+  var code = 'OnRegularEvent:\n' + dothis + Blockly.Dart.INDENT + 'syscall exit R0\n';
   return code;
 };
 
