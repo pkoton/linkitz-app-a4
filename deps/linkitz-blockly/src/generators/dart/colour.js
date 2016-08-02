@@ -33,7 +33,15 @@ Blockly.Dart.addReservedWords('Math');
 
 Blockly.Dart['colour_picker'] = function(block) {
   // Colour picker.
-  var code = '\'' + block.getFieldValue('COLOUR') + '\'';
+  var value_color = block.getFieldValue('COLOUR'); // getFieldValue('COLOUR') returns the color as a hex string no quotes
+    var t1 = value_color.substr(1,2);
+    var t2 = value_color.substr(3,2);
+    var t3 = value_color.substr(5,2);
+    var code =
+      'Set R' + (global_list_variables[scratchColor][0] + 1) + ' ' +  t1 + '\n' + 
+      'Set R' + (global_list_variables[scratchColor][0] + 2)  + ' ' + t2 + '\n' +
+      'Set R' + (global_list_variables[scratchColor][0] + 3)  + ' ' + t3 + '\n' +
+      'Set R1 '+ global_list_variables[scratchColor][0]  + '\n';
   return [code, Blockly.Dart.ORDER_ATOMIC];
 };
 

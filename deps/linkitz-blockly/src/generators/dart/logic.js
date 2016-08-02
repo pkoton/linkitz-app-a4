@@ -50,38 +50,52 @@ Blockly.Dart['controls_if'] = function(block) {
 };
 
 Blockly.Dart['logic_compare'] = function(block) {
-  // Comparison operator.
+  // Comparison operator.HAVE TO PUT IN ASSEMBY EQUIVALENTS
   var OPERATORS = {
-    'EQ': '==',
-    'NEQ': '!=',
-    'LT': '<',
-    'LTE': '<=',
-    'GT': '>',
-    'GTE': '>='
+    'EQ': 'cmpeq',
+    'NEQ': 'cmpneq',
+    'LT': 'cmplt',
+    'LTE': 'cmple',
+    'GT': 'cmpgt',
+    'GTE': 'cmpge'
   };
   var operator = OPERATORS[block.getFieldValue('OP')];
   var order = (operator == '==' || operator == '!=') ?
       Blockly.Dart.ORDER_EQUALITY : Blockly.Dart.ORDER_RELATIONAL;
-  var argument0 = Blockly.Dart.valueToCode(block, 'A', order) || '0';
-  var argument1 = Blockly.Dart.valueToCode(block, 'B', order) || '0';
-  var code = argument0 + ' ' + operator + ' ' + argument1;
+  var argument0 = Blockly.Dart.valueToCode(block, 'A', order);
+  var argument1 = Blockly.Dart.valueToCode(block, 'B', order);
+  if (!argument0) {
+    if (!argument1) {
+      var code = operator + ' R0 R0\n';
+    }
+    else {
+    var code = argument1 + '\n' + operator + ' R0 R1 R1\n';
+    }
+  }
+  else if (!argument1) {
+    var code = argument0 + '\n' + operator + ' R1 R0 R1\n';
+  }
+  else {
+  // **** the code below isnt going to work becuase when do you use R1 and R2 ****
+  var code = argument0 + '\npush R1 \n' + argument1 + '\npop R2 \n' + operator + ' R2 R1 R1\n';
+  }
   return [code, order];
 };
 
 Blockly.Dart['logic_operation'] = function(block) {
   // Operations 'and', 'or'.
-  var operator = (block.getFieldValue('OP') == 'AND') ? '&&' : '||';
-  var order = (operator == '&&') ? Blockly.Dart.ORDER_LOGICAL_AND :
+  var operator = (block.getFieldValue('OP') == 'AND') ? 'land' : 'lor';
+  var order = (operator == 'land') ? Blockly.Dart.ORDER_LOGICAL_AND :
       Blockly.Dart.ORDER_LOGICAL_OR;
   var argument0 = Blockly.Dart.valueToCode(block, 'A', order);
   var argument1 = Blockly.Dart.valueToCode(block, 'B', order);
   if (!argument0 && !argument1) {
     // If there are no arguments, then the return value is false.
-    argument0 = 'false';
-    argument1 = 'false';
+    argument0 = 'R0';
+    argument1 = 'R0';
   } else {
     // Single missing arguments have no effect on the return value.
-    var defaultArgument = (operator == '&&') ? 'true' : 'false';
+    var defaultArgument = (operator == 'land') ? 'true' : 'R0';
     if (!argument0) {
       argument0 = defaultArgument;
     }
@@ -89,7 +103,7 @@ Blockly.Dart['logic_operation'] = function(block) {
       argument1 = defaultArgument;
     }
   }
-  var code = argument0 + ' ' + operator + ' ' + argument1;
+  var code = argument0 + '\npush R1 \n' + argument1 + '\npop R2 \n' + operator + ' R2 R1 R1\n';
   return [code, order];
 };
 
