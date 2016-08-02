@@ -74,8 +74,21 @@ Blockly.Dart.ORDER_NONE = 99;          // (...)
 Blockly.Dart.INDENT = '   ';
 Blockly.Dart.STATEMENT_PREFIX = null;
 
-/**
- * Initialise the database of variable names.
+// SPECIAL REGISTERS ARE SET HERE
+// We maintain a list of all global_list_variables
+// There is a scratch register for colors (always a list of length 3).
+// The head of this list is global_list_variables[scratchColor][0]
+// Which is currently set as R124
+
+var global_list_variables = [];
+var scratchColor = 124;
+global_list_variables[scratchColor] = [];
+global_list_variables[scratchColor][0] = 124;
+
+// We maintain a list of all global_numeric_variables
+var global_numeric_variables = [];
+
+ /* Initialise the database of variable names.
  * @param {!Blockly.Workspace} workspace Workspace to generate code from.
  */
 Blockly.Dart.init = function(workspace) {
@@ -109,7 +122,9 @@ Blockly.Dart.init = function(workspace) {
  */
 Blockly.Dart.finish = function(code) {
   // Indent every line.
+  
   if (code) {
+    code = 'set R' + global_list_variables[scratchColor][0] + ' 3\n' + code;
     code = Blockly.Dart.prefixLines(code, Blockly.Dart.INDENT);
   }
 
