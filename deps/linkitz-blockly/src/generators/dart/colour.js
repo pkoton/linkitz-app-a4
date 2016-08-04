@@ -28,15 +28,49 @@ goog.provide('Blockly.Dart.colour');
 
 goog.require('Blockly.Dart');
 
+// convert a hexidecimal color string to 0..255 R,G,B, remember that first char is #
+// example input: #ff00cc
+
+function hexToRGB (hex){
+    var r = parseInt(hex.substr(1,2),16);
+    var g = parseInt(hex.substr(3,2),16);
+    var b = parseInt(hex.substr(5,2),16);
+    return [r,g,b];
+}
+
+// convert (h,s,v) to [r,g,b]
+
+function HSVtoRGB(h, s, v) {
+    var r, g, b, i, f, p, q, t;
+    var normH = (h % 360)/360; 
+    i = Math.floor(normH * 6);
+    f = normH * 6 - i;
+    p = v * (1 - s);
+    q = v * (1 - f * s);
+    t = v * (1 - (1 - f) * s);
+    switch (i % 6) {
+        case 0: r = v, g = t, b = p; break;
+        case 1: r = q, g = v, b = p; break;
+        case 2: r = p, g = v, b = t; break;
+        case 3: r = p, g = q, b = v; break;
+        case 4: r = t, g = p, b = v; break;
+        case 5: r = v, g = p, b = q; break;
+    }
+        r = Math.round(r * 255);
+        g = Math.round(g * 255);
+        b = Math.round(b * 255);
+    return [r,g,b];
+}
 
 Blockly.Dart.addReservedWords('Math');
 
 Blockly.Dart['colour_picker'] = function(block) {
   // Colour picker.
   var value_color = block.getFieldValue('COLOUR'); // getFieldValue('COLOUR') returns the color as a hex string no quotes
-    var t1 = value_color.substr(1,2);
-    var t2 = value_color.substr(3,2);
-    var t3 = value_color.substr(5,2);
+  var colorRGB = hexToRGB (value_color);
+    var t1 = colorRGB[0];
+    var t2 = colorRGB[1];
+    var t3 = colorRGB[2];
     var code =
       'Set R' + (global_list_variables[scratchColor][0] + 1) + ' ' +  t1 + '\n' + 
       'Set R' + (global_list_variables[scratchColor][0] + 2)  + ' ' + t2 + '\n' +
