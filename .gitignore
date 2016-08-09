@@ -1,3 +1,7 @@
 build/
 node_modules/
 *.pyc
+deps/linkitz-blockly/src/blockly_compressed.js
+deps/linkitz-blockly/src/dart_compressed.js
+deps/linkitz-blockly/src/blockly_uncompressed.js
+deps/linkitz-blockly/src/msg/js/*.js
