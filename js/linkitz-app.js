@@ -98,7 +98,11 @@ linkitzApp.controller('LinkitzAppController', [
             .then(HexGenerator.processAssembly)
             .then(LinkitzToy.programDevice)
             .then(function programSuccess() {
-                LogService.appLogMsg("Programming Successful.");
+                LogService.appLogMsg("Programming Successful. Resetting...");
+            })
+            .then(LinkitzToy.resetDevice)
+            .then(function resetSuccess() {
+                LogService.appLogMsg("Reset Sent.");
             })
             .catch(function (reason) {
                 errorCatcher.handle("Error programming Linkitz", reason);

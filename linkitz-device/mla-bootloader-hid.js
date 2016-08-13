@@ -1,7 +1,4 @@
-//  Multiple Updates from Jon's original code
-//  For Jade Action 0.7
-//  Adding code for Jade Action 0.8
-//  Added "doRoverMode" which should start Rover Mode but there still needs to be a general call back for the data coming back
+//  Initial code for Linkitz MLA bootloader
 
 const packetSize = 64;
 

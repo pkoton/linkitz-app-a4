@@ -247,6 +247,32 @@ linkitzApp.factory('LinkitzToy',
         return deferred.promise;
     }
 
+    function linkitzResetDevice() {
+        var deferred = $q.defer();
+
+        if (linkitzInfo.isConnected) {
+            linkitz.resetDevice(
+                function successCallback() {
+                    $rootScope.$evalAsync(function () {
+                        deferred.resolve();
+                    });
+                },
+                function timeoutCallback() {
+                    deferred.reject("Timeout programming device.");
+                },
+                function errorCallback() {
+                    deferred.reject("Error programming device.");
+                }
+            );
+        }
+        else {
+            deferred.reject("Not connected to Linkitz");
+        }
+
+
+        return deferred.promise;
+    }
+
     return {
         '$linkitz':         linkitz,
         'info':             linkitzInfo,
@@ -254,7 +280,8 @@ linkitzApp.factory('LinkitzToy',
         'disconnect':       linkitzDisconnect,
         'verifyDevice':     linkitzVerifyDevice,
         'eraseDevice':      linkitzEraseDevice,
-        'programDevice':    linkitzProgramDevice
+        'programDevice':    linkitzProgramDevice,
+        'resetDevice':      linkitzResetDevice 
     };
 
 }]);
