@@ -37,7 +37,7 @@
 
   <xml id="toolbox" style="display: none">
                  
-      <category id="LED" class="LED"  colour="#873299">
+<category id="LED" class="LED"  colour="#873299">
         <block type="flash_leds"></block>
         <block type="colour_picker"></block>
         <block type="colour_picker"><field name="COLOUR">#FF7245</field></block>
@@ -48,6 +48,8 @@
         <block type="colour_picker"><field name="COLOUR">#1329c3</field></block>
         <block type="colour_picker"><field name="COLOUR">#9862e6</field></block>
         <block type="colour_picker"><field name="COLOUR">#FFFFFF</field></block>
+        
+     
       </category>
       
            <sep></sep>
@@ -65,7 +67,7 @@
       <block type="getbatterylevel"></block>
      <block type="getambientlight"></block>
      <block type="getroster"></block>
-    
+   
     </category>
 
      <sep></sep>
@@ -75,28 +77,32 @@
       <block type="logic_compare"></block>
       <block type="logic_operation"></block>
       <block type="math_number"></block>
-      <block type="math_arithmetic"></block>  <!-- might want the advanced math block, but we'll see -->
-     
+      <block type="math_arithmetic"></block>  
       <block type="math_random_int"></block>
       
       <block type="controls_while"></block>
-      
+     
       <block type="controls_flow_statements"></block>
     </category>
+   
+    
     
          <sep></sep>
          
     <category id="catLists" class="catLists" colour="#33cc66">
-      <!-- <block type="lists_create_empty"></block> -->
+      
+     
+      
       <block type="lists_create_n">
         <value name="NUM_ITEMS">
           <block type="math_number">
-            <field name="NUM">1</field>
+            <field name="NUM">3</field>
           </block>
         </value>
       </block>
-      
-     <block type="lists_create_with"></block>
+    
+      <block type="lists_create_with"></block>  
+
       
      <block type="lists_getIndex_nonMut">
         <value name="VALUE">
