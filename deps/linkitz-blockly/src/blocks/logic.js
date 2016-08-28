@@ -45,7 +45,7 @@ Blockly.Blocks['controls_if'] = {
    */
   init: function() {
     this.appendDummyInput()
-      .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_8_Logic.png",50,50,"*"));this.setHelpUrl(Blockly.Msg.CONTROLS_IF_HELPURL);
+      .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_8_Logic.png",50,50,"*"));this.setHelpUrl(Blockly.Msg.CONTROLS_IF_HELPURL);
     this.setColour(Blockly.Blocks.logic.HUE);
     this.appendValueInput('IF0')
         .setCheck('Boolean')
@@ -274,15 +274,11 @@ Blockly.Blocks['logic_compare'] = {
     var OPERATORS = this.RTL ? [
           ['>', 'LT'],
           ['==', 'EQ'],
-          ['<', 'GT'],
-          ['AND','AND'],
-          ['OR','OR']
+          ['<', 'GT']
         ] : [
           ['<', 'LT'],
           ['=', 'EQ'],
-          ['>', 'GT'],
-          ['AND','AND'],
-          ['OR','OR']
+          ['>', 'GT']
         ];
     this.setHelpUrl(Blockly.Msg.LOGIC_COMPARE_HELPURL);
     this.setColour(Blockly.Blocks.logic.HUE);
@@ -435,7 +431,7 @@ Blockly.Blocks['logic_ternary'] = {
    */
   init: function() {
     this.appendDummyInput()
-      .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_8_Logic.png",50,50,"*"));this.setHelpUrl(Blockly.Msg.CONTROLS_IF_HELPURL);
+      .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_8_Logic.png",50,50,"*"));this.setHelpUrl(Blockly.Msg.CONTROLS_IF_HELPURL);
     this.setHelpUrl(Blockly.Msg.LOGIC_TERNARY_HELPURL);
     this.setColour(Blockly.Blocks.logic.HUE);
     this.appendValueInput('IF')
