@@ -74,19 +74,35 @@ Blockly.Dart.ORDER_NONE = 99;          // (...)
 Blockly.Dart.INDENT = '   ';
 Blockly.Dart.STATEMENT_PREFIX = null;
 
-// SPECIAL REGISTERS ARE SET HERE
-// We maintain a list of all global_list_variables
-// There is a scratch register for colors (always a list of length 3).
-// The head of this list is global_list_variables[scratchColor][0]
-// Which is currently set as R124
+// SPECIAL REGISTERS R0 - R127 ARE SET HERE
+
+// We maintain a table of all global_list_variables, each element is a list of [head addr, list size]
+// The special scratch register for colors (always a list of length 3) is currently set as R124
+// global_list_variables builds DOWN from R127 to R0
 
 var global_list_variables = [];
-var scratchColor = 124;
-global_list_variables[scratchColor] = [];
-global_list_variables[scratchColor][0] = 124;
+// var scratchColor = 124; // this is the real value
+// global_list_variables[scratchColor] = [124,4];
+var scratchColor = 15; //shorten for testing only
+global_list_variables[scratchColor] = ['scratchColor',4];
+var list_current = scratchColor; //list_current points to the bottom of global_list_variables, initially the scratchColor
 
-// We maintain a list of all global_numeric_variables
-var global_numeric_variables = [];
+// We maintain an array of all global_scalar_variables.
+// The variable_name's index in the array indicates the register number which holds the value
+// e.g. the variable_name in global_scalar_variables[5] has its value stored in R5
+// the first three registers are special. R0 is null/zero. R1 and R2 are used as scratch registers.
+// global_scalar_variables builds UP from R0 to R127
+
+var global_scalar_variables = [];
+global_scalar_variables[0] = 'zero';
+global_scalar_variables[1] = 'scratch1';
+global_scalar_variables[2] = 'scratch2';
+var gsv_next = 3 // gsv_next points to the next empty register index
+var global_scalar_variables_pp ='';
+
+// undef_vars list holds the names of variables that are used before generator has seen their value
+// once value is set, variable name is moved to correct global variable list (scalar or list)
+var undef_vars = [];
 
  /* Initialise the database of variable names.
  * @param {!Blockly.Workspace} workspace Workspace to generate code from.
@@ -97,7 +113,7 @@ Blockly.Dart.init = function(workspace) {
   // Create a dictionary mapping desired function names in definitions_
   // to actual function names (to avoid collisions with user functions).
   Blockly.Dart.functionNames_ = Object.create(null);
-
+  
   if (!Blockly.Dart.variableDB_) {
     Blockly.Dart.variableDB_ =
         new Blockly.Names(Blockly.Dart.RESERVED_WORDS_);
@@ -111,8 +127,10 @@ Blockly.Dart.init = function(workspace) {
     defvars[i] = 'var ' +
         Blockly.Dart.variableDB_.getName(variables[i],
         Blockly.Variables.NAME_TYPE) + ';';
+    undef_vars[i] = Blockly.Dart.variableDB_.getName(variables[i], Blockly.Variables.NAME_TYPE); // push all vars here
   }
   Blockly.Dart.definitions_['variables'] = defvars.join('\n');
+  
 };
 
 /**
@@ -124,8 +142,14 @@ Blockly.Dart.finish = function(code) {
   // Indent every line.
   
   if (code) {
-    code = 'set R' + global_list_variables[scratchColor][0] + ' 3\n' + code;
-    code = Blockly.Dart.prefixLines(code, Blockly.Dart.INDENT);
+    code = initialize_lists() + code; // set headaddr and length of every list variable
+    // alert("gsv length is " + global_scalar_variables.length);
+    global_scalar_variables_pp = global_scalar_variables.join(',');
+    code = 'global_scalar_variables=['+ global_scalar_variables_pp + ']\n' + code;
+    // code = Blockly.Dart.prefixLines(code, Blockly.Dart.INDENT);
+    var global_list_variables_pp = mdarray_pp(global_list_variables);
+    code = 'global_list_variables=['+ global_list_variables_pp + ']\n' + code;
+    code = print_linkitz_vars() + '\n' + code;
   }
 
   // Convert the definitions dictionary into a list.
@@ -143,7 +167,8 @@ Blockly.Dart.finish = function(code) {
   delete Blockly.Dart.definitions_;
   delete Blockly.Dart.functionNames_;
   Blockly.Dart.variableDB_.reset();
-  var allDefs = imports.join('\n') + '\n\n' + definitions.join('\n\n');
+  // var allDefs = imports.join('\n') + '\n\n' + definitions.join('\n\n');
+  var allDefs = imports.join('\n');
   return allDefs.replace(/\n\n+/g, '\n\n').replace(/\n*$/, '\n\n\n') + code;
 };
 
