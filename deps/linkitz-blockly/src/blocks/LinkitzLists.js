@@ -1,4 +1,6 @@
-// Make lists non-mutable - length is fixed
+// This is different from standard Blockly because we are making lists non-mutable - length is fixed
+// Lists are stored as addr = Length, addr+1 = list[0], ...,addr+(length-1)=list[Length-1]
+
 
 /**
  * This block has been modified from the original lists_getIndex.
@@ -17,7 +19,7 @@ Blockly.Blocks['lists_getIndex_nonMut'] = {
          [Blockly.Msg.LISTS_GET_INDEX_RANDOM, 'RANDOM']];
     this.setHelpUrl(Blockly.Msg.LISTS_GET_INDEX_HELPURL);
     this.appendDummyInput()
-      .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_12_Lists.png",50,50,"*"));
+      .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_12_Lists.png",50,50,"*"));
     this.setColour('#33CC66');
     this.appendDummyInput()
         .appendField("get");
@@ -143,7 +145,7 @@ Blockly.Blocks['lists_setIndex_nonMut'] = {
     this.setHelpUrl(Blockly.Msg.LISTS_SET_INDEX_HELPURL);
     this.setColour('#33CC66');
     this.appendDummyInput()
-      .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_12_Lists.png",50,50,"*"));
+      .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_12_Lists.png",50,50,"*"));
     this.appendDummyInput()
         .appendField("set");
     this.appendValueInput('LIST')
