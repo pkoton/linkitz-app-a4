@@ -258,10 +258,36 @@ linkitzApp.factory('LinkitzToy',
                     });
                 },
                 function timeoutCallback() {
-                    deferred.reject("Timeout programming device.");
+                    deferred.reject("Timeout resetting device.");
                 },
                 function errorCallback() {
-                    deferred.reject("Error programming device.");
+                    deferred.reject("Error resetting device.");
+                }
+            );
+        }
+        else {
+            deferred.reject("Not connected to Linkitz");
+        }
+
+
+        return deferred.promise;
+    }
+
+    function linkitzSignFlash() {
+        var deferred = $q.defer();
+
+        if (linkitzInfo.isConnected) {
+            linkitz.signFlash(
+                function successCallback() {
+                    $rootScope.$evalAsync(function () {
+                        deferred.resolve();
+                    });
+                },
+                function timeoutCallback() {
+                    deferred.reject("Timeout signing flash.");
+                },
+                function errorCallback() {
+                    deferred.reject("Error signing flash.");
                 }
             );
         }
@@ -281,7 +307,8 @@ linkitzApp.factory('LinkitzToy',
         'verifyDevice':     linkitzVerifyDevice,
         'eraseDevice':      linkitzEraseDevice,
         'programDevice':    linkitzProgramDevice,
-        'resetDevice':      linkitzResetDevice 
+        'resetDevice':      linkitzResetDevice,
+        'signFlash':       linkitzSignFlash
     };
 
 }]);
