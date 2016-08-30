@@ -1,9 +1,11 @@
 {
   "name": "Linkitz",
-  "version": "0.9.3.1",
+  "version": "0.9.4.1",
   "manifest_version": 2,
   "minimum_chrome_version": "46",
   "description": "Linkitz empowers girls to explore technology and build endless amazing creations.",
+
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAkeZXX+WZIAi3CSWadcezsgaP/0N1W9OXJuDcG3kvOl88nu5IClgMSBLfFQyenXer4Z3vTSUxHScgHVIgNOKFXEsIDkREPjN3z9YW9/wqvujjLgNWt0DYcDHkyQZ3YdJ8VFogOz18zdXtbkJio2q2OpGaxL7VsNxCZ+yTB49qlhE8dsZnjTGEhWo+Sri87lmGHYrJUo3KI2ii9FAthKrapKzqM1fkpvn5gvb4wLJ/VmUdIxRXDWImDTEX1vKX6ACmXA5kIqT9+sFI4sUxvfSjMGau2zZv2Q8lUj/XLpzOcWPmaj4b41sblvwNn4S9k7TDWm5LsrYhE0dffiAF8Ad+LwIDAQAB",
 
   "icons": {
     "128": "icons/corplogo128x128.png"

@@ -15,25 +15,46 @@
 
 Blockly.Dart['flash_leds'] = function(block) {
   var value_color = Blockly.Dart.valueToCode(block, 'COLOR', Blockly.Dart.ORDER_ATOMIC) ;
-  //alert("input to flash_leds is *" + value_color +'*');
+  alert("in flash_leds: input is *" + value_color +'*');
+  
+ 
   if (value_color == 'None' || value_color =='') { // input is blank or null
     //alert('input is null');
     var code = 'syscall flashHue R0 \n'; 
   }
+  
   else {
     var targetBlock = block.getInputTargetBlock('COLOR');
-    //alert("input to flash_leds is block type " + targetBlock.type);
+     alert("in flash_leds: input is block type " + targetBlock.type);
+     
    if (targetBlock.type == 'math_number' ) { // input is any single decimal number
     //alert('got a number');
      var code = value_color + 'syscall flashHue R1' +  '\n';
     return code;
-    }
-    else {// assuming it's a single color
-    //alert('input is a color');
-     var code = value_color + 'syscall flashRBG R1' +  '\n';
-    }
-  };
-    return code;
+  
+    } else if (targetBlock.type == 'colour_picker') {
+      var code = value_color + 'syscall flashRBGptr R1' +  '\n';
+      
+      } else if ((targetBlock.type == 'variables_get' )) { // it's  a variable
+      var varName = targetBlock.getFieldValue('VAR');
+      alert("in flash_leds: variables_get varName is " +varName);
+      
+      if (global_scalar_variables.indexOf(varName) >= 0) { // it's a scalar variable
+        var code = value_color + 'syscall flashHue R1' +  '\n';
+        } else if (find_in_GLV(varName) >= 0) {
+            var code = value_color + 'syscall flashRBGptr R1' +  '\n';
+        } else {
+          alert('in flash_leds: variable not defined');
+          var code = "FAIL1 at flash_leds\n";       
+        }
+      } // end if variables_get
+      
+    else {// we don't know what it is
+      alert('in flash_leds: input of unknown type');
+      var code = "FAIL2 at flash_leds\n"; 
+      }
+  }
+  return code;
 }
 
 // convert a hexidecimal color string to 0..255 R,G,B, remember that first char is ' and second char is #
@@ -254,7 +275,8 @@ Blockly.Dart['getidfromradioatport'] = function(block) {
 
 Blockly.Dart['on_initialization'] = function(block) {
   var dothis = Blockly.Dart.statementToCode(block, 'NAME');
-  var code = 'On_initialization:\n' + dothis + 'syscall exit R0\n';;
+  alert("In on_initialization, code is " + dothis + "Syscall exit R0");
+  var code = 'On_initialization:\n' + dothis + Blockly.Dart.INDENT + 'syscall exit R0\n';;
   return code;
 };
 
