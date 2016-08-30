@@ -100,7 +100,7 @@ linkitzApp.controller('LinkitzAppController', [
             .then(function programSuccess() {
                 LogService.appLogMsg("Programming Successful. Signing...");
             })
-            .then(LinkitzToy.signDevice)
+            .then(LinkitzToy.signFlash)
             .then(function signSuccess() {
                 LogService.appLogMsg("Signed.");
             })

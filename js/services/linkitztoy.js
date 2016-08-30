@@ -84,12 +84,12 @@ linkitzApp.factory('LinkitzToy',
             },
             function timeoutCallback() {
                 $rootScope.$evalAsync(function () {
-                    deferred.reject("Timeout programming device.");
+                    deferred.reject("Timeout verifying device.");
                 });
             },
             function errorCallback() {
                 $rootScope.$evalAsync(function () {
-                    deferred.reject("Error programming device.");
+                    deferred.reject("Error verifying device.");
                 });
             }
         );
@@ -107,10 +107,10 @@ linkitzApp.factory('LinkitzToy',
                     });
                 },
                 function timeoutCallback() {
-                    deferred.reject("Timeout programming device.");
+                    deferred.reject("Timeout erasing device.");
                 },
                 function errorCallback() {
-                    deferred.reject("Error programming device.");
+                    deferred.reject("Error erasing device.");
                 }
             );
         }
@@ -308,7 +308,7 @@ linkitzApp.factory('LinkitzToy',
         'eraseDevice':      linkitzEraseDevice,
         'programDevice':    linkitzProgramDevice,
         'resetDevice':      linkitzResetDevice,
-        'signFlash':       linkitzSignFlash
+        'signFlash':        linkitzSignFlash
     };
 
 }]);
