@@ -78,9 +78,17 @@ Blockly.Generator.prototype.workspaceToCode = function(workspace) {
     console.warn('No workspace specified in workspaceToCode call.  Guessing.');
     workspace = Blockly.getMainWorkspace();
   }
+  if (debug){alert("starting")};
   var code = [];
   this.init(workspace);
   var blocks = workspace.getTopBlocks(true);
+    // added linkitz function to prepare memory allocation for all variables
+    if (debug){alert("calling resolve var refs")};
+  if (resolve_var_refs(workspace, 0) == 0) {
+      alert("unresolved variables issue");
+  }
+  else {
+    if (debug){alert("out of resolve var refs")};
   for (var x = 0, block; block = blocks[x]; x++) {
     var blocktype = block.type;
     // alert('top block of type ' + blocktype);
@@ -108,6 +116,7 @@ Blockly.Generator.prototype.workspaceToCode = function(workspace) {
   code = code.replace(/\n\s+$/, '\n');
   code = code.replace(/[ \t]+\n/g, '\n');
   return code;
+  }
 };
 
 // The following are some helpful functions which can be used by multiple
