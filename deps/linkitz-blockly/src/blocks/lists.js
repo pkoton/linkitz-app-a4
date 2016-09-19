@@ -68,7 +68,7 @@ Blockly.Blocks['lists_create_with'] = {
    */
   init: function() {
     this.appendDummyInput()
-      .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_12_Lists.png",50,50,"*"));
+      .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_12_Lists.png",50,50,"*"));
     this.setHelpUrl(Blockly.Msg.LISTS_CREATE_WITH_HELPURL);
     this.setColour('#33CC66');
     this.itemCount_ = 3;
