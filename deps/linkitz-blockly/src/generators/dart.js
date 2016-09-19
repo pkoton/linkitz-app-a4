@@ -19,220 +19,214 @@
  */
 
 /**
- * @fileoverview Generating Linkitz assembly code for variable blocks.
- * This is based on the Dart generator
- * written by @author fraser@google.com (Neil Fraser)
- * Modified by lyssa@linkitz.com (Lyssa Neel)
+ * @fileoverview Helper functions for generating Dart for blocks.
+ * @author fraser@google.com (Neil Fraser)
  */
 'use strict';
 
-goog.provide('Blockly.Dart.variables');
+goog.provide('Blockly.Dart');
 
-goog.require('Blockly.Dart');
+goog.require('Blockly.Generator');
 
 
-// This should run first, during blockly.init.
-// resolve variable refs handles var1 = var2 when var2 is used before it is defined
- // or var1 = var2 = var1 when there is a loop of assignments
- // it cycles through all blocks looking for variable_set, when a variable is set it is pushed var to GSV
- // or GLV lists. If it is set to a var that has not been defined yet, it is pushed to undef_vars list.
- // Finally, cycle through undef_vars list trying to resolve var references, until none are left
- // or until no more can be removed which is a fail state
- 
- function resolve_var_refs(workspace, undef_vars_count){
-  var blocks = workspace.getAllBlocks();
-  alert("in resolve var refs");
-  // Iterate through every block.
-    for (var i = 0; i < blocks.length; i++) {
-      if (blocks[i].type == 'variables_set') {
-        var current_block = blocks[i];
-        var varName = Blockly.Dart.variableDB_.getName(current_block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
-        alert(varName);
-        if (global_scalar_variables.indexOf(varName) >=0) {
-          if (debug) {alert("found scalar")};
-          continue;
-          } else if (varName in global_list_variables) {
-            if (debug) {alert("found list")};
-            continue;
-          } else { // new variable, add it to the correct variables list
-            if (debug) {alert("new var")};
-            var targetBlock = current_block.getInputTargetBlock('VALUE');
-            var inputType = targetBlock.type;
-            // drew says we dont need the value, use it here for error checking
-            if (debug) {
-              var assigned_value = Blockly.Dart.valueToCode(targetBlock, 'VALUE', Blockly.Dart.ORDER_ASSIGNMENT) || '0';
-              alert("in resolve_var_refs: " + varName + " is being assigned input of type " + inputType);
-            }
-            switch (inputType) {
-              case "math_number": // falls through to next
-              case "math_arithmetic": // falls through to next
-              case "math_random_int":
-                addNewScalarVar(varName);
-                break;
-              case 'colour_picker': 
-                addNewListVar(varName,4); // color always uses 4 registers
-                break;
-                
-              case 'Array':
-                  // ********* TODO what if it is a list but not a color? esp a nested list *********
-                break;
-              case 'variables_get':
-                  if (debug) {alert(varName + " is assigned to a variable")};
-                  // get RHS variable name
-                  // check if RHS is already defined -- if so, we know the type of varName
-                  var RHSvar = targetBlock.getFieldValue('VAR');
-                  alert("RHS variable is " + RHSvar);
-                  if (global_scalar_variables.indexOf(RHSvar) >= 0) { // RHSvar is defined as scalar
-                    addNewScalarVar(varName);
-                    gsv_next++;
-                    // Find and remove varName from undef_vars list
-                    var i = undef_vars.indexOf("varName");
-                    if (i != -1) {
-                      undef_vars.splice(i, 1);
-                      }
-                    undef_vars_next--;
-                  } else if (RHSvar in global_list_variables) { //RHSvar is defined as a list
-                    addNewListVar(varName, global_list_variables[RHSvar][1]);
-                    // Find and remove varName from undef_vars list
-                    var i = undef_vars.indexOf("varName");
-                    if (i != -1) {
-                      undef_vars.splice(i, 1);
-                      }
-                    undef_vars_next--;
-                    } else { // varName is a forward reference
-                      undef_vars[undef_vars_next] = varName;
-                      undef_vars_next++;
-                    }
-                break;
-              default:
-                alert("unknown variable type in resolve_variable_refs");
-                return 0;
-            } // end switch
-          } // end else { // new variable, add it to the correct variables list
-      } // end if (blocks[i].type == 'variables_set')
-    } // end for
-    if (undef_vars.length == 0) {
-      // we win!
-      return 1;
-    } else if (undef_vars_count == undef_vars.length) {
-      // bad news, we have a loop situation
-      return 0;
+/**
+ * Dart code generator.
+ * @type {!Blockly.Generator}
+ */
+Blockly.Dart = new Blockly.Generator('Dart');
+
+/**
+ * List of illegal variable names.
+ * This is not intended to be a security feature.  Blockly is 100% client-side,
+ * so bypassing this list is trivial.  This is intended to prevent users from
+ * accidentally clobbering a built-in object or function.
+ * @private
+ */
+Blockly.Dart.addReservedWords(
+    // https://www.dartlang.org/docs/spec/latest/dart-language-specification.pdf
+    // Section 16.1.1
+    'assert,break,case,catch,class,const,continue,default,do,else,enum,extends,false,final,finally,for,if,in,is,new,null,rethrow,return,super,switch,this,throw,true,try,var,void,while,with,' +
+    // https://api.dartlang.org/dart_core.html
+    'print,identityHashCode,identical,BidirectionalIterator,Comparable,double,Function,int,Invocation,Iterable,Iterator,List,Map,Match,num,Pattern,RegExp,Set,StackTrace,String,StringSink,Type,bool,DateTime,Deprecated,Duration,Expando,Null,Object,RuneIterator,Runes,Stopwatch,StringBuffer,Symbol,Uri,Comparator,AbstractClassInstantiationError,ArgumentError,AssertionError,CastError,ConcurrentModificationError,CyclicInitializationError,Error,Exception,FallThroughError,FormatException,IntegerDivisionByZeroException,NoSuchMethodError,NullThrownError,OutOfMemoryError,RangeError,StackOverflowError,StateError,TypeError,UnimplementedError,UnsupportedError');
+
+/**
+ * Order of operation ENUMs.
+ * https://www.dartlang.org/docs/dart-up-and-running/ch02.html#operator_table
+ */
+Blockly.Dart.ORDER_ATOMIC = 0;         // 0 "" ...
+Blockly.Dart.ORDER_UNARY_POSTFIX = 1;  // expr++ expr-- () [] .
+Blockly.Dart.ORDER_UNARY_PREFIX = 2;   // -expr !expr ~expr ++expr --expr
+Blockly.Dart.ORDER_MULTIPLICATIVE = 3; // * / % ~/
+Blockly.Dart.ORDER_ADDITIVE = 4;       // + -
+Blockly.Dart.ORDER_SHIFT = 5;          // << >>
+Blockly.Dart.ORDER_BITWISE_AND = 6;    // &
+Blockly.Dart.ORDER_BITWISE_XOR = 7;    // ^
+Blockly.Dart.ORDER_BITWISE_OR = 8;     // |
+Blockly.Dart.ORDER_RELATIONAL = 9;     // >= > <= < as is is!
+Blockly.Dart.ORDER_EQUALITY = 10;      // == !=
+Blockly.Dart.ORDER_LOGICAL_AND = 11;   // &&
+Blockly.Dart.ORDER_LOGICAL_OR = 12;    // ||
+Blockly.Dart.ORDER_CONDITIONAL = 13;   // expr ? expr : expr
+Blockly.Dart.ORDER_CASCADE = 14;       // ..
+Blockly.Dart.ORDER_ASSIGNMENT = 15;    // = *= /= ~/= %= += -= <<= >>= &= ^= |=
+Blockly.Dart.ORDER_NONE = 99;          // (...)
+
+Blockly.Dart.INDENT = '   ';
+Blockly.Dart.STATEMENT_PREFIX = null;
+
+//******************* LINKITZ STUFF *******************
+
+var debug = 1;
+
+// Linkitz SPECIAL REGISTERS R0 - R127 ARE SET HERE
+
+// We maintain a dictionary of all global_list_variables, each element is a list of [head addr, list size]
+// global_list_variables builds DOWN from R127 to R0
+
+var glv_next = 127;
+var global_list_variables = new Object();
+
+// We maintain an array of all global_scalar_variables.
+// The variable_name's index in the array indicates the register number which holds the value
+// e.g. the variable_name in global_scalar_variables[5] has its value stored in R5
+// the first three registers are special. R0 is null/zero. R1 and R2 are used as scratch registers.
+// global_scalar_variables builds UP from R0 to R127
+
+var global_scalar_variables = [];
+global_scalar_variables[0] = 'zero';
+global_scalar_variables[1] = 'scratch1';
+global_scalar_variables[2] = 'scratch2';
+var gsv_next = 3 // gsv_next points to the next empty register index
+var global_scalar_variables_pp ='';
+
+// undef_vars list holds the names of variables that are used before generator has seen their value
+// once value is set, variable name is moved to correct global variable list (scalar or list)
+var undef_vars = [];
+var undef_vars_next = 0;
+
+ /* Initialise the database of variable names.
+ * @param {!Blockly.Workspace} workspace Workspace to generate code from.
+ */
+Blockly.Dart.init = function(workspace) {
+  // Create a dictionary of definitions to be printed before the code.
+  Blockly.Dart.definitions_ = Object.create(null);
+  // Create a dictionary mapping desired function names in definitions_
+  // to actual function names (to avoid collisions with user functions).
+  Blockly.Dart.functionNames_ = Object.create(null);
+  
+  if (!Blockly.Dart.variableDB_) {
+    Blockly.Dart.variableDB_ =
+        new Blockly.Names(Blockly.Dart.RESERVED_WORDS_);
+  } else {
+    Blockly.Dart.variableDB_.reset();
+  }
+
+  var defvars = [];
+  var variables = Blockly.Variables.allVariables(workspace);
+  for (var i = 0; i < variables.length; i++) {
+    defvars[i] = 'var ' +
+        Blockly.Dart.variableDB_.getName(variables[i],
+        Blockly.Variables.NAME_TYPE) + ';';
+  }
+  Blockly.Dart.definitions_['variables'] = defvars.join('\n');
+};
+
+/**
+ * Prepend the generated code with the variable definitions.
+ * @param {string} code Generated code.
+ * @return {string} Completed code.
+ */
+Blockly.Dart.finish = function(code) {
+  // Indent every line.
+  
+  if (code) {
+    global_scalar_variables_pp = global_scalar_variables.join(',');
+    code = 'global_scalar_variables=['+ global_scalar_variables_pp + ']\n' + code;
+    // code = Blockly.Dart.prefixLines(code, Blockly.Dart.INDENT);
+    // var global_list_variables_pp = global_list_variables.join('\n');
+     var global_list_variables_pp = JSON.stringify(global_list_variables);
+    code = 'global_list_variables=['+ global_list_variables_pp + ']\n' + code;
+  }
+
+  // Convert the definitions dictionary into a list.
+  var imports = [];
+  var definitions = [];
+  for (var name in Blockly.Dart.definitions_) {
+    var def = Blockly.Dart.definitions_[name];
+    if (def.match(/^import\s/)) {
+      imports.push(def);
     } else {
-      // go through all variable_set blocks again to try to resolve more references.
-      resolve_var_refs(workspace, undef_vars.length);
-      }
- }
- 
- function addNewListVar(varName,len) {
-  var new_current = glv_next - len; 
-  global_list_variables[varName]=[new_current,len];
-  glv_next = new_current;
-  if (debug) {alert(varName + " added to GLV with length " + len)};
- }
+      definitions.push(def);
+    }
+  }
+  // Clean up temporary data.
+  delete Blockly.Dart.definitions_;
+  delete Blockly.Dart.functionNames_;
+  Blockly.Dart.variableDB_.reset();
+  // var allDefs = imports.join('\n') + '\n\n' + definitions.join('\n\n');
+  var allDefs = imports.join('\n');
+  return allDefs.replace(/\n\n+/g, '\n\n').replace(/\n*$/, '\n\n\n') + code;
+};
 
-function addNewScalarVar(varName) {
-  global_scalar_variables[gsv_next] = varName;
-  if (debug) {alert("in resolve_var_refs: GSV pointer now is " + gsv_next)};
-  gsv_next++;
-  }
- 
- 
- Blockly.Dart['variables_get'] = function(block) {
-  // Variable getter.
-  var varName = Blockly.Dart.variableDB_.getName(block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
-  if (debug) {alert("in variables_get: name is " + varName)};
-  var varName_undef = 1;
-  var is_scalar = global_scalar_variables.indexOf(varName); // is it in global_scalar_variables
-  if (is_scalar >= 0) {
-    varName_undef = 0;
-    var code = 'push R' + is_scalar + '\npop R1\n';  
-  } else if (varName in global_list_variables) { // is it in global_list_variables
-      varName_undef = 0;
-      var code = 'push R' + global_list_variables[varName][0] + '\npop R1\n';
-      }
-  if (varName_undef) {                                                // variable value has not been set yet
-    alert('in variables_get: ' + varName + ' is undefined');
-    var code = varName  + ' UNDEFINED\n';
-  }
-  return [code, Blockly.Dart.ORDER_ATOMIC];
-}
+/**
+ * Naked values are top-level blocks with outputs that aren't plugged into
+ * anything.  A trailing semicolon is needed to make this legal.
+ * @param {string} line Line of generated code.
+ * @return {string} Legal line of code.
+ */
+Blockly.Dart.scrubNakedValue = function(line) {
+  return line + ';\n';
+};
 
-Blockly.Dart['variables_set'] = function(block) {
-  // Variable setter
-  var argument0 = Blockly.Dart.valueToCode(block, 'VALUE', Blockly.Dart.ORDER_ASSIGNMENT) || '0';
-  var targetBlock = block.getInputTargetBlock('VALUE');
-  var inputType = targetBlock.type;
-  var varName = Blockly.Dart.variableDB_.getName(block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
-  if (debug) {alert("in variables_set: input is of type " + inputType + ", varName is " + varName + ", value is " + argument0)};
-  if (debug) {alert("GLV is " + JSON.stringify(global_list_variables));}
-  var found = global_scalar_variables.indexOf(varName);
-  if (found >= 0) { // setting a scalar, value is in R1
-    if (debug) {alert("in variables_set, scalar variable " + varName + " defined at R" + found)};
-    var code =  argument0 +'Push R1\nPop R' + found + '\n';
-    return code;
-    }
-  if (varName in global_list_variables) { // setting a list, values are on the stack
-    if (debug) {alert("in variables_set (2): global_list_variables[varName] is " + global_list_variables[varName] + " global_list_variables[varName][0] is " + global_list_variables[varName][0]);}
-    found = global_list_variables[varName][0]; //headaddr
-    var list_len = global_list_variables[varName][1];
-    var pops = argument0 + 'Pop R0\n'; // don't need length, we already have it
-    if (debug) {alert("in variables_set, list variable " + varName + " defined at R" + found)};
-    for (var i = (list_len - 1); i > 0; i--) {
-     pops = pops + 'Pop R' + (found + i) + '\n';
-    }
-    var code = pops;
-    return code;
-  }
-// ************* else if its a  non-color-picker list, where is input ??? *************
-  alert("in variables_set, " + varName + " not found"); 
-  var code = varName  + ' UNDEFINED\n';
-  return code;
-}
- 
- // copy a list of length l from one set of l registers to another set of l registers using push/pop
- function list_copy(old_ptr, new_ptr, l) {
-    var local_code = '';
-    // you don't need to copy the address pointer (lowest register)
-    // it will already have been set in and is non-mutable
-    for (var i = 0; i < l; i++) {
-     local_code = local_code + "Push R" + old_ptr + "\n Pop R" + new_ptr + "\n";
-     global_list_variables[new_ptr] = global_list_variables[old_ptr];
-     old_ptr++;
-     new_ptr++;
-    }
-    return local_code;
- }
- 
- // copy a list of length l from one set of l registers to another set of l registers using rcopy
- function list_rcopy(old_ptr, new_ptr, l) {
-    var local_code = '';
-    for (var i = 0; i < l; i++) {
-     local_code = local_code + "rcopy R" + new_ptr + " R" + old_ptr + "\n";
-     global_list_variables[new_ptr] = global_list_variables[old_ptr];
-     old_ptr++;
-     new_ptr++;
-    }
-    return local_code;
- }
- 
- // pretty print the contents of a multidimensional array
- function mdarray_pp(a){
-  var contents = '';
-  for (var i=0; i < a.length; i++) {
-    if (a[i] && Array.isArray(a[i])) {
-      contents = contents + "[" + a[i].join(",") + "] ";
-      }
-    else if (typeof a[i] != 'undefined') {
-      contents = contents + a[i] + ",";
-      }
-      else {
-      contents += "."
-     }
-  }
-  return(contents);
- }
- 
- 
+/**
+ * Encode a string as a properly escaped Dart string, complete with quotes.
+ * @param {string} string Text to encode.
+ * @return {string} Dart string.
+ * @private
+ */
+Blockly.Dart.quote_ = function(string) {
+  // TODO: This is a quick hack.  Replace with goog.string.quote
+  string = string.replace(/\\/g, '\\\\')
+                 .replace(/\n/g, '\\\n')
+                 .replace(/\$/g, '\\$')
+                 .replace(/'/g, '\\\'');
+  return '\'' + string + '\'';
+};
 
- 
- 
+/**
+ * Common tasks for generating Dart from blocks.
+ * Handles comments for the specified block and any connected value blocks.
+ * Calls any statements following this block.
+ * @param {!Blockly.Block} block The current block.
+ * @param {string} code The Dart code created for this block.
+ * @return {string} Dart code with comments and subsequent blocks added.
+ * @private
+ */
+Blockly.Dart.scrub_ = function(block, code) {
+  var commentCode = '';
+  // Only collect comments for blocks that aren't inline.
+  if (!block.outputConnection || !block.outputConnection.targetConnection) {
+    // Collect comment for this block.
+    var comment = block.getCommentText();
+    if (comment) {
+      commentCode += Blockly.Dart.prefixLines(comment, '// ') + '\n';
+    }
+    // Collect comments for all value arguments.
+    // Don't collect comments for nested statements.
+    for (var x = 0; x < block.inputList.length; x++) {
+      if (block.inputList[x].type == Blockly.INPUT_VALUE) {
+        var childBlock = block.inputList[x].connection.targetBlock();
+        if (childBlock) {
+          var comment = Blockly.Dart.allNestedComments(childBlock);
+          if (comment) {
+            commentCode += Blockly.Dart.prefixLines(comment, '// ');
+          }
+        }
+      }
+    }
+  }
+  var nextBlock = block.nextConnection && block.nextConnection.targetBlock();
+  // alert("blockToCode called");
+  var nextCode = Blockly.Dart.blockToCode(nextBlock);
+  return commentCode + code + nextCode;
+};
