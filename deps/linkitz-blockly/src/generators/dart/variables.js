@@ -31,25 +31,125 @@ goog.provide('Blockly.Dart.variables');
 goog.require('Blockly.Dart');
 
 
-Blockly.Dart['variables_get'] = function(block) {
+// This should run first, during blockly.init.
+// resolve variable refs handles var1 = var2 when var2 is used before it is defined
+ // or var1 = var2 = var1 when there is a loop of assignments
+ // it cycles through all blocks looking for variable_set, when a variable is set it is pushed var to GSV
+ // or GLV lists. If it is set to a var that has not been defined yet, it is pushed to undef_vars list.
+ // Finally, cycle through undef_vars list trying to resolve var references, until none are left
+ // or until no more can be removed which is a fail state
+ 
+ function resolve_var_refs(workspace, undef_vars_count){
+  var blocks = workspace.getAllBlocks();
+  alert("in resolve var refs");
+  // Iterate through every block.
+    for (var i = 0; i < blocks.length; i++) {
+      if (blocks[i].type == 'variables_set') {
+        var current_block = blocks[i];
+        var varName = Blockly.Dart.variableDB_.getName(current_block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+        alert(varName);
+        if (global_scalar_variables.indexOf(varName) >=0) {
+          if (debug) {alert("found scalar")};
+          continue;
+          } else if (varName in global_list_variables) {
+            if (debug) {alert("found list")};
+            continue;
+          } else { // new variable, add it to the correct variables list
+            if (debug) {alert("new var")};
+            var targetBlock = current_block.getInputTargetBlock('VALUE');
+            var inputType = targetBlock.type;
+            // drew says we dont need the value, use it here for error checking
+            if (debug) {
+              var assigned_value = Blockly.Dart.valueToCode(targetBlock, 'VALUE', Blockly.Dart.ORDER_ASSIGNMENT) || '0';
+              alert("in resolve_var_refs: " + varName + " is being assigned input of type " + inputType);
+            }
+            switch (inputType) {
+              case "math_number": // falls through to next
+              case "math_arithmetic": // falls through to next
+              case "math_random_int":
+                addNewScalarVar(varName);
+                break;
+              case 'colour_picker': 
+                addNewListVar(varName,4); // color always uses 4 registers
+                break;
+                
+              case 'Array':
+                  // ********* TODO what if it is a list but not a color? esp a nested list *********
+                break;
+              case 'variables_get':
+                  if (debug) {alert(varName + " is assigned to a variable")};
+                  // get RHS variable name
+                  // check if RHS is already defined -- if so, we know the type of varName
+                  var RHSvar = targetBlock.getFieldValue('VAR');
+                  alert("RHS variable is " + RHSvar);
+                  if (global_scalar_variables.indexOf(RHSvar) >= 0) { // RHSvar is defined as scalar
+                    addNewScalarVar(varName);
+                    gsv_next++;
+                    // Find and remove varName from undef_vars list
+                    var i = undef_vars.indexOf("varName");
+                    if (i != -1) {
+                      undef_vars.splice(i, 1);
+                      }
+                    undef_vars_next--;
+                  } else if (RHSvar in global_list_variables) { //RHSvar is defined as a list
+                    addNewListVar(varName, global_list_variables[RHSvar][1]);
+                    // Find and remove varName from undef_vars list
+                    var i = undef_vars.indexOf("varName");
+                    if (i != -1) {
+                      undef_vars.splice(i, 1);
+                      }
+                    undef_vars_next--;
+                    } else { // varName is a forward reference
+                      undef_vars[undef_vars_next] = varName;
+                      undef_vars_next++;
+                    }
+                break;
+              default:
+                alert("unknown variable type in resolve_variable_refs");
+                return 0;
+            } // end switch
+          } // end else { // new variable, add it to the correct variables list
+      } // end if (blocks[i].type == 'variables_set')
+    } // end for
+    if (undef_vars.length == 0) {
+      // we win!
+      return 1;
+    } else if (undef_vars_count == undef_vars.length) {
+      // bad news, we have a loop situation
+      return 0;
+    } else {
+      // go through all variable_set blocks again to try to resolve more references.
+      resolve_var_refs(workspace, undef_vars.length);
+      }
+ }
+ 
+ function addNewListVar(varName,len) {
+  var new_current = glv_next - len; 
+  global_list_variables[varName]=[new_current,len];
+  glv_next = new_current;
+  if (debug) {alert(varName + " added to GLV with length " + len)};
+ }
+
+function addNewScalarVar(varName) {
+  global_scalar_variables[gsv_next] = varName;
+  if (debug) {alert("in resolve_var_refs: GSV pointer now is " + gsv_next)};
+  gsv_next++;
+  }
+ 
+ 
+ Blockly.Dart['variables_get'] = function(block) {
   // Variable getter.
   var varName = Blockly.Dart.variableDB_.getName(block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
-  alert("in variables_get: name is " + varName);
+  if (debug) {alert("in variables_get: name is " + varName)};
   var varName_undef = 1;
   var is_scalar = global_scalar_variables.indexOf(varName); // is it in global_scalar_variables
   if (is_scalar >= 0) {
     varName_undef = 0;
     var code = 'push R' + is_scalar + '\npop R1\n';  
-  } else 
-    for (var i=0; i < global_list_variables.length; i++) {
-      if (global_list_variables[i] && Array.isArray(global_list_variables[i])) {
-        var is_list = global_list_variables[i].indexOf(varName); // is it in global_list_variables
-        if (is_list >= 0) {
-          varName_undef = 0;
-          var code = 'push R' + i + '\npop R1\n';
-        }
-     }
-    }
+  } else if (varName in global_list_variables) { // is it in global_list_variables
+      varName_undef = 0;
+      var code = 'push R' + global_list_variables[varName][0] + '\npop R1\n';
+      }
   if (varName_undef) {                                                // variable value has not been set yet
     alert('in variables_get: ' + varName + ' is undefined');
     var code = varName  + ' UNDEFINED\n';
@@ -59,46 +159,35 @@ Blockly.Dart['variables_get'] = function(block) {
 
 Blockly.Dart['variables_set'] = function(block) {
   // Variable setter
-  var argument0 = Blockly.Dart.valueToCode(block, 'VALUE',
-      Blockly.Dart.ORDER_ASSIGNMENT) || '0';
+  var argument0 = Blockly.Dart.valueToCode(block, 'VALUE', Blockly.Dart.ORDER_ASSIGNMENT) || '0';
   var targetBlock = block.getInputTargetBlock('VALUE');
   var inputType = targetBlock.type;
   var varName = Blockly.Dart.variableDB_.getName(block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
-  alert("in variables_set: input is of type " + inputType + ", varName is " + varName + ", value is " + argument0);
-  
-  if (inputType == 'colour_picker') { // color RGB is in scratch color registers, R: R16, G: R17, B: R18
-    var found = find_in_GLV(varName);
-    if (found >= 0) { // variable already defined
-      alert("in variables_set, list variable " + varName + " already defined at R" + found);
-      var code = argument0 + list_copy(16, (found + 1), 3);
-    } else {
-      var new_current = list_current - 4; // we know color list length is 3 registers but
-      var code = argument0 + list_copy(16, new_current + 1,3); // for colors you only have to copy the RGB not the size 
-      global_list_variables[new_current] = [varName,4];
-      list_current = new_current;
-      alert("in variables_set: GLV pointer at " + list_current + ", global_list_variables now contains " + global_list_variables[new_current]);
-      }
+  if (debug) {alert("in variables_set: input is of type " + inputType + ", varName is " + varName + ", value is " + argument0)};
+  if (debug) {alert("GLV is " + JSON.stringify(global_list_variables));}
+  var found = global_scalar_variables.indexOf(varName);
+  if (found >= 0) { // setting a scalar, value is in R1
+    if (debug) {alert("in variables_set, scalar variable " + varName + " defined at R" + found)};
+    var code =  argument0 +'Push R1\nPop R' + found + '\n';
+    return code;
     }
-  else if (inputType == 'math_number') { // value is in R1
-    var found = global_scalar_variables.indexOf(varName);
-    alert(global_scalar_variables.indexOf(varName));
-    if (found >= 0) { // variable already defined
-      alert("in variables_set, scalar variable " + varName + " already defined at R" + found);
-      var code = 'Push R1\nPop R' + found + '\n';
-      } else {
-        global_scalar_variables[gsv_next] = varName;
-        alert("in variables_set: GSV pointer now is " + global_scalar_variables[gsv_next]);
-        var code = argument0 + 'Push R1\nPop R' + gsv_next + '\n';  //TODO what if it is a list but not a color? *********
-        gsv_next++;
-    }  
-  } else { // variable is set to another variable v
-    // look for v in GSV list, index >=0 will tell you which register the value is in,
-    // put value in R gsv_next and varName in GSV list
-    // else call find_in_GLV, if present, list_copy the values to R list_current-3 and [varname, length]in GLV list
-    // other wise its undefined (or its set to yet another variable...how to keep going?)
+  if (varName in global_list_variables) { // setting a list, values are on the stack
+    if (debug) {alert("in variables_set (2): global_list_variables[varName] is " + global_list_variables[varName] + " global_list_variables[varName][0] is " + global_list_variables[varName][0]);}
+    found = global_list_variables[varName][0]; //headaddr
+    var list_len = global_list_variables[varName][1];
+    var pops = argument0 + 'Pop R0\n'; // don't need length, we already have it
+    if (debug) {alert("in variables_set, list variable " + varName + " defined at R" + found)};
+    for (var i = (list_len - 1); i > 0; i--) {
+     pops = pops + 'Pop R' + (found + i) + '\n';
+    }
+    var code = pops;
+    return code;
   }
-  return code; 
-};
+// ************* else if its a  non-color-picker list, where is input ??? *************
+  alert("in variables_set, " + varName + " not found"); 
+  var code = varName  + ' UNDEFINED\n';
+  return code;
+}
  
  // copy a list of length l from one set of l registers to another set of l registers using push/pop
  function list_copy(old_ptr, new_ptr, l) {
@@ -143,53 +232,7 @@ Blockly.Dart['variables_set'] = function(block) {
   return(contents);
  }
  
- // generate the assembly code to set headdr and maxsize of each global list variable
- // (to be printed at initialization )
- function initialize_lists(){
-  var contents = '';
-  for (var i=0; i < global_list_variables.length; i++) {
-    if (global_list_variables[i] && Array.isArray(global_list_variables[i])) {
-      contents = contents + "Set R" + i + " " + (global_list_variables[i][1] -1) + "\n"; 
-      }   
-  }
-  return(contents);
- }
+ 
+
  
  
- //for memory management purposes, print all Linkitz variables and the # of registers each uses
- function print_linkitz_vars(){
-  alert("list_current "+ list_current + ", gsv_next "+ gsv_next);
-  var linkitz_vars = '';
-  var gsv_length = global_scalar_variables.length
-    for (var i=0; i < gsv_length; i++) {
-    linkitz_vars += 'R'+ i + ' [' + global_scalar_variables[i] + ',1]\n'; 
-    }
-    for (var j = gsv_next; j < list_current; j++) {
-    linkitz_vars += 'R'+ j + ' .\n';  
-    }
-    for (var k = list_current; k < global_list_variables.length; k++) {
-    if (Array.isArray(global_list_variables[k])) {
-     linkitz_vars +=  'R' + k + ' [' + global_list_variables[k] + ']\n';
-    }
-      else linkitz_vars += 'R'+ k + ' .\n';
-    }
-    return linkitz_vars;
- }
- 
- // search global_list_variables for varName, if found return the index of the item
- function find_in_GLV(varName){
-  var varName_undef = -1;
-  alert("list_current = " + list_current)
-  for (var i=list_current; i < (scratchColor +3); i++) {
-      if (global_list_variables[i] && Array.isArray(global_list_variables[i])) {
-        alert("in find_in_GLV i = " + i);
-        var found = global_list_variables[i].indexOf(varName); // is it in global_list_variables
-        alert("global_list_variables[i].indexOf(varName) = " + global_list_variables[i].indexOf(varName));
-        if (found > - 1) {
-          alert("in find_in_GLV found at " + i);
-          return i;
-        }
-      }
-  }
-  return varName_undef;
- }
