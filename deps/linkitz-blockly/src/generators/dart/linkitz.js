@@ -14,81 +14,52 @@
 // If no input, treats as Hue = 0
 
 Blockly.Dart['flash_leds'] = function(block) {
-  var value_color = Blockly.Dart.valueToCode(block, 'COLOR', Blockly.Dart.ORDER_ATOMIC) ;
-  alert("in flash_leds: input is *" + value_color +'*');
-  
- 
-  if (value_color == 'None' || value_color =='') { // input is blank or null
+  var flash_arg = Blockly.Dart.valueToCode(block, 'COLOR', Blockly.Dart.ORDER_ATOMIC) ;
+  if (debug) {alert("in flash_leds: input is *" + flash_arg +'*')};
+  if (flash_arg == 'None' || flash_arg =='') { // input is blank or null
     //alert('input is null');
     var code = 'syscall flashHue R0 \n'; 
   }
-  
   else {
     var targetBlock = block.getInputTargetBlock('COLOR');
-     alert("in flash_leds: input is block type " + targetBlock.type);
-     
-   if (targetBlock.type == 'math_number' ) { // input is any single decimal number
-    //alert('got a number');
-     var code = value_color + 'syscall flashHue R1' +  '\n';
-    return code;
-  
-    } else if (targetBlock.type == 'colour_picker') {
-      var code = value_color + 'syscall flashRBGptr R1' +  '\n';
-      
-      } else if ((targetBlock.type == 'variables_get' )) { // it's  a variable
-      var varName = targetBlock.getFieldValue('VAR');
-      alert("in flash_leds: variables_get varName is " +varName);
-      
-      if (global_scalar_variables.indexOf(varName) >= 0) { // it's a scalar variable
-        var code = value_color + 'syscall flashHue R1' +  '\n';
-        } else if (find_in_GLV(varName) >= 0) {
-            var code = value_color + 'syscall flashRBGptr R1' +  '\n';
-        } else {
-          alert('in flash_leds: variable not defined');
-          var code = "FAIL1 at flash_leds\n";       
-        }
-      } // end if variables_get
-      
-    else {// we don't know what it is
-      alert('in flash_leds: input of unknown type');
-      var code = "FAIL2 at flash_leds\n"; 
-      }
+     if (debug) {alert("in flash_leds: input is block type " + targetBlock.type)};
+     switch (targetBlock.type) {
+      case 'math_number': //value is in R1
+        var code = flash_arg + 'syscall flashHue R1' +  '\n';
+        break;
+      case 'colour_picker': // colors are on stack
+        var code = flash_arg + 'syscall flashRBG R1' +  '\n'; // R1 not needed
+        break;
+      // put case array (= list) here
+      case 'variables_get':
+        var varName = targetBlock.getFieldValue('VAR');
+        if (debug) {alert("in flash_leds: variables_get varName is " +varName)};
+        if (global_scalar_variables.indexOf(varName) >= 0) { // it's a scalar variable
+          var code = flash_arg + 'syscall flashHue R1' +  '\n'; // value is put in R1
+          }
+          else if (varName in global_list_variables) { // it's a list, pointer is in R1
+            // but we need the colors on the stack; push the colors onto stack
+            var headaddr = global_list_variables[varName][0];
+            var list_len = global_list_variables[varName][1];
+            var pushes = '';
+            for (var i = 1; i < list_len; i++) {
+              pushes = pushes + 'Push R' + (headaddr + i) + '\n';
+              }
+            pushes = pushes + 'Set R1 ' + (list_len - 1) + '\nPush R1\n';
+            var code = pushes + 'syscall flashRBG R1' +  '\n';
+            }
+              else {
+                if (debug) {alert('in flash_leds: variable not defined')};
+                var code = "FAIL1 at flash_leds\n";       
+                }
+        break;
+      default: // we don't know what it is
+        if (debug) {alert('in flash_leds: input of unknown type')};
+        var code = "FAIL2 at flash_leds\n";
+        break;
+     }
   }
   return code;
-}
-
-// convert a hexidecimal color string to 0..255 R,G,B, remember that first char is ' and second char is #
-// example input: '#ff00cc'
-
-function hexToRGB (hex){
-    var r = parseInt(hex.substr(2,2),16);
-    var g = parseInt(hex.substr(4,2),16);
-    var b = parseInt(hex.substr(6,2),16);
-    return [r,g,b];
-}
-
-// convert (h,s,v) to [r,g,b]
-
-function HSVtoRGB(h, s, v) {
-    var r, g, b, i, f, p, q, t;
-    var normH = (h % 360)/360; 
-    i = Math.floor(normH * 6);
-    f = normH * 6 - i;
-    p = v * (1 - s);
-    q = v * (1 - f * s);
-    t = v * (1 - (1 - f) * s);
-    switch (i % 6) {
-        case 0: r = v, g = t, b = p; break;
-        case 1: r = q, g = v, b = p; break;
-        case 2: r = p, g = v, b = t; break;
-        case 3: r = p, g = q, b = v; break;
-        case 4: r = t, g = p, b = v; break;
-        case 5: r = v, g = p, b = q; break;
-    }
-        r = Math.round(r * 255);
-        g = Math.round(g * 255);
-        b = Math.round(b * 255);
-    return [r,g,b];
 }
 
 // **************************************************************************************************
@@ -98,7 +69,7 @@ function HSVtoRGB(h, s, v) {
 
 Blockly.Dart['onmotiontrigger'] = function(block) {
   var dothis = Blockly.Dart.statementToCode(block, 'NAME');
-  var code = 'On_motion_trigger:\n' + dothis + '\n' + 'syscall exit R0\n';
+  var code = 'On_motion_trigger:\n' + dothis + 'syscall exit R0\n';
   return code;
 };
 
@@ -147,11 +118,11 @@ Blockly.Dart['set_mic_threshold'] = function(block) {
   return code;
 };
 
-Blockly.Dart['read_sound_levels'] = function(block) {
+Blockly.JavaScript['read_sound_levels'] = function(block) {
   // TODO: Assemble JavaScript into code variable.
   var code = '...';
   // TODO: Change ORDER_NONE to the correct strength.
-  return [code, Blockly.Dart.ORDER_NONE];
+  return [code, Blockly.JavaScript.ORDER_NONE];
 };
 
 
@@ -262,11 +233,11 @@ Blockly.Dart['setradioeventtrigger'] = function(block) {
   return code;
 };
 
-Blockly.Dart['getidfromradioatport'] = function(block) {
+Blockly.JavaScript['getidfromradioatport'] = function(block) {
   // TODO: Assemble JavaScript into code variable.
   var code = '...';
   // TODO: Change ORDER_NONE to the correct strength.
-  return [code, Blockly.Dart.ORDER_NONE];
+  return [code, Blockly.JavaScript.ORDER_NONE];
 };
 
 // **************************************************************************************************
@@ -275,7 +246,7 @@ Blockly.Dart['getidfromradioatport'] = function(block) {
 
 Blockly.Dart['on_initialization'] = function(block) {
   var dothis = Blockly.Dart.statementToCode(block, 'NAME');
-  alert("In on_initialization, code is " + dothis + "Syscall exit R0");
+  if (debug) {alert("In on_initialization, code is " + dothis + "Syscall exit R0")};
   var code = 'On_initialization:\n' + dothis + Blockly.Dart.INDENT + 'syscall exit R0\n';;
   return code;
 };
@@ -316,31 +287,31 @@ Blockly.Dart['getroster'] = function(block) {
   return [code, Blockly.Dart.ORDER_NONE];
 };
 
-Blockly.Dart['roster_event']= function(block) {
-  var value_linkroster = Blockly.Dart.valueToCode(block, 'LinkRoster', Blockly.Dart.ORDER_ATOMIC);
-  var statements_script = Blockly.Dart.statementToCode(block, 'Script');
+Blockly.JavaScript['roster_event']= function(block) {
+  var value_linkroster = Blockly.JavaScript.valueToCode(block, 'LinkRoster', Blockly.JavaScript.ORDER_ATOMIC);
+  var statements_script = Blockly.JavaScript.statementToCode(block, 'Script');
   // var priority = 4-length(value_linkroster);
   // TODO: Assemble JavaScript into code variable.
   var code = 'pass // When this list matches the one updated by the hub, use the set of event handlers in statements_script';
   return code;
 };
 
-Blockly.Dart['roster_list'] = function(block) {
-  var value_link1 = Blockly.Dart.valueToCode(block, 'Link1', Blockly.Dart.ORDER_ATOMIC);
-  var value_link2 = Blockly.Dart.valueToCode(block, 'Link2', Blockly.Dart.ORDER_ATOMIC);
-  var value_link3 = Blockly.Dart.valueToCode(block, 'Link3', Blockly.Dart.ORDER_ATOMIC);
-  var statements_rostercode = Blockly.Dart.statementToCode(block, 'Rostercode');
+Blockly.JavaScript['roster_list'] = function(block) {
+  var value_link1 = Blockly.JavaScript.valueToCode(block, 'Link1', Blockly.JavaScript.ORDER_ATOMIC);
+  var value_link2 = Blockly.JavaScript.valueToCode(block, 'Link2', Blockly.JavaScript.ORDER_ATOMIC);
+  var value_link3 = Blockly.JavaScript.valueToCode(block, 'Link3', Blockly.JavaScript.ORDER_ATOMIC);
+  var statements_rostercode = Blockly.JavaScript.statementToCode(block, 'Rostercode');
   // TODO: Assemble JavaScript into code variable.
   var code = '...';
   // TODO: Change ORDER_NONE to the correct strength.
-  return [code, Blockly.Dart.ORDER_NONE];
+  return [code, Blockly.JavaScript.ORDER_NONE];
 };
 
-Blockly.Dart['roster_event_two'] = function(block) {
+Blockly.JavaScript['roster_event_two'] = function(block) {
   var dropdown_link3 = block.getFieldValue('Link3');
   var dropdown_link2 = block.getFieldValue('Link2');
   var dropdown_link1 = block.getFieldValue('Link1');
-  var statements_script = Blockly.Dart.statementToCode(block, 'Script');
+  var statements_script = Blockly.JavaScript.statementToCode(block, 'Script');
   // TODO: Assemble JavaScript into code variable.
   var linkRoster =[]
   // TODO: append non 'None' values to this list
@@ -350,9 +321,9 @@ Blockly.Dart['roster_event_two'] = function(block) {
   return code;
 };
 
-Blockly.Dart['connection_event'] = function(block) {
+Blockly.JavaScript['connection_event'] = function(block) {
   var dropdown_name = block.getFieldValue('NAME');
-  var statements_script = Blockly.Dart.statementToCode(block, 'script');
+  var statements_script = Blockly.JavaScript.statementToCode(block, 'script');
   // TODO: Assemble JavaScript into code variable.
   var code = 'pass  // execute this script once when this link is plugged in';
   return code;

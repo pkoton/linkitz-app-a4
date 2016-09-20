@@ -74,18 +74,17 @@ Blockly.Dart.ORDER_NONE = 99;          // (...)
 Blockly.Dart.INDENT = '   ';
 Blockly.Dart.STATEMENT_PREFIX = null;
 
-// SPECIAL REGISTERS R0 - R127 ARE SET HERE
+//******************* LINKITZ STUFF *******************
 
-// We maintain a table of all global_list_variables, each element is a list of [head addr, list size]
-// The special scratch register for colors (always a list of length 3) is currently set as R124
+var debug = 0;
+
+// Linkitz SPECIAL REGISTERS R0 - R127 ARE SET HERE
+
+// We maintain a dictionary of all global_list_variables, each element is a list of [head addr, list size]
 // global_list_variables builds DOWN from R127 to R0
 
-var global_list_variables = [];
-// var scratchColor = 124; // this is the real value
-// global_list_variables[scratchColor] = [124,4];
-var scratchColor = 15; //shorten for testing only
-global_list_variables[scratchColor] = ['scratchColor',4];
-var list_current = scratchColor; //list_current points to the bottom of global_list_variables, initially the scratchColor
+var glv_next = 127;
+var global_list_variables = new Object();
 
 // We maintain an array of all global_scalar_variables.
 // The variable_name's index in the array indicates the register number which holds the value
@@ -103,6 +102,7 @@ var global_scalar_variables_pp ='';
 // undef_vars list holds the names of variables that are used before generator has seen their value
 // once value is set, variable name is moved to correct global variable list (scalar or list)
 var undef_vars = [];
+var undef_vars_next = 0;
 
  /* Initialise the database of variable names.
  * @param {!Blockly.Workspace} workspace Workspace to generate code from.
@@ -127,10 +127,8 @@ Blockly.Dart.init = function(workspace) {
     defvars[i] = 'var ' +
         Blockly.Dart.variableDB_.getName(variables[i],
         Blockly.Variables.NAME_TYPE) + ';';
-    undef_vars[i] = Blockly.Dart.variableDB_.getName(variables[i], Blockly.Variables.NAME_TYPE); // push all vars here
   }
   Blockly.Dart.definitions_['variables'] = defvars.join('\n');
-  
 };
 
 /**
@@ -142,14 +140,12 @@ Blockly.Dart.finish = function(code) {
   // Indent every line.
   
   if (code) {
-    code = initialize_lists() + code; // set headaddr and length of every list variable
-    // alert("gsv length is " + global_scalar_variables.length);
     global_scalar_variables_pp = global_scalar_variables.join(',');
     code = 'global_scalar_variables=['+ global_scalar_variables_pp + ']\n' + code;
     // code = Blockly.Dart.prefixLines(code, Blockly.Dart.INDENT);
-    var global_list_variables_pp = mdarray_pp(global_list_variables);
+    // var global_list_variables_pp = global_list_variables.join('\n');
+     var global_list_variables_pp = JSON.stringify(global_list_variables);
     code = 'global_list_variables=['+ global_list_variables_pp + ']\n' + code;
-    code = print_linkitz_vars() + '\n' + code;
   }
 
   // Convert the definitions dictionary into a list.
@@ -230,6 +226,7 @@ Blockly.Dart.scrub_ = function(block, code) {
     }
   }
   var nextBlock = block.nextConnection && block.nextConnection.targetBlock();
+  // alert("blockToCode called");
   var nextCode = Blockly.Dart.blockToCode(nextBlock);
   return commentCode + code + nextCode;
 };
