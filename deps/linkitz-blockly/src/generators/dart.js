@@ -76,7 +76,7 @@ Blockly.Dart.STATEMENT_PREFIX = null;
 
 //******************* LINKITZ STUFF *******************
 
-var debug = 1;
+var debug = 0;
 
 // Linkitz SPECIAL REGISTERS R0 - R127 ARE SET HERE
 
