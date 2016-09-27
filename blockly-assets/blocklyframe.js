@@ -66,7 +66,15 @@ function injectLanguage() {
 
 function init() {
     injectLanguage();
-    Blockly.inject(document.body, {path: 'blockly/', toolbox: document.getElementById('toolbox')});
+    Blockly.inject(document.body, 
+      { 
+        path: 'blockly/', 
+        toolbox: document.getElementById('toolbox'),
+        zoom: 
+          { controls: true,
+            wheel: true,
+          },                                    
+      });
 
     Blockly.mainWorkspace.addChangeListener(onBlocklyChanged);
 //    Blockly.addChangeListener();
