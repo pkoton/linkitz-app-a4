@@ -1,5 +1,8 @@
 build/
+release/
+archive/
 node_modules/
+manifest-build/
 *.pyc
 deps/linkitz-blockly/src/blockly_compressed.js
 deps/linkitz-blockly/src/dart_compressed.js

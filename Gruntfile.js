@@ -1,8 +1,19 @@
 module.exports = function(grunt) {
 
   grunt.initConfig({
+    concat: {
+      dev: {
+        src: ['manifest-src/manifest-head.json', 'manifest-src/manifest-key.json', 'manifest-src/manifest-tail.json'],
+        dest: 'manifest-build/manifest-dev.json',
+      },
+      release: {
+        src: ['manifest-src/manifest-head.json', 'manifest-src/manifest-tail.json'],
+        dest: 'manifest-build/manifest-release.json',
+      }
+    },
+
     copy: {
-      main: {
+      dev: {
         files: [
           {expand: true, cwd: 'deps', src: ['angular/**'], dest: 'build/'},
           {expand: true, cwd: 'deps', src: ['angular-animate/**'], dest: 'build/'},
@@ -22,11 +33,38 @@ module.exports = function(grunt) {
           {expand: true, src: ['partials/**'], dest: 'build/'},
           {expand: true, src: ['q/**'], dest: 'build/'},
           {expand: true, src: ['app-entry.js', 'app-main.html', 'manifest.json'], dest: 'build/'},
+          {expand: true, cwd: 'manifest-build', src: ['manifest-dev.json'], dest: 'build/', rename: function (dest,src) {return dest + 'manifest.json'; }},
           {expand: true, cwd: 'blockly-assets', src: ['blocklyframe.html', 'blocklyframe.js'], dest: 'build/'},
           {expand: true, cwd: 'deps/linkitz-blockly/src', src: ['blockly_compressed.js', 'blocks_compressed.js', 'dart_compressed.js', 'images/**', 'media/**', 'msg/**'], dest: 'build/blockly/'},
           {expand: true, cwd: 'blockly-assets', src: ['style.css', 'msg/**'], dest: 'build/blockly/'},
         ],
       },
+      release: {
+        files: [
+          {expand: true, cwd: 'deps', src: ['angular/**'], dest: 'release/'},
+          {expand: true, cwd: 'deps', src: ['angular-animate/**'], dest: 'release/'},
+          {expand: true, cwd: 'deps', src: ['angular-bootstrap/**'], dest: 'release/'},
+          {expand: true, cwd: 'deps', src: ['angular-resource/**'], dest: 'release/'},
+          {expand: true, cwd: 'deps', src: ['angular-sanitize/**'], dest: 'release/'},
+          {expand: true, src: ['bootstrap/**'], dest: 'release/'},
+          {expand: true, src: ['css/**'], dest: 'release/'},
+          {expand: true, src: ['fonts/**'], dest: 'release/'},
+          {expand: true, src: ['font-awesome-4.2.0/**'], dest: 'release/'},
+          {expand: true, src: ['icons/**'], dest: 'release/'},
+          {expand: true, src: ['images/**'], dest: 'release/'},
+          {expand: true, src: ['jquery/**'], dest: 'release/'},
+          {expand: true, src: ['jquery-ui/**'], dest: 'release/'},
+          {expand: true, src: ['js/**'], dest: 'release/'},
+          {expand: true, src: ['linkitz-device/**'], dest: 'release/'},
+          {expand: true, src: ['partials/**'], dest: 'release/'},
+          {expand: true, src: ['q/**'], dest: 'release/'},
+          {expand: true, src: ['app-entry.js', 'app-main.html', 'manifest.json'], dest: 'release/'},
+          {expand: true, cwd: 'manifest-build', src: ['manifest-release.json'], dest: 'release/', rename: function (dest,src) {return dest + 'manifest.json'; }},          
+          {expand: true, cwd: 'blockly-assets', src: ['blocklyframe.html', 'blocklyframe.js'], dest: 'release/'},
+          {expand: true, cwd: 'deps/linkitz-blockly/src', src: ['blockly_compressed.js', 'blocks_compressed.js', 'dart_compressed.js', 'images/**', 'media/**', 'msg/**'], dest: 'release/blockly/'},
+          {expand: true, cwd: 'blockly-assets', src: ['style.css', 'msg/**'], dest: 'release/blockly/'},
+        ],
+      }
     },
     watch: {
       devapp: {
@@ -99,12 +137,25 @@ module.exports = function(grunt) {
           }
         }
       }
+    },
+    compress: {
+      release: {
+        options: {
+          archive: 'archive/linkitz-app-release.zip'
+        },
+        files: [
+          {expand: true, cwd: 'release/', src: ['**'], dest: '/'}
+        ]
+      }
     }
+
   });
 
+  grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-contrib-compress');
   grunt.loadNpmTasks('grunt-shell');
 
   grunt.registerTask('default', ['watch']);
