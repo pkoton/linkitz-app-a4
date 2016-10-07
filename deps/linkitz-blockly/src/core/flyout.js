@@ -362,6 +362,12 @@ Blockly.Flyout.prototype.hide = function() {
  */
 Blockly.Flyout.prototype.show = function(xmlList) {
   this.hide();
+  var hide_onInit = false;
+  var hide_onReg = false;
+  var hide_onMotion = false;
+  var hide_onMic = false;
+  var hide_onRadio = false;
+  
   // Delete any blocks from a previous showing.
   var blocks = this.workspace_.getTopBlocks(false);
   for (var i = 0, block; block = blocks[i]; i++) {
@@ -385,25 +391,58 @@ Blockly.Flyout.prototype.show = function(xmlList) {
         Blockly.Procedures.flyoutCategory(this.workspace_.targetWorkspace);
   }
 
+  var blocks = this.workspace_.targetWorkspace.getAllBlocks();
+  for (var i = 0; i < blocks.length; i++) {
+    switch (blocks[i].type) {
+        case 'on_regular_event':
+          hide_onReg = true;
+          break;
+        case 'on_initialization':
+          hide_onInit = true;
+        case 'onmotiontrigger':
+          hide_onMotion = true;
+          break;
+        case 'on_mic_event':
+          hide_onMic = true;
+          break;
+        case 'radio_onreceive':
+          hide_onRadio = true;
+          break;
+    }
+  } 
+  
   var margin = this.CORNER_RADIUS;
   this.svgGroup_.style.display = 'block';
   // Create the blocks to be shown in this flyout.
   var blocks = [];
   var gaps = [];
   this.permanentlyDisabled_.length = 0;
-  for (var i = 0, xml; xml = xmlList[i]; i++) {
-    if (xml.tagName && xml.tagName.toUpperCase() == 'BLOCK') {
-      var block = Blockly.Xml.domToBlock(this.workspace_, xml);
-      if (block.disabled) {
-        // Record blocks that were initially disabled.
-        // Do not enable these blocks as a result of capacity filtering.
-        this.permanentlyDisabled_.push(block);
+    for (var i = 0, xml; xml = xmlList[i]; i++) {
+      if (xml.tagName && xml.tagName.toUpperCase() == 'BLOCK') {
+        var blockType = xml.getAttribute('type');
+        if (blockType == "on_initialization" && hide_onInit) {
+          continue;
+        } else if (blockType == "on_regular_event" && hide_onReg) {
+          continue;
+        } else if (blockType == 'onmotiontrigger' && hide_onMotion) {
+         continue;
+        } else if (blockType == 'on_mic_event' && hide_onMic) {
+          continue;
+        } else if (blockType == 'radio_onreceive' && hide_onRadio) {
+          continue;
+        } else {
+          var block = Blockly.Xml.domToBlock(this.workspace_, xml);
+          if (block.disabled) {
+            // Record blocks that were initially disabled.
+            // Do not enable these blocks as a result of capacity filtering.
+            this.permanentlyDisabled_.push(block);
+          }
+        blocks.push(block);
+        var gap = parseInt(xml.getAttribute('gap'), 10);
+        gaps.push(isNaN(gap) ? margin * 3 : gap);
+        }
       }
-      blocks.push(block);
-      var gap = parseInt(xml.getAttribute('gap'), 10);
-      gaps.push(isNaN(gap) ? margin * 3 : gap);
     }
-  }
 
   // Lay out the blocks vertically.
   var cursorY = margin;
@@ -691,11 +730,11 @@ Blockly.Flyout.prototype.filterForCapacity_ = function() {
   var blocks = this.workspace_.getTopBlocks(false);
   for (var i = 0, block; block = blocks[i]; i++) {
     if (this.permanentlyDisabled_.indexOf(block) == -1) {
-      var allBlocks = block.getDescendants();
-      block.setDisabled(allBlocks.length > remainingCapacity);
+         var allBlocks = block.getDescendants();
+          block.setDisabled(allBlocks.length > remainingCapacity);
+      }
     }
-  }
-};
+  };
 
 /**
  * Return the deletion rectangle for this flyout.
