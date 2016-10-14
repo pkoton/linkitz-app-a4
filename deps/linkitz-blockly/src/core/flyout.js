@@ -399,6 +399,7 @@ Blockly.Flyout.prototype.show = function(xmlList) {
           break;
         case 'on_initialization':
           hide_onInit = true;
+          break;
         case 'onmotiontrigger':
           hide_onMotion = true;
           break;
