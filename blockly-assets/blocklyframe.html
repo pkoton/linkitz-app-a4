@@ -37,26 +37,28 @@
 
   <xml id="toolbox" style="display: none">
                  
-<category id="LED" class="LED"  colour="#873299">
-        <block type="flash_leds"></block>
-        <block type="colour_picker"></block>
-        <block type="colour_picker"><field name="COLOUR">#FF7245</field></block>
-        <block type="colour_picker"><field name="COLOUR">#ffe600</field></block>
-        <block type="colour_picker"><field name="COLOUR">#009245</field></block>
-        <block type="colour_picker"><field name="COLOUR">#66d9ff</field></block>
-        <block type="colour_picker"><field name="COLOUR">#1329c3</field></block>
-        <block type="colour_picker"><field name="COLOUR">#9862e6</field></block>
-        <block type="colour_picker"><field name="COLOUR">#FFFFFF</field></block>
-        
-     
-      </category>
+  <category id="LED" class="LED"  colour="#873299">
+    <block type="flash_leds"></block>
+    <block type="colour_picker"></block>
+    <block type="colour_picker"><field name="COLOUR">#FF7245</field></block>
+    <block type="colour_picker"><field name="COLOUR">#ff6aa2</field></block>
+    <block type="colour_picker"><field name="COLOUR">#ffe600</field></block>
+    <block type="colour_picker"><field name="COLOUR">#009245</field></block>
+    <block type="colour_picker"><field name="COLOUR">#66d9ff</field></block>
+    <block type="colour_picker"><field name="COLOUR">#1329c3</field></block>
+    <block type="colour_picker"><field name="COLOUR">#9862e6</field></block>
+    <block type="colour_picker"><field name="COLOUR">#FFFFFF</field></block>
+    <block type="led_attached"></block>
+    <block type="usb_attached"></block>
+  </category>
       
            <sep></sep>
            
-      <category id="Motion" class="Motion" colour="#0083CC">
+    <category id="Motion" class="Motion" colour="#0083CC">
       <block type="onmotiontrigger"></block>
       <block type="getmotiondata"></block>
-      </category>
+      <block type="motion_attached"></block>
+    </category>
       
         <sep></sep>     
     
@@ -64,10 +66,9 @@
       <block type="on_initialization"></block>
       <block type="on_regular_event"></block>
       <block type="getbatterylevel"></block>
-     <block type="getambientlight"></block>
-     <block type="getroster"></block>
+      <block type="getambientlight"></block>
+      <block type="getroster"></block>
       <block type="setregularlyscheduledeventperiod"></block>
-   
     </category>
 
      <sep></sep>
@@ -77,11 +78,10 @@
       <block type="logic_compare"></block>
       <block type="logic_operation"></block>
       <block type="math_number"></block>
-      <block type="math_arithmetic"></block>  
-      <block type="math_random_int"></block>
-      
+      <block type="math_arithmetic"></block>  <!-- might want the advanced math block, but we'll see -->
+      <block type="math_single"></block>
+      <block type="math_binary"></block>
       <block type="controls_while"></block>
-     
       <block type="controls_flow_statements"></block>
     </category>
    
@@ -100,20 +100,16 @@
           </block>
         </value>
       </block>
-    
       <block type="lists_create_with"></block>  
-
-      
-     <block type="lists_getIndex_nonMut">
+      <block type="lists_getIndex_nonMut">
         <value name="VALUE">
           <block type="variables_get">
             <field name="VAR" class="listVar">...</field>
           </block>
         </value>
       </block> 
-    
      <block type="lists_setIndex_nonMut">
-        <value name="LIST">
+         <value name="LIST">
           <block type="variables_get">
             <field name="VAR" class="listVar">...</field>
           </block>
@@ -121,7 +117,7 @@
       </block>
       
     <block type="lists_length"></block> 
-    
+    <block type="math_on_list"></block>
     </category>
     
          <sep></sep>
