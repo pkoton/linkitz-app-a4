@@ -76,33 +76,43 @@ Blockly.Dart.STATEMENT_PREFIX = null;
 
 //******************* LINKITZ STUFF *******************
 
-var debug = 0;
+var debug = 1;
 
 // Linkitz SPECIAL REGISTERS R0 - R127 ARE SET HERE
 
 // We maintain a dictionary of all global_list_variables, each element is a list of [head addr, list size]
 // global_list_variables builds DOWN from R127 to R0
 
-var glv_next = 127;
+var glv_next = 127; // glv_next points to the empty register at the bottom of list register space
 var global_list_variables = new Object();
 
 // We maintain an array of all global_scalar_variables.
 // The variable_name's index in the array indicates the register number which holds the value
 // e.g. the variable_name in global_scalar_variables[5] has its value stored in R5
-// the first three registers are special. R0 is null/zero. R1 and R2 are used as scratch registers.
+// the first three registers are special.
+// R0 is null/zero.
+// R1 and R2 are used as scratch registers.
 // global_scalar_variables builds UP from R0 to R127
 
 var global_scalar_variables = [];
-global_scalar_variables[0] = 'zero';
-global_scalar_variables[1] = 'scratch1';
-global_scalar_variables[2] = 'scratch2';
-var gsv_next = 3 // gsv_next points to the next empty register index
+global_scalar_variables[0] = 'zero'; // R0
+global_scalar_variables[1] = 'scratch1'; // R1
+global_scalar_variables[2] = 'scratch2'; // R2
+global_scalar_variables[3] = 'led_attached'; // R3
+global_scalar_variables[4] = 'usb_attached'; // R4
+global_scalar_variables[5] = 'motion_attached'; // R5
+
+var gsv_next = 6 // gsv_next points to the next empty register index
 var global_scalar_variables_pp ='';
+
+var mask = 14; // 00001110 corresponding to ports 1,2,3
 
 // undef_vars list holds the names of variables that are used before generator has seen their value
 // once value is set, variable name is moved to correct global variable list (scalar or list)
 var undef_vars = [];
 var undef_vars_next = 0;
+
+var ifCount = 0; //global var for generating unique labels for conditionals
 
  /* Initialise the database of variable names.
  * @param {!Blockly.Workspace} workspace Workspace to generate code from.
