@@ -31,50 +31,80 @@ goog.provide('Blockly.Dart.variables');
 goog.require('Blockly.Dart');
 
 
-// This should run first, during blockly.init.
-// resolve variable refs handles var1 = var2 when var2 is used before it is defined
- // or var1 = var2 = var1 when there is a loop of assignments
- // it cycles through all blocks looking for variable_set, when a variable is set it is pushed var to GSV
+ // This should run first, during blockly.init.
+ // it cycles through all blocks looking for variable_set, when a variable is set it is pushed to GSV
  // or GLV lists. If it is set to a var that has not been defined yet, it is pushed to undef_vars list.
  // Finally, cycle through undef_vars list trying to resolve var references, until none are left
  // or until no more can be removed which is a fail state
+ // resolve variable refs handles var1 = var2 when var2 is used before it is defined
+ // or var1 = var2 = var1 when there is a loop of assignments
  
  function resolve_var_refs(workspace, undef_vars_count){
   var blocks = workspace.getAllBlocks();
-  alert("in resolve var refs");
+  if (debug) {alert("in resolve var refs")};
   // Iterate through every block.
     for (var i = 0; i < blocks.length; i++) {
       if (blocks[i].type == 'variables_set') {
         var current_block = blocks[i];
         var varName = Blockly.Dart.variableDB_.getName(current_block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
-        alert(varName);
+        if (debug) {alert(varName)};
         if (global_scalar_variables.indexOf(varName) >=0) {
           if (debug) {alert("found scalar")};
           continue;
           } else if (varName in global_list_variables) {
             if (debug) {alert("found list")};
             continue;
-          } else { // new variable, add it to the correct variables list
+          } else { // NEW VARIABLE, add it to the correct variables list
             if (debug) {alert("new var")};
             var targetBlock = current_block.getInputTargetBlock('VALUE');
             var inputType = targetBlock.type;
-            // drew says we dont need the value, use it here for error checking
             if (debug) {
               var assigned_value = Blockly.Dart.valueToCode(targetBlock, 'VALUE', Blockly.Dart.ORDER_ASSIGNMENT) || '0';
-              alert("in resolve_var_refs: " + varName + " is being assigned input of type " + inputType);
+              alert("in resolve_var_refs:\nTarget Block is " + targetBlock + "\nvarName is " + varName + " is being assigned input of type " + inputType + " with value " + assigned_value);
             }
             switch (inputType) {
+  
+              // ********* SCALARS *********  
+              
               case "math_number": // falls through to next
-              case "math_arithmetic": // falls through to next
+              case "math_arithmetic":
+              case "math_single":
+              case "math_binary":
               case "math_random_int":
+              case "led_attached":
+              case "usb_attached":
+              case "motion_attached":
+              case "logic_compare":
+              case "logic_operation":
+              case "lists_length":
+              case "math_on_list":
+              case "lists_getIndex_nonMut": // Drew said just return a scalar and we can fix later - 11/27/2016
+              case "getbatterylevel":
+              case "getambientlight":
                 addNewScalarVar(varName);
                 break;
+              
+              // ********* LISTS *********  
+              
               case 'colour_picker': 
-                addNewListVar(varName,4); // color always uses 4 registers
+                addNewListVar(varName,3); // color always a list of length 3
                 break;
-                
+              case 'lists_create_n':
+                var l1 = targetBlock.getInputTargetBlock("NUM_ITEMS");
+                var l2 = parseInt(l1.getFieldValue("NUM"));
+                if (debug){  alert("in lists_create_n " + targetBlock + " NUM_ITEMS is " + l2)};
+                addNewListVar(varName, l2);
+                break;
+              case 'lists_create_with':
+                var l1 = parseInt(targetBlock.itemCount_);
+                if (debug){  alert("in lists_create_with " + targetBlock + " itemCount_ is " + l1)};
+                addNewListVar(varName, l1);
+                break;
+              case 'getmotiondata':
+                addNewListVar(varName,4); // getmotiondata returns MagLNK, a list of length 4
+                break;
               case 'Array':
-                  // ********* TODO what if it is a list but not a color? esp a nested list *********
+                
                 break;
               case 'variables_get':
                   if (debug) {alert(varName + " is assigned to a variable")};
@@ -124,18 +154,27 @@ goog.require('Blockly.Dart');
  }
  
  function addNewListVar(varName,len) {
-  var new_current = glv_next - len; 
-  global_list_variables[varName]=[new_current,len];
-  glv_next = new_current;
-  if (debug) {alert(varName + " added to GLV with length " + len)};
- }
+    var bottom = glv_next - len; //point to where we want to insert
+    if (debug) {alert("len = "+len+" bottom = "+bottom)};
+    if (bottom < gsv_next) {
+     alert("Error: Out of variable space in addNewListVar");
+     return0;
+    }
+    global_list_variables[varName]=[bottom,(len + 1)];
+    glv_next = bottom - 1; // move pointer to next space down
+    if (debug) {alert("bottom = "+bottom+ " glv_next = "+glv_next)};
+    if (debug) {alert(varName + " added to GLV with length " + (len + 1))};
+  }
 
 function addNewScalarVar(varName) {
+  if (gsv_next > glv_next) {
+    alert("Error: Out of variable space in addNewScalarVar");
+   return0;
+  }
   global_scalar_variables[gsv_next] = varName;
   if (debug) {alert("in resolve_var_refs: GSV pointer now is " + gsv_next)};
-  gsv_next++;
+  gsv_next++; // point to next empty space
   }
- 
  
  Blockly.Dart['variables_get'] = function(block) {
   // Variable getter.
@@ -175,9 +214,9 @@ Blockly.Dart['variables_set'] = function(block) {
     if (debug) {alert("in variables_set (2): global_list_variables[varName] is " + global_list_variables[varName] + " global_list_variables[varName][0] is " + global_list_variables[varName][0]);}
     found = global_list_variables[varName][0]; //headaddr
     var list_len = global_list_variables[varName][1];
-    var pops = argument0 + 'Pop R0\n'; // don't need length, we already have it
+    var pops = argument0 + 'Pop R' + found + '\n'; // don't need length, we already have it  pop it into R that holds length
     if (debug) {alert("in variables_set, list variable " + varName + " defined at R" + found)};
-    for (var i = (list_len - 1); i > 0; i--) {
+    for (var i = 1; i < list_len; i++) {
      pops = pops + 'Pop R' + (found + i) + '\n';
     }
     var code = pops;

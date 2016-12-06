@@ -29,6 +29,7 @@ goog.provide('Blockly.Dart.procedures');
 goog.require('Blockly.Dart');
 
 Blockly.Dart['procedures_defreturn'] = function(block) {
+  if (debug) {alert('in procedures def no return')};
   // Define a procedure with a return value.
   var funcName = Blockly.Dart.variableDB_.getName(block.getFieldValue('NAME'),
       Blockly.Procedures.NAME_TYPE);
@@ -45,7 +46,7 @@ Blockly.Dart['procedures_defreturn'] = function(block) {
   var returnValue = Blockly.Dart.valueToCode(block, 'RETURN',
       Blockly.Dart.ORDER_NONE) || '';
   if (returnValue) {
-    returnValue = Blockly.Dart.INDENT + 'syscall return ' + returnValue + ';\n'; // to be written
+    returnValue = Blockly.Dart.INDENT +  returnValue + ';\nsyscall return R1\n'; // value in R1
   }
     else {
     returnValue = Blockly.Dart.INDENT + 'syscall return R0\n';  // no returned value, just return R0
@@ -56,13 +57,12 @@ Blockly.Dart['procedures_defreturn'] = function(block) {
     args[x] = Blockly.Dart.variableDB_.getName(block.arguments_[x],
         Blockly.Variables.NAME_TYPE);
   }
-  // var code = returnType + ' ' + funcName + '(' + args.join(', ') + ') {\n' +
-  //    branch + returnValue + '}';
-    var code = funcName + ':' + args.join(', ') + '\n' +
-        branch + returnValue;
+  var code =  funcName + //'(' + args.join(', ') + ') {\n'
+   ':\n' + branch + returnValue ;
+if (debug) {alert('procedure code is ' + code)};
   code = Blockly.Dart.scrub_(block, code);
   Blockly.Dart.definitions_[funcName] = code;
-  return null;
+  return code;
 };
 
 // Defining a procedure without a return value uses the same generator as

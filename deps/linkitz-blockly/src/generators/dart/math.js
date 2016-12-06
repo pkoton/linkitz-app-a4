@@ -73,7 +73,24 @@ Blockly.Dart['math_arithmetic'] = function(block) {
     code = 'Math.pow(' + argument0 + ', ' + argument1 + ')';
     return [code, Blockly.Dart.ORDER_UNARY_POSTFIX];
   }
-  code = argument0 + operator + argument1;
+  code = argument0 + 'push R1 \n' + argument1 + 'pop R2 \n' + operator + ' R2 R1 R1\n';
+  return [code, order];
+};
+
+Blockly.Dart['math_binary'] = function(block) {
+  // Basic arithmetic operators, and power.
+  var OPERATORS = {
+    'BITWISEAND': [' & ', Blockly.Dart.ORDER_ADDITIVE],
+    'BITWISEOR': [' | ', Blockly.Dart.ORDER_ADDITIVE]
+  };
+  var tuple = OPERATORS[block.getFieldValue('OP')];
+  var operator = tuple[0];
+  var order = tuple[1];
+  var argument0 = Blockly.Dart.valueToCode(block, 'A', order) || '0';
+  var argument1 = Blockly.Dart.valueToCode(block, 'B', order) || '0';
+  var code;
+  // Power in Dart requires a special case since it has no operator.
+  code = argument0 + 'push R1 \n' + argument1 + 'pop R2 \n' + operator + ' R2 R1 R1\n';
   return [code, order];
 };
 
@@ -87,10 +104,10 @@ Blockly.Dart['math_single'] = function(block) {
     arg = Blockly.Dart.valueToCode(block, 'NUM',
         Blockly.Dart.ORDER_UNARY_PREFIX) || '0';
     if (arg[0] == '-') {
-      // --3 is not legal in Dart.
+      // --3 is not legal in assembly.
       arg = ' ' + arg;
     }
-    code = '-' + arg;
+    code = arg + 'Set R2 -1\n* R1 R2 R1\n';
     return [code, Blockly.Dart.ORDER_UNARY_PREFIX];
   }
   Blockly.Dart.definitions_['import_dart_math'] =
@@ -109,7 +126,7 @@ Blockly.Dart['math_single'] = function(block) {
   // wrapping the code.
   switch (operator) {
     case 'ABS':
-      code = arg + '.abs()';
+      code = arg + 'ABS R1 R1\n';
       break;
     case 'ROOT':
       code = 'Math.sqrt(' + arg + ')';
@@ -458,25 +475,8 @@ Blockly.Dart['math_constrain'] = function(block) {
 };
 
 Blockly.Dart['math_random_int'] = function(block) {
-  // Random integer between [X] and [Y].
-  Blockly.Dart.definitions_['import_dart_math'] =
-      'import \'dart:math\' as Math;';
-  var argument0 = Blockly.Dart.valueToCode(block, 'FROM',
-      Blockly.Dart.ORDER_NONE) || '0';
-  var argument1 = Blockly.Dart.valueToCode(block, 'TO',
-      Blockly.Dart.ORDER_NONE) || '0';
-  var functionName = Blockly.Dart.provideFunction_(
-      'math_random_int',
-      [ 'int ' + Blockly.Dart.FUNCTION_NAME_PLACEHOLDER_ + '(num a, num b) {',
-        '  if (a > b) {',
-        '    // Swap a and b to ensure a is smaller.',
-        '    num c = a;',
-        '    a = b;',
-        '    b = c;',
-        '  }',
-        '  return new Math.Random().nextInt(b - a + 1) + a;',
-        '}']);
-  var code = functionName + '(' + argument0 + ', ' + argument1 + ')';
+  // Random integer between -127 and 127.
+  var code = 'RANDOM\n'; // TBD
   return [code, Blockly.Dart.ORDER_UNARY_POSTFIX];
 };
 

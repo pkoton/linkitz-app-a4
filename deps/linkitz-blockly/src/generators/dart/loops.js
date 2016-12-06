@@ -62,7 +62,7 @@ Blockly.Dart['controls_repeat'] = Blockly.Dart['controls_repeat_ext'];
 Blockly.Dart['controls_whileUntil'] = function(block) {
   // Do while/until loop.
   var until = block.getFieldValue('MODE') == 'UNTIL';
-  var argument0 = Blockly.Dart.valueToCode(block, 'BOOL',
+  var argument0 = Blockly.Dart.valueToCode(block, 'TEST',
       until ? Blockly.Dart.ORDER_UNARY_PREFIX :
       Blockly.Dart.ORDER_NONE) || 'false';
   var branch = Blockly.Dart.statementToCode(block, 'DO');
@@ -155,7 +155,7 @@ Blockly.Dart['controls_flow_statements'] = function(block) {
   // Flow statements: continue, break.
   switch (block.getFieldValue('FLOW')) {
     case 'BREAK':
-      return 'break;\n';
+      return 'GOTO ;\n';
     case 'CONTINUE':
       return 'continue;\n';
   }
