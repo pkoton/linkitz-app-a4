@@ -9,16 +9,18 @@
 // **************************************************************************************************
 
 // flash LEDs takes either
-// - a single color and calls flashRGB
+// - a single color and calls flashRGB (color picker is special case of list)
 // - a number which is treated as hue and calls flashHue
-// If no input, treats as Hue = 0
+// - a list
+// - a variable
+// If no input, treats as Hue = 0 and calls flashHue
 
 Blockly.Dart['flash_leds'] = function(block) {
   var flash_arg = Blockly.Dart.valueToCode(block, 'COLOR', Blockly.Dart.ORDER_ATOMIC) ;
   if (debug) {alert("in flash_leds: input is *" + flash_arg +'*')};
   if (flash_arg == 'None' || flash_arg =='') { // input is blank or null
     //alert('input is null');
-    var code = 'syscall flashHue R0 \n'; 
+    var code = 'Push R0\nsyscall flashRGB\n'; 
   }
   else {
     var targetBlock = block.getInputTargetBlock('COLOR');
@@ -27,10 +29,16 @@ Blockly.Dart['flash_leds'] = function(block) {
       case 'math_number': //value is in R1
         var code = flash_arg + 'syscall flashHue R1' +  '\n';
         break;
-      case 'colour_picker': // colors are on stack
-        var code = flash_arg + 'syscall flashRBG R1' +  '\n'; // R1 not needed
+      
+      // Flash(getmotiondata) length 4 on stack, uses XYZ discards M
+      // Flash(len 3) (one color) flashes most recently used petal specified color
+      // Flash(len 12) (four colors) flashes hub, petal 1, petal 2 and petal 3 the specified colors in that order
+      // Flash(len 24) allows granular control of which LEDs on the petals are used to express a color 
+      case 'colour_picker':
+      case 'getmotiondata':
+      case 'array':
+        var code = flash_arg + 'syscall flashRGB' +  '\n'; 
         break;
-      // put case array (= list) here
       case 'variables_get':
         var varName = targetBlock.getFieldValue('VAR');
         if (debug) {alert("in flash_leds: variables_get varName is " +varName)};
@@ -42,11 +50,11 @@ Blockly.Dart['flash_leds'] = function(block) {
             var headaddr = global_list_variables[varName][0];
             var list_len = global_list_variables[varName][1];
             var pushes = '';
-            for (var i = 1; i < list_len; i++) {
+            for (var i = 1; i < list_len; i++) { //*******make sure not backwards
               pushes = pushes + 'Push R' + (headaddr + i) + '\n';
               }
             pushes = pushes + 'Set R1 ' + (list_len - 1) + '\nPush R1\n';
-            var code = pushes + 'syscall flashRBG R1' +  '\n';
+            var code = pushes + 'syscall flashRGB' +  '\n';
             }
               else {
                 if (debug) {alert('in flash_leds: variable not defined')};
@@ -62,6 +70,27 @@ Blockly.Dart['flash_leds'] = function(block) {
   return code;
 }
 
+Blockly.Dart['led_attached'] = function(block) {
+  alert("found 1");
+  var found = global_scalar_variables.indexOf('led_attached');
+  if (found >= 0) { // it better be!
+    var code = 'Push R' + found + '\nPop R1\nset R2 '+ mask + '\n& R1 R2 R1\n'; // only look at the lower bits
+    // the value in R1, if 0 then no led attached, else 2 4 8 tells you where
+    return [code, Blockly.Dart.ORDER_ATOMIC];
+    }
+};
+
+Blockly.Dart['usb_attached'] = function(block) {
+  var found = global_scalar_variables.indexOf('usb_attached');
+  if (found >= 0) { // it better be!
+    var code = 'Push R' + found + '\nPop R1\nset R2 '+ mask + '\n& R1 R2 R1\n'; // only look at the lower bits
+    // the value in R1, if 0 then no led attached, else 2 4 8 tells you where
+    return [code, Blockly.Dart.ORDER_ATOMIC];
+    }
+};
+
+
+
 // **************************************************************************************************
 // MOTION  MOTION  MOTION  MOTION  MOTION  MOTION  MOTION MOTION  MOTION  MOTION  MOTION
 // **************************************************************************************************
@@ -73,16 +102,24 @@ Blockly.Dart['onmotiontrigger'] = function(block) {
   return code;
 };
 
-// Advanced: Get Motion Data reads motion sensor
-// What does it do? 
-//     1? return a list (magnitude, x,y,z)
-//     2? set a global variable and return TRUE
-// If no motion link is present, returns an empty list
-// If more then one motion sensor is present ...?
+// Get Motion Data reads motion sensor
+// it writes 4 values onto stack (M,x,y,z) and returns TRUE
+// If no motion link is present, values are 0,0,0,0
+// If more then one motion sensor is present, value is not defined
+// future work: if assigning to a scalar, return M
 
 Blockly.Dart['getmotiondata'] = function(block) {
-  var code = '[' + getMotionData() + ']\n';
-  return code;
+  var code = 'GETMOTIONDATA\n';// this puts motion data on the stack in order top{4,M,L,N,K,...} 4 is length of data
+  return [code, Blockly.Dart.ORDER_ATOMIC];
+};
+
+Blockly.Dart['motion_attached'] = function(block) {
+  var found = global_scalar_variables.indexOf('motion_attached');
+  if (found >= 0) { // it better be!
+    var code = 'Push R' + found + '\nPop R1\nset R2 '+ mask + '\n& R1 R2 R1\n'; // only look at the lower bits
+    // the value in R1, if 0 then no led attached, else 2 4 8 tells you where
+    return [code, Blockly.Dart.ORDER_ATOMIC];
+    }
 };
 
 // Advanced: Set Motion Trigger - POSTPONED
@@ -106,7 +143,7 @@ Blockly.Dart['on_microphone_trigger'] = function(block) {
 // Advanced:
 
 Blockly.Dart['getmicdata'] = function(block) {
-  var code = 'GetMicData()\n';
+  var code = 'GETMICDATA\n'; // format TBD
   return code;
 };
 
@@ -260,20 +297,17 @@ Blockly.Dart['on_regular_event'] = function(block) {
 // Advanced: return the battery "life" or "health" -- however that is defined -- as an integer from 1= very bad to 10 = very good
 
 Blockly.Dart['getbatterylevel'] = function(block) {
-  // TODO: Assemble JavaScript into code variable.
-  var code = '...';
-  // TODO: Change ORDER_NONE to the correct strength.
-  return [code, Blockly.Dart.ORDER_NONE];
+  var code = 'GETBATTERYLEVEL\n'; // format just like getmotionattached but no masking
+  return [code, Blockly.Dart.ORDER_ATOMIC];
 };
 
 // Advanced: returns a reading from the ambient light sensor in the hub
 
 Blockly.Dart['getambientlight'] = function(block) {
-  // TODO: Assemble JavaScript into code variable.
-  var code = '...';
-  // TODO: Change ORDER_NONE to the correct strength.
-  return [code, Blockly.Dart.ORDER_NONE];
+  var code = 'GETAMBIENTLIGHT\n'; // format format just like getmotionattached but no masking
+  return [code, Blockly.Dart.ORDER_ATOMIC];
 };
+
 
 // the ROSTER is a list of links connected to the hub. it is represented by a 3-tuple where position in the list
 // corrresponds to port number and the link type is repsented by an integer
@@ -287,25 +321,20 @@ Blockly.Dart['getroster'] = function(block) {
   return [code, Blockly.Dart.ORDER_NONE];
 };
 
-Blockly.JavaScript['roster_event']= function(block) {
-  var value_linkroster = Blockly.JavaScript.valueToCode(block, 'LinkRoster', Blockly.JavaScript.ORDER_ATOMIC);
-  var statements_script = Blockly.JavaScript.statementToCode(block, 'Script');
-  // var priority = 4-length(value_linkroster);
-  // TODO: Assemble JavaScript into code variable.
-  var code = 'pass // When this list matches the one updated by the hub, use the set of event handlers in statements_script';
-  return code;
+Blockly.Dart['RegularEventSpeed'] = function(block) {
+  var argument0 = Blockly.Dart.valueToCode(block, 'PERIOD', Blockly.Dart.ORDER_ASSIGNMENT) || '0';
+  if (argument0 > 255) {
+    alert("max value for speed is 255");
+    code = 'Error in RegularEventSpeed\n;'
+    return code;
+  } else {
+    var code = argument0 + '\nSyscall SET_REG_EVENT_SPEED R1\n'; //finds it's argument in R1
+    return code;
+  }
 };
 
-Blockly.JavaScript['roster_list'] = function(block) {
-  var value_link1 = Blockly.JavaScript.valueToCode(block, 'Link1', Blockly.JavaScript.ORDER_ATOMIC);
-  var value_link2 = Blockly.JavaScript.valueToCode(block, 'Link2', Blockly.JavaScript.ORDER_ATOMIC);
-  var value_link3 = Blockly.JavaScript.valueToCode(block, 'Link3', Blockly.JavaScript.ORDER_ATOMIC);
-  var statements_rostercode = Blockly.JavaScript.statementToCode(block, 'Rostercode');
-  // TODO: Assemble JavaScript into code variable.
-  var code = '...';
-  // TODO: Change ORDER_NONE to the correct strength.
-  return [code, Blockly.JavaScript.ORDER_NONE];
-};
+
+
 
 Blockly.JavaScript['roster_event_two'] = function(block) {
   var dropdown_link3 = block.getFieldValue('Link3');
@@ -371,11 +400,6 @@ Blockly.Dart['delay'] = function(block) {
   return code;
 };
 
-Blockly.Dart['setregularlyscheduledeventperiod'] = function(block) {
-  // TODO: Assemble JavaScript into code variable.
-  var code = '...';
-  return code;
-};
 
 // check what type of message is being sent
 
@@ -543,15 +567,13 @@ Blockly.Dart['lists_setIndex_nonMut'] = function(block) {
 
 Blockly.Dart['controls_while'] = function(block) {
   // Do while loop.
-  var until = block.getFieldValue('MODE') == 'UNTIL';
-  var argument0 = Blockly.Dart.valueToCode(block, 'BOOL',
-      until ? Blockly.Dart.ORDER_LOGICAL_NOT :
-      Blockly.Dart.ORDER_NONE) || 'False';
+  ifCount++;
+  var argument0 = Blockly.Dart.valueToCode(block, 'TEST', Blockly.Dart.ORDER_NONE) || 'False';
+  var code = 'while_label_' + ifCount + ':\n' + argument0;
+  code += 'BTR1SNZ \n GOTO end_label_' + ifCount + '\n';
   var branch = Blockly.Dart.statementToCode(block, 'DO');
   branch = Blockly.Dart.addLoopTrap(branch, block.id) ||
       Blockly.Dart.PASS;
-  if (until) {
-    argument0 = 'not ' + argument0;
-  }
-  return 'while ' + argument0 + ':\n' + branch;
+  code += branch + 'GOTO ' + 'while_label_' + ifCount + '\n end_label_' + ifCount + ':\n';
+  return code;
 };

@@ -41,7 +41,7 @@ Blockly.Blocks['controls_repeat_ext'] = {
    */
   init: function() {
     this.appendDummyInput()
-      .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_9_Loops.png",40,40,"*"));
+      .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_9_Loops.png",40,40,"*"));
     this.jsonInit({
       "message0": Blockly.Msg.CONTROLS_REPEAT_TITLE,
       "args0": [
@@ -100,10 +100,10 @@ Blockly.Blocks['controls_while'] = {
     var MODE = 'WHILE';
     this.setHelpUrl(Blockly.Msg.CONTROLS_WHILEUNTIL_HELPURL);
     this.appendDummyInput()
-      .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_9_Loops.png",40,40,"*"));
+      .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_9_Loops.png",40,40,"*"));
     this.setColour('#9862E6');
-    this.appendValueInput('BOOL')
-        .setCheck('Boolean')
+    this.appendValueInput('TEST')
+        .setCheck(['Boolean','Number'])
         .appendField(Blockly.Msg.CONTROLS_WHILEUNTIL_OPERATOR_WHILE);
     this.appendStatementInput('DO')
         .appendField(Blockly.Msg.CONTROLS_WHILEUNTIL_INPUT_DO);

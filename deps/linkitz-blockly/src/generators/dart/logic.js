@@ -28,7 +28,7 @@ goog.provide('Blockly.Dart.logic');
 
 goog.require('Blockly.Dart');
 
-
+/*
 Blockly.Dart['controls_if'] = function(block) {
   // If/elseif/else condition.
   var n = 0;
@@ -47,6 +47,49 @@ Blockly.Dart['controls_if'] = function(block) {
     code += ' else {\n' + branch + '}';
   }
   return code + '\n';
+};
+*/
+
+Blockly.Dart['controls_if'] = function(block) {
+  // If/elseif/else condition.
+  var n = 0;
+  ifCount++; // ifCount is global for generating unique labels across multiple conditional statements
+  var elseCount = block.elseCount_;
+  var elseifcount = block.elseifCount_;
+  var argument = Blockly.Dart.valueToCode(block, 'IF' + n, Blockly.Dart.ORDER_NONE) || 'false';      //argument is in R1
+  var code = argument;
+  var branch = Blockly.Dart.statementToCode(block, 'DO' + n); // branch = statements to be executed if argument is true/non-zero
+      if ((elseCount == 0) && (elseifcount == 0)) {
+        code += 'BTR1SNZ \n GOTO endif_label_' + ifCount + '\n'; // test value in R1, skip the instuction 'GOTO else_label' if non-zero
+        code += branch + 'GOTO endif_label_' + ifCount + '\n';
+      }
+      else if ((elseCount > 0 ) && (elseifcount == 0)) { // if this is a simple if-then-else
+        code += 'BTR1SNZ \n GOTO else_label_' + ifCount + '\n'; // test value in R1, skip the instuction 'GOTO else_label' if non-zero
+        code += branch + 'GOTO endif_label_' + ifCount + '\n';
+      } else { // if there are nested if statements with out without an else
+          code += 'BTR1SNZ \n GOTO elseif_label_' + ifCount + '_1\n'; // test value in R1, skip the instuction 'GOTO else_label' if non-zero
+          code += branch + 'GOTO endif_label_' + ifCount + '\n';
+     
+          for (n = 1; n <= elseifcount; n++) {
+            argument = Blockly.Dart.valueToCode(block, 'IF' + n, Blockly.Dart.ORDER_NONE) || 'false';
+            branch = Blockly.Dart.statementToCode(block, 'DO' + n);
+            code += 'elseif_label_' + ifCount + '_' + n + ':\n' + argument +  'BTR1SNZ \n';
+            var z = n + 1;
+            if (z  > elseifcount) { 
+              if (elseCount > 0) {code += 'GOTO else_label_' + ifCount + '\n' + branch; }
+                else {
+                  code += 'GOTO endif_label_' + ifCount + '\n' + branch;
+                  }
+              } else {
+                 code += 'GOTO elseif_label_' + ifCount + '_' + z +'\n' + branch;
+            }
+          }
+      }
+  if (elseCount > 0) {
+    branch = Blockly.Dart.statementToCode(block, 'ELSE') || ' ';
+    code += ' else_label_' + ifCount + ':\n' + branch + '\n';
+  }
+  return code + 'endif_label_' + ifCount + ':\n';
 };
 
 Blockly.Dart['logic_compare'] = function(block) {
@@ -76,7 +119,6 @@ Blockly.Dart['logic_compare'] = function(block) {
     var code = argument0 + '\n' + operator + ' R1 R0 R1\n';
   }
   else {
-  // **** the code below isnt going to work becuase when do you use R1 and R2 ****
   var code = argument0 + '\npush R1 \n' + argument1 + '\npop R2 \n' + operator + ' R2 R1 R1\n';
   }
   return [code, order];

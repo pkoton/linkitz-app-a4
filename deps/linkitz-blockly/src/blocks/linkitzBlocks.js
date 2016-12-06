@@ -11,6 +11,35 @@
 // LED  LED  LED  LED  LED  LED  LED  LED  LED  LED  LED  LED  LED  LED  LED  LED  LED  LED
 // **************************************************************************************************
 
+// led_attached returns 0 if the LED link is not attached and non-zero otherwise, the value indicting which port(s)
+// 2 = port1, 4 = port2, 8 = port3, 10 = port1 and port3 etc 
+// https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#oogcwh
+
+Blockly.Blocks['led_attached'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("LED Attached?");
+    this.setOutput(true, "Number");
+    this.setColour('#873299');
+    this.setTooltip('');
+    this.setHelpUrl('http://www.example.com/');
+  }
+};
+
+// usb_attached returns 0 if the usb link is not attached and non-zero otherwise, the value indicting which port(s)
+// 2 = port1, 4 = port2, 8 = port3, 10 = port1 and port3 etc
+
+Blockly.Blocks['usb_attached'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("USB Attached?");
+    this.setOutput(true, "Number");
+    this.setColour("#FF6A13");
+    this.setTooltip('');
+    this.setHelpUrl('http://www.example.com/');
+  }
+};
+
 // Flash LEDs takes a one color or a list of 1 or more colors and flashes the attached LEDs using the
 // pseudo-LRU algorithm
 // https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#4vqrqb
@@ -18,7 +47,7 @@
 Blockly.Blocks['flash_leds'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_4.2_Sparkle.png", 50, 50, "Flash color"));
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_4.2_Sparkle.png", 50, 50, "Flash color"));
   //  this.appendDummyInput()
   //      .appendField("Flash LEDs")
   //      .appendField("color");
@@ -45,7 +74,7 @@ Blockly.Blocks['ledoutput1'] = {
         .appendField("color")
         .appendField(new Blockly.FieldColour("#cc0000"), "NAME");
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_4.2_Sparkle.png", 50, 50, "LEDLink"));
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_4.2_Sparkle.png", 50, 50, "LEDLink"));
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setColour('#873299');
@@ -63,7 +92,7 @@ Blockly.Blocks['ledoutput2'] = {
         .appendField("color")
         .appendField(new Blockly.FieldColour("#00cc00"), "NAME");
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_4.2_Sparkle.png", 50, 50, "LEDLink"));
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_4.2_Sparkle.png", 50, 50, "LEDLink"));
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setColour('#873299');
@@ -81,7 +110,7 @@ Blockly.Blocks['ledoutput3'] = {
         .appendField("color")
         .appendField(new Blockly.FieldColour("#0000cc"), "NAME");
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_4.2_Sparkle.png", 50, 50, "LEDLink"));
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_4.2_Sparkle.png", 50, 50, "LEDLink"));
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setColour('#873299');
@@ -95,7 +124,7 @@ Blockly.Blocks['ledoutput3'] = {
 Blockly.Blocks['sparkle'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_4.2_Sparkle.png", 50, 50, "Sparkle LEDs"));
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_4.2_Sparkle.png", 50, 50, "Sparkle LEDs"));
     this.appendDummyInput()
         .appendField("Sparkle");
     this.setPreviousStatement(true);
@@ -115,7 +144,7 @@ Blockly.Blocks['ledoutput'] = {
     this.appendDummyInput()
         .appendField("LED Output");
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_4.2_Sparkle.png", 50, 50, "Light LED"));
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_4.2_Sparkle.png", 50, 50, "Light LED"));
     this.appendValueInput("NAME")
         .setCheck(['Colour', "Array"]);
     this.setInputsInline(true);
@@ -136,11 +165,25 @@ Blockly.Blocks['onmotiontrigger'] = {
     this.appendDummyInput()
         .appendField("When");
     this.appendDummyInput()
-		.appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_07012015_1_Motion.png", 50, 50, "On Motion Trigger"));
+		.appendField(new Blockly.FieldImage("../../images/LZ_Icons_07012015_1_Motion.png", 50, 50, "On Motion Trigger"));
     this.appendStatementInput("NAME")
         .setCheck(null);
     this.setColour('#0083CC');
     this.setTooltip('Use this to define response to motion input');
+    this.setHelpUrl('http://www.example.com/');
+  }
+};
+
+// motion_attached returns 0 if the motion link is not attached and non-zero otherwise, the value indicting which port(s)
+// 2 = port1, 4 = port2, 8 = port3, 10 = port1 and port3 etc
+
+Blockly.Blocks['motion_attached'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("Motion Attached?");
+    this.setOutput(true, "Number");
+    this.setColour('#0083CC');
+    this.setTooltip('Returns 0 if motion link is not attached, else 2,4,8 indicating which port(s) motion link(s) are on');
     this.setHelpUrl('http://www.example.com/');
   }
 };
@@ -150,7 +193,7 @@ Blockly.Blocks['onmotiontrigger'] = {
     this.appendDummyInput()
         .appendField("When");
     this.appendDummyInput()
-		.appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_07012015_1_Motion.png", 50, 50, "On Motion Trigger"));
+		.appendField(new Blockly.FieldImage("../../images/LZ_Icons_07012015_1_Motion.png", 50, 50, "On Motion Trigger"));
     //this.appendDummyInput()
     //    .appendField("On Motion Trigger");
     //this.appendDummyInput()
@@ -171,12 +214,12 @@ Blockly.Blocks['onmotiontrigger'] = {
 Blockly.Blocks['getmotiondata'] = {
   init: function() {
     this.appendDummyInput()
-		.appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_15.1_DataMove.png", 40, 40, "Get Motion Data"));
+		.appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_15.1_DataMove.png", 40, 40, "Get Motion Data"));
     this.appendDummyInput()
         .appendField(" Get Motion Data");
     this.setOutput(true, "Array");
     this.setColour('#0083CC');
-    this.setTooltip('Reads motion sensor and returns the list (Mag, X, Y, Z)');
+    this.setTooltip('Reads motion sensor and returns the list (X, Y, Z)');
     this.setHelpUrl('http://www.example.com/');
   }
 };
@@ -189,7 +232,7 @@ Blockly.Blocks['getmotiondata'] = {
 Blockly.Blocks['setmotiontrigger'] = {
   init: function() {
     this.appendDummyInput()
-		.appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_1_Motion.png", 50, 50, "GetMotionData"));
+		.appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_1_Motion.png", 50, 50, "GetMotionData"));
     this.appendDummyInput()
         .appendField("Set Motion Trigger");
     this.appendValueInput("NAME")
@@ -200,6 +243,40 @@ Blockly.Blocks['setmotiontrigger'] = {
     this.setColour('#0083CA');
     this.setTooltip('');
     this.setHelpUrl('http://www.example.com/');
+  }
+};
+
+
+Blockly.Blocks['math_binary'] = {
+  /**
+   * Block for basic binary operator.
+   * @this Blockly.Block
+   */
+  init: function() {
+    var OPERATORS =
+        [['&','BITWISEAND'],
+         ['|','BITWISEOR']];
+    this.appendDummyInput()
+      .appendField(new Blockly.FieldImage("../../images/LZ_Icons_binary.png",50,50,"*"));
+    this.setHelpUrl(Blockly.Msg.MATH_ARITHMETIC_HELPURL);
+    this.setColour(Blockly.Blocks.math.HUE);
+    this.setOutput(true, 'Number');
+    this.appendValueInput('A')
+        .setCheck('Number');
+    this.appendValueInput('B')
+        .setCheck('Number')
+        .appendField(new Blockly.FieldDropdown(OPERATORS), 'OP');
+    this.setInputsInline(true);
+    // Assign 'this' to a variable for use in the tooltip closure below.
+    var thisBlock = this;
+    this.setTooltip(function() {
+      var mode = thisBlock.getFieldValue('OP');
+      var TOOLTIPS = {
+        'BITWISEAND':Blockly.Msg.MATH_ARITHMETIC_TOOLTIP_BITWISEAND,
+        'BITWISEOR':Blockly.Msg.MATH_ARITHMETIC_TOOLTIP_BITWISEOR
+      };
+      return TOOLTIPS[mode];
+    });
   }
 };
 
@@ -241,7 +318,7 @@ Blockly.Blocks['read_sound_levels'] = {
 Blockly.Blocks['getmicdata'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_15.3_DataMic.png", 40, 40, "GetMicData"));
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_15.3_DataMic.png", 40, 40, "GetMicData"));
     this.appendDummyInput()
         .appendField("Get Mic Data");
     this.setOutput(true, "Array");
@@ -254,7 +331,7 @@ Blockly.Blocks['getmicdata'] = {
 Blockly.Blocks['set_mic_threshold'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_3_Mic.png", 50, 50, "GetMicData"));
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_3_Mic.png", 50, 50, "GetMicData"));
     this.appendDummyInput()
         .appendField("Set Mic Threshold");
     this.appendValueInput("NAME")
@@ -279,7 +356,7 @@ Blockly.Blocks['set_mic_threshold'] = {
 Blockly.Blocks['playdatastream'] = {
   init: function() {
     this.appendDummyInput()
-	.appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_2_Speaker.png", 50, 50, "GetSpeakerData"));
+	.appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_2_Speaker.png", 50, 50, "GetSpeakerData"));
     this.appendDummyInput()
         .appendField("Play data stream");
     this.appendValueInput("NAME")
@@ -299,7 +376,7 @@ Blockly.Blocks['playdatastream'] = {
 Blockly.Blocks['speaker_play_sound'] = {
   init: function() {
     this.appendDummyInput()
-	.appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_2_Speaker.png", 50, 50, "GetSpeakerData"));
+	.appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_2_Speaker.png", 50, 50, "GetSpeakerData"));
     this.appendDummyInput()
         .appendField("Play sound");
     this.appendValueInput("NAME")
@@ -322,7 +399,7 @@ Blockly.Blocks['speaker_play_sound'] = {
 Blockly.Blocks['radio_onreceive'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_5.1_RadioOnReceive.png", 50, 50, "*"));
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_5.1_RadioOnReceive.png", 50, 50, "*"));
     this.appendDummyInput()
         .appendField("Radio On Receive");
     this.appendStatementInput("NAME");
@@ -339,7 +416,7 @@ Blockly.Blocks['radio_onreceive'] = {
 Blockly.Blocks['getidfromradio'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_5.1_RadioOnReceive.png", 50, 50, "*"));
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_5.1_RadioOnReceive.png", 50, 50, "*"));
     this.appendDummyInput()
         .appendField("Get ID from radio");
     this.setOutput(true);
@@ -352,7 +429,7 @@ Blockly.Blocks['getidfromradio'] = {
 Blockly.Blocks['getidfromradioatport'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_5.1_RadioOnReceive.png", 50, 50, "*"));
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_5.1_RadioOnReceive.png", 50, 50, "*"));
     this.appendDummyInput()
         .appendField("Get ID from radio");
     this.appendValueInput("port");
@@ -370,7 +447,7 @@ Blockly.Blocks['getidfromradioatport'] = {
 Blockly.Blocks['transmit2'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_5.3_RadioTransmit.png", 50, 50, "*"));
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_5.3_RadioTransmit.png", 50, 50, "*"));
     this.appendDummyInput()
         .appendField("Transmit");
     this.appendValueInput("Target")
@@ -394,7 +471,7 @@ Blockly.Blocks['transmit2'] = {
 Blockly.Blocks['createmessage'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_5.2_CreateAMessage.png", 50, 50, "*"));
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_5.2_CreateAMessage.png", 50, 50, "*"));
     this.appendDummyInput()
         .appendField("Create a message");
     this.appendValueInput("MessageName")
@@ -429,7 +506,7 @@ Blockly.Blocks['check_type'] = {
 Blockly.Blocks['getradiodata'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_15.2_DataFriend.png", 40, 40, "Get Radio Data"));
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_15.2_DataFriend.png", 40, 40, "Get Radio Data"));
     this.appendDummyInput()
         .appendField("Get Radio Data");
     this.setInputsInline(true);
@@ -445,7 +522,7 @@ Blockly.Blocks['getradiodata'] = {
 Blockly.Blocks['setradioeventtrigger'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_5.1_RadioOnReceive.png", 50, 50, "*"));
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_5.1_RadioOnReceive.png", 50, 50, "*"));
     this.appendDummyInput()
         .appendField("Set Radio Event Trigger");
     this.appendValueInput("NAME")
@@ -465,7 +542,7 @@ Blockly.Blocks['setradioeventtrigger'] = {
 Blockly.Blocks['radiogetrange'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_5.1_RadioOnReceive.png", 50, 50, "*"));
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_5.1_RadioOnReceive.png", 50, 50, "*"));
     this.appendDummyInput()
         .appendField("Get Radio Range");
     this.setOutput(true, "Number");
@@ -481,16 +558,14 @@ Blockly.Blocks['radiogetrange'] = {
 
 // https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#v4hgbw
 
-Blockly.Blocks['setregularlyscheduledeventperiod'] = {
+Blockly.Blocks['RegularEventSpeed'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
     this.appendDummyInput()
-        .appendField("Set Regularly Scheduled Event Period");
-    this.appendValueInput("period")
+        .appendField("Set Regular Event Speed");
+    this.appendValueInput("PERIOD")
         .setCheck("Number");
-    this.appendDummyInput()
-        .appendField("ms");
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setColour('#FFCE00');
@@ -504,7 +579,7 @@ Blockly.Blocks['setregularlyscheduledeventperiod'] = {
 Blockly.Blocks['on_regular_event'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
     this.appendDummyInput()
         .appendField("On Regular Event");
     this.appendStatementInput("NAME");
@@ -517,7 +592,7 @@ Blockly.Blocks['on_regular_event'] = {
 Blockly.Blocks['initialize'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
     this.appendDummyInput()
         .appendField("Initialize");
     this.setPreviousStatement(true);
@@ -531,7 +606,7 @@ Blockly.Blocks['initialize'] = {
 Blockly.Blocks['on_initialization'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
     this.appendDummyInput()
         .appendField("On Initialization");
     this.appendStatementInput("NAME");
@@ -545,7 +620,7 @@ Blockly.Blocks['on_initialization'] = {
 Blockly.Blocks['getambientlight'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
     this.appendDummyInput()
         .appendField("Get ambient light");
     this.setInputsInline(true);
@@ -560,7 +635,7 @@ Blockly.Blocks['getambientlight'] = {
 Blockly.Blocks['getbatterylevel'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
     this.appendDummyInput()
         .appendField("Get battery level");
     this.setInputsInline(true);
@@ -579,7 +654,7 @@ Blockly.Blocks['getbatterylevel'] = {
 Blockly.Blocks['getroster'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
     this.appendDummyInput()
         .appendField(" Get roster");
     this.setOutput(true, "Array");
@@ -594,7 +669,7 @@ Blockly.Blocks['getroster'] = {
 Blockly.Blocks['getmyid'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
     this.appendDummyInput()
         .appendField("Get my ID ");
     this.setInputsInline(true);
@@ -610,7 +685,7 @@ Blockly.Blocks['getmyid'] = {
 Blockly.Blocks['writeidtoradio'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
     this.appendDummyInput()
         .appendField("Write my ID to radio petal");
     this.setInputsInline(true);
@@ -628,7 +703,7 @@ Blockly.Blocks['writeidtoradio'] = {
 Blockly.Blocks['write_this_idtoradio'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
     this.appendDummyInput()
         .appendField("Write this ID to radio petal");
     this.appendValueInput("ID")
@@ -661,7 +736,7 @@ With priority, we can end that collision.  Only the highest priority script is t
 Blockly.Blocks['roster_event'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
     this.setHelpUrl('http://www.example.com/');
     this.setColour(LinkitzHue,LinkitzSaturation,LinkitzValue);
     this.appendDummyInput()
@@ -681,7 +756,7 @@ Blockly.Blocks['roster_event'] = {
 Blockly.Blocks['roster_list'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
     this.setHelpUrl('http://www.example.com/');
     this.setColour(LinkitzHue,LinkitzSaturation,LinkitzValue);
     this.appendDummyInput()
@@ -703,7 +778,7 @@ Blockly.Blocks['roster_list'] = {
 Blockly.Blocks['roster_event_two'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
     this.setHelpUrl('http://www.example.com/');
     this.setColour(LinkitzHue,LinkitzSaturation,LinkitzValue);
     this.appendDummyInput()
@@ -724,7 +799,7 @@ Blockly.Blocks['roster_event_two'] = {
 Blockly.Blocks['connection_event'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
     this.setHelpUrl('http://www.example.com/');
     this.setColour(LinkitzHue,LinkitzSaturation,LinkitzValue);
     this.appendDummyInput()
@@ -743,7 +818,7 @@ Blockly.Blocks['connection_event'] = {
 Blockly.Blocks['delay'] = {
   init: function() {
     //this.appendDummyInput()
-    //    .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
+    //    .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
     this.appendDummyInput()
         .appendField("Delay ");
     this.appendValueInput("delay_in_ms")
@@ -774,7 +849,7 @@ Blockly.Blocks['radio_event'] = {
     this.appendDummyInput()
         .appendField("On Radio Event");
     this.appendDummyInput()
-    .appendField(new Blockly.FieldImage("blockly/images/radio_icon2.png", 22, 18, "GetMicData"));
+    .appendField(new Blockly.FieldImage("../../images/radio_icon2.png", 22, 18, "GetMicData"));
     this.setColour(LinkitzHue,LinkitzSaturation,LinkitzValue);
     this.appendValueInput("NAME")
         .appendField(new Blockly.FieldDropdown([["Msg_Color", "MSG_COLOR"], ["Msg_Sound", "MSG_SOUND"], ["Msg_Blank", "MSG_BLANK"]]), "NAME");
@@ -789,7 +864,7 @@ Blockly.Blocks['radio_event'] = {
 Blockly.Blocks['sound_fdv'] = {
   init: function() {
     this.appendDummyInput()
-	.appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_2.2_SoundBlock.png", 50, 50, "GetSpeakerData"));
+	.appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_2.2_SoundBlock.png", 50, 50, "GetSpeakerData"));
     this.appendDummyInput()
         .appendField("Sound with");
     this.appendValueInput("Frequency")
@@ -842,7 +917,7 @@ Blockly.Blocks['sound_from_mic'] = {
     this.setInputsInline(false);
     this.setOutput(true);
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("blockly/images/mic_icon2.png", 22, 18, "GetMicData"));
+        .appendField(new Blockly.FieldImage("../../images/mic_icon2.png", 22, 18, "GetMicData"));
     this.setColour('#33CC66');
     this.setTooltip('');
     this.setHelpUrl('http://www.example.com/');
@@ -867,7 +942,7 @@ Blockly.Blocks['sound_user_defined_from_mic'] = {
     this.setInputsInline(false);
     this.setOutput(true);
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("blockly/images/mic_icon2.png", 22, 18, "GetMicData"));
+        .appendField(new Blockly.FieldImage("../../images/mic_icon2.png", 22, 18, "GetMicData"));
     this.setColour('#33CC66');
     this.setTooltip('');
     this.setHelpUrl('http://www.example.com/');
@@ -879,7 +954,7 @@ Blockly.Blocks['sound_user_defined_from_mic'] = {
 Blockly.Blocks['on_microphone_trigger'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_3.1_OnMicTrigger.png", 50, 50, "On Mic Trigger"));
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_3.1_OnMicTrigger.png", 50, 50, "On Mic Trigger"));
     this.appendDummyInput()
         .appendField("On Microphone Trigger");
     this.appendStatementInput("NAME");
@@ -915,7 +990,7 @@ Blockly.Blocks['sound_convert_pitch_to_hue'] = {
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("blockly/images/mic_icon2.png", 22, 18, "GetMicData"));
+        .appendField(new Blockly.FieldImage("../../images/mic_icon2.png", 22, 18, "GetMicData"));
     this.setColour('#E81A4B');;
     this.setTooltip('');
     this.setHelpUrl('http://www.example.com/');

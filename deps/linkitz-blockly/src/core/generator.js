@@ -92,7 +92,7 @@ Blockly.Generator.prototype.workspaceToCode = function(workspace) {
   for (var x = 0, block; block = blocks[x]; x++) {
     var blocktype = block.type;
     // alert('top block of type ' + blocktype);
-    if (blocktype == 'on_initialization' || blocktype == 'on_regular_event' || blocktype == 'onmotiontrigger') {
+    if (blocktype == 'on_initialization' || blocktype == 'on_regular_event' || blocktype == 'onmotiontrigger' || blocktype == 'procedures_defreturn' || blocktype == 'procedures_defnoreturn') {
       var line = this.blockToCode(block);
       if (goog.isArray(line)) {
        // Value blocks return tuples of code and operator order.
@@ -170,7 +170,7 @@ Blockly.Generator.prototype.blockToCode = function(block) {
   }
 
   var func = this[block.type];
-  //alert("block type is " + block.type);
+  if (debug) {alert("block type is " + block.type)};
   goog.asserts.assertFunction(func,
       'Language "%s" does not know how to generate code for block type "%s".',
       this.name_, block.type);

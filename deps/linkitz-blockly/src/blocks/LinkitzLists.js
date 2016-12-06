@@ -239,6 +239,6 @@ Blockly.Blocks['lists_create_n'] = {
         .setCheck("Number");
     this.setInputsInline(true);
     this.setColour('#33CC66');
-    this.setOutput(true);
+    this.setOutput(true, 'Array');
   }
 }

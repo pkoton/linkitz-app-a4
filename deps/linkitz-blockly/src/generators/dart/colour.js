@@ -68,11 +68,11 @@ Blockly.Dart['colour_picker'] = function(block) {
   // Colour picker.
   var value_color = block.getFieldValue('COLOUR'); // getFieldValue('COLOUR') returns the color as a hex string no quotes
   var colorRGB = hexToRGB (value_color);
-    var code =
-      'Set R1 ' + colorRGB[0] + '\nPush R1\n' + 
-      'Set R1 ' + colorRGB[1] + '\nPush R1\n' +
-      'Set R1 ' + colorRGB[2] + '\nPush R1\n' + // all 3 values are now on the stack in order Blue (top) Green Red (bottom)
-      'Set R1 3' + '\nPush R1\n'; // add length of color list
+    var code = // want to push so stack is in this order top{3,R,G,B,...}
+      'Set R1 ' + colorRGB[2] + '\nPush R1\n' +  // B
+      'Set R1 ' + colorRGB[1] + '\nPush R1\n' +  //G
+      'Set R1 ' + colorRGB[0] + '\nPush R1\n' + // R
+      'Set R1 3' + '\nPush R1\n'; // add length of color list =3
   return [code, Blockly.Dart.ORDER_ATOMIC];
 };
 

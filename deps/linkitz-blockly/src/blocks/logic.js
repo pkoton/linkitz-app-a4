@@ -48,7 +48,7 @@ Blockly.Blocks['controls_if'] = {
       .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_8_Logic.png",50,50,"*"));this.setHelpUrl(Blockly.Msg.CONTROLS_IF_HELPURL);
     this.setColour(Blockly.Blocks.logic.HUE);
     this.appendValueInput('IF0')
-        .setCheck('Boolean')
+        .setCheck(['Boolean','Number'])
         .appendField(Blockly.Msg.CONTROLS_IF_MSG_IF);
     this.appendStatementInput('DO0')
         .appendField(Blockly.Msg.CONTROLS_IF_MSG_THEN);
@@ -101,7 +101,7 @@ Blockly.Blocks['controls_if'] = {
     this.elseCount_ = parseInt(xmlElement.getAttribute('else'), 10) || 0;
     for (var i = 1; i <= this.elseifCount_; i++) {
       this.appendValueInput('IF' + i)
-          .setCheck('Boolean')
+          .setCheck(['Boolean','Number'])
           .appendField(Blockly.Msg.CONTROLS_IF_MSG_ELSEIF);
       this.appendStatementInput('DO' + i)
           .appendField(Blockly.Msg.CONTROLS_IF_MSG_THEN);
@@ -158,7 +158,7 @@ Blockly.Blocks['controls_if'] = {
         case 'controls_if_elseif':
           this.elseifCount_++;
           var ifInput = this.appendValueInput('IF' + this.elseifCount_)
-              .setCheck('Boolean')
+              .setCheck(['Boolean','Number'])
               .appendField(Blockly.Msg.CONTROLS_IF_MSG_ELSEIF);
           var doInput = this.appendStatementInput('DO' + this.elseifCount_);
           doInput.appendField(Blockly.Msg.CONTROLS_IF_MSG_THEN);
@@ -271,15 +271,21 @@ Blockly.Blocks['logic_compare'] = {
    * @this Blockly.Block
    */
   init: function() {
-    var OPERATORS = this.RTL ? [
-          ['>', 'LT'],
-          ['==', 'EQ'],
-          ['<', 'GT']
-        ] : [
-          ['<', 'LT'],
-          ['=', 'EQ'],
-          ['>', 'GT']
-        ];
+  var OPERATORS = this.RTL ? [
+                  ['=', 'EQ'],
+                  ['\u2260', 'NEQ'],
+                  ['>', 'LT'],
+                  ['\u2265', 'LTE'],
+                  ['<', 'GT'],
+                  ['\u2264', 'GTE']
+              ] : [
+                  ['=', 'EQ'],
+                  ['\u2260', 'NEQ'],
+                  ['<', 'LT'],
+                  ['\u2264', 'LTE'],
+                  ['>', 'GT'],
+                  ['\u2265', 'GTE']
+              ];
     this.setHelpUrl(Blockly.Msg.LOGIC_COMPARE_HELPURL);
     this.setColour(Blockly.Blocks.logic.HUE);
     this.setOutput(true, 'Boolean');
@@ -341,9 +347,9 @@ Blockly.Blocks['logic_operation'] = {
     this.setColour(Blockly.Blocks.logic.HUE);
     this.setOutput(true, 'Boolean');
     this.appendValueInput('A')
-        .setCheck('Boolean');
+        .setCheck(['Boolean','Number']);
     this.appendValueInput('B')
-        .setCheck('Boolean')
+        .setCheck(['Boolean','Number'])
         .appendField(new Blockly.FieldDropdown(OPERATORS), 'OP');
     this.setInputsInline(true);
     // Assign 'this' to a variable for use in the tooltip closure below.
