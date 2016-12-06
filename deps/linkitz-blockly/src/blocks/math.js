@@ -67,11 +67,9 @@ Blockly.Blocks['math_arithmetic'] = {
          [Blockly.Msg.MATH_SUBTRACTION_SYMBOL, 'MINUS'],
          [Blockly.Msg.MATH_MULTIPLICATION_SYMBOL, 'MULTIPLY'],
          [Blockly.Msg.MATH_DIVISION_SYMBOL, 'DIVIDE'],
-         [Blockly.Msg.MATH_POWER_SYMBOL, 'POWER'],
-         ['&','BITWISEAND'],
-         ['|','BITWISEOR']];
+         [Blockly.Msg.MATH_POWER_SYMBOL, 'POWER']];
     this.appendDummyInput()
-      .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_10_Math.png",50,50,"*"));
+      .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_10_Math.png",50,50,"*"));
     this.setHelpUrl(Blockly.Msg.MATH_ARITHMETIC_HELPURL);
     this.setColour(Blockly.Blocks.math.HUE);
     this.setOutput(true, 'Number');
@@ -90,9 +88,7 @@ Blockly.Blocks['math_arithmetic'] = {
         'MINUS': Blockly.Msg.MATH_ARITHMETIC_TOOLTIP_MINUS,
         'MULTIPLY': Blockly.Msg.MATH_ARITHMETIC_TOOLTIP_MULTIPLY,
         'DIVIDE': Blockly.Msg.MATH_ARITHMETIC_TOOLTIP_DIVIDE,
-        'POWER': Blockly.Msg.MATH_ARITHMETIC_TOOLTIP_POWER,
-        'BITWISEAND':Blockly.Msg.MATH_ARITHMETIC_TOOLTIP_BITWISEAND,
-        'BITWISEOR':Blockly.Msg.MATH_ARITHMETIC_TOOLTIP_BITWISEOR
+        'POWER': Blockly.Msg.MATH_ARITHMETIC_TOOLTIP_POWER
       };
       return TOOLTIPS[mode];
     });
@@ -106,15 +102,11 @@ Blockly.Blocks['math_single'] = {
    */
   init: function() {
     var OPERATORS =
-        [[Blockly.Msg.MATH_SINGLE_OP_ROOT, 'ROOT'],
+        [
          [Blockly.Msg.MATH_SINGLE_OP_ABSOLUTE, 'ABS'],
-         ['-', 'NEG'],
-         ['ln', 'LN'],
-         ['log10', 'LOG10'],
-         ['e^', 'EXP'],
-         ['10^', 'POW10']];
+         ['-', 'NEG']];
     this.appendDummyInput()
-      .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_10_Math.png",50,50,"*"));
+      .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_10_Math.png",50,50,"*"));
     this.setHelpUrl(Blockly.Msg.MATH_SINGLE_HELPURL);
     this.setColour(Blockly.Blocks.math.HUE);
     this.setOutput(true, 'Number');
@@ -153,7 +145,7 @@ Blockly.Blocks['math_trig'] = {
          [Blockly.Msg.MATH_TRIG_ACOS, 'ACOS'],
          [Blockly.Msg.MATH_TRIG_ATAN, 'ATAN']];
     this.appendDummyInput()
-      .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_10_Math.png",50,50,"*"));
+      .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_10_Math.png",50,50,"*"));
     this.setHelpUrl(Blockly.Msg.MATH_TRIG_HELPURL);
     this.setColour(Blockly.Blocks.math.HUE);
     this.setOutput(true, 'Number');
@@ -191,7 +183,7 @@ Blockly.Blocks['math_constant'] = {
          ['sqrt(\u00bd)', 'SQRT1_2'],
          ['\u221e', 'INFINITY']];
     this.appendDummyInput()
-      .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_10_Math.png",50,50,"*"));
+      .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_10_Math.png",50,50,"*"));
     this.setHelpUrl(Blockly.Msg.MATH_CONSTANT_HELPURL);
     this.setColour(Blockly.Blocks.math.HUE);
     this.setOutput(true, 'Number');
@@ -217,7 +209,7 @@ Blockly.Blocks['math_number_property'] = {
          [Blockly.Msg.MATH_IS_NEGATIVE, 'NEGATIVE'],
          [Blockly.Msg.MATH_IS_DIVISIBLE_BY, 'DIVISIBLE_BY']];
     this.appendDummyInput()
-      .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_10_Math.png",50,50,"*"));
+      .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_10_Math.png",50,50,"*"));
     this.setColour(Blockly.Blocks.math.HUE);
     this.appendValueInput('NUMBER_TO_CHECK')
         .setCheck('Number');
@@ -278,7 +270,7 @@ Blockly.Blocks['math_change'] = {
    */
   init: function() {
     this.appendDummyInput()
-      .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_10_Math.png",50,50,"*"));
+      .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_10_Math.png",50,50,"*"));
     this.jsonInit({
       "message0": Blockly.Msg.MATH_CHANGE_TITLE,
       "args0": [
@@ -338,7 +330,7 @@ Blockly.Blocks['math_round'] = {
          [Blockly.Msg.MATH_ROUND_OPERATOR_ROUNDUP, 'ROUNDUP'],
          [Blockly.Msg.MATH_ROUND_OPERATOR_ROUNDDOWN, 'ROUNDDOWN']];
     this.appendDummyInput()
-      .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_10_Math.png",50,50,"*"));
+      .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_10_Math.png",50,50,"*"));
     this.setHelpUrl(Blockly.Msg.MATH_ROUND_HELPURL);
     this.setColour(Blockly.Blocks.math.HUE);
     this.setOutput(true, 'Number');
@@ -368,9 +360,9 @@ Blockly.Blocks['math_on_list'] = {
     // Assign 'this' to a variable for use in the closures below.
     var thisBlock = this;
     this.appendDummyInput()
-      .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_10_Math.png",50,50,"*"));
+      .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_10_Math.png",50,50,"*"));
     this.setHelpUrl(Blockly.Msg.MATH_ONLIST_HELPURL);
-    this.setColour(Blockly.Blocks.math.HUE);
+    this.setColour('#33CC66');
     this.setOutput(true, 'Number');
     var dropdown = new Blockly.FieldDropdown(OPERATORS, function(newOp) {
       thisBlock.updateType_(newOp);
@@ -433,7 +425,7 @@ Blockly.Blocks['math_modulo'] = {
    */
   init: function() {
     this.appendDummyInput()
-      .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_10_Math.png",50,50,"*"));
+      .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_10_Math.png",50,50,"*"));
     this.jsonInit({
       "message0": Blockly.Msg.MATH_MODULO_TITLE,
       "args0": [
@@ -464,7 +456,7 @@ Blockly.Blocks['math_constrain'] = {
    */
   init: function() {
     this.appendDummyInput()
-      .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_10_Math.png",50,50,"*"));
+      .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_10_Math.png",50,50,"*"));
     this.jsonInit({
       "message0": Blockly.Msg.MATH_CONSTRAIN_TITLE,
       "args0": [
@@ -500,7 +492,7 @@ Blockly.Blocks['math_random_int'] = {
    */
   init: function() {
     this.appendDummyInput()
-      .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_10_Math.png",50,50,"*"));
+      .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_10_Math.png",50,50,"*"));
       this.appendDummyInput().appendField("Random integer from -127 to 127");
       this.setOutput(true,"Number");
       this.setColour(Blockly.Blocks.math.HUE);
@@ -516,7 +508,7 @@ Blockly.Blocks['math_random_float'] = {
    */
   init: function() {
     this.appendDummyInput()
-      .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_10_Math.png",50,50,"*"));
+      .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_10_Math.png",50,50,"*"));
     this.setHelpUrl(Blockly.Msg.MATH_RANDOM_FLOAT_HELPURL);
     this.setColour(Blockly.Blocks.math.HUE);
     this.setOutput(true, 'Number');
