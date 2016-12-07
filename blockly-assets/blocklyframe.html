@@ -67,40 +67,37 @@
       <block type="on_regular_event"></block>
       <block type="getbatterylevel"></block>
       <block type="getambientlight"></block>
-      <block type="getroster"></block>
       <block type="setregularlyscheduledeventperiod"></block>
     </category>
 
      <sep></sep>
      
     <category id="catLogic" class="catLogic"  colour="#FF9903"> 
-      <block type="controls_if"></block>  <!--  Definitely need this one -->
+      <block type="controls_if"></block> 
       <block type="logic_compare"></block>
       <block type="logic_operation"></block>
       <block type="math_number"></block>
-      <block type="math_arithmetic"></block>  <!-- might want the advanced math block, but we'll see -->
+      <block type="math_arithmetic"></block>
       <block type="math_single"></block>
       <block type="math_binary"></block>
+      <block type="math_random_int"></block>
       <block type="controls_while"></block>
-      <block type="controls_flow_statements"></block>
     </category>
    
-    
-    
-         <sep></sep>
+    <sep></sep>
          
     <category id="catLists" class="catLists" colour="#33cc66">
       
-     
-      
-      <block type="lists_create_n">
+       <block type="lists_create_n">
         <value name="NUM_ITEMS">
           <block type="math_number">
             <field name="NUM">3</field>
           </block>
         </value>
       </block>
-      <block type="lists_create_with"></block>  
+      
+      <block type="lists_create_with"></block>
+      
       <block type="lists_getIndex_nonMut">
         <value name="VALUE">
           <block type="variables_get">
@@ -108,6 +105,7 @@
           </block>
         </value>
       </block> 
+      
      <block type="lists_setIndex_nonMut">
          <value name="LIST">
           <block type="variables_get">
@@ -117,6 +115,7 @@
       </block>
       
     <block type="lists_length"></block> 
+      
     <block type="math_on_list"></block>
     </category>
     
