@@ -41,7 +41,7 @@ Blockly.Blocks['procedures_defnoreturn'] = {
    */
   init: function() {
     this.appendDummyInput()
-      .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_15_Functions.png",50,50,"*"));
+      .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_15_Functions.png",50,50,"*"));
     this.setHelpUrl(Blockly.Msg.CONTROLS_IF_HELPURL);
     var nameField = new Blockly.FieldTextInput(
         Blockly.Msg.PROCEDURES_DEFNORETURN_PROCEDURE,
@@ -350,7 +350,7 @@ Blockly.Blocks['procedures_defreturn'] = {
    */
   init: function() {
     this.appendDummyInput()
-      .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_15_Functions.png",50,50,"*"));
+      .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_15_Functions.png",50,50,"*"));
     var nameField = new Blockly.FieldTextInput(
         Blockly.Msg.PROCEDURES_DEFRETURN_PROCEDURE,
         Blockly.Procedures.rename);
@@ -453,7 +453,7 @@ Blockly.Blocks['procedures_callnoreturn'] = {
    */
   init: function() {
     this.appendDummyInput()
-      .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_15_Functions.png",50,50,"*"));
+      .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_15_Functions.png",50,50,"*"));
     this.appendDummyInput('TOPROW')
         .appendField('', 'NAME');
     this.setPreviousStatement(true);
@@ -683,7 +683,7 @@ Blockly.Blocks['procedures_callreturn'] = {
    */
   init: function() {
     this.appendDummyInput()
-      .appendField(new Blockly.FieldImage("blockly/images/LZ_Icons_31032016_15_Functions.png",50,50,"*"));
+      .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_15_Functions.png",50,50,"*"));
     this.appendDummyInput('TOPROW')
         .appendField('', 'NAME');
     this.setOutput(true);
