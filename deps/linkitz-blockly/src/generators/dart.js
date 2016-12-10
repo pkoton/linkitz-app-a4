@@ -101,11 +101,16 @@ global_scalar_variables[2] = 'scratch2'; // R2
 global_scalar_variables[3] = 'led_attached'; // R3
 global_scalar_variables[4] = 'usb_attached'; // R4
 global_scalar_variables[5] = 'motion_attached'; // R5
+global_scalar_variables[6] = 'batterylevel'; // R6
+global_scalar_variables[7] = 'ambientlight'; // R7
 
-var gsv_next = 6 // gsv_next points to the next empty register index
-var global_scalar_variables_pp ='';
+var gsv_next = 8 // gsv_next points to the next empty register index
+var global_scalar_variables_pp =''; // string for pretty printing the GSV list
 
-var mask = 14; // 00001110 corresponding to ports 1,2,3
+var procs = new Object(); // holds name and return type (scalar or list) for each user-defined function
+
+
+var mask = 14; // 00001110 corresponding to ports 1,2,3 for checking if a specific type link is attached
 
 // undef_vars list holds the names of variables that are used before generator has seen their value
 // once value is set, variable name is moved to correct global variable list (scalar or list)
