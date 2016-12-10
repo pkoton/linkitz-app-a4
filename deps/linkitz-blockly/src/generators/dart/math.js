@@ -41,14 +41,9 @@ Blockly.Dart['math_number'] = function(block) {
   } else if (number_arg == -Infinity) {
     code = '-double.INFINITY';
     order = Blockly.Dart.ORDER_UNARY_PREFIX;
-  } else {
-    // -4.abs() returns -4 in Dart due to strange order of operation choices.
-    // -4 is actually an operator and a number.  Reflect this in the order.
-    order = number_arg < 0 ?
-        Blockly.Dart.ORDER_UNARY_PREFIX : Blockly.Dart.ORDER_ATOMIC;
-  }
+  } 
   var code = 'set R1 '+ number_arg + '\n';
-  return [code, order];
+  return [code, Blockly.Dart.ORDER_ATOMIC];
 };
 
 Blockly.Dart['math_arithmetic'] = function(block) {
@@ -110,79 +105,16 @@ Blockly.Dart['math_single'] = function(block) {
     code = arg + 'Set R2 -1\n* R1 R2 R1\n';
     return [code, Blockly.Dart.ORDER_UNARY_PREFIX];
   }
-  Blockly.Dart.definitions_['import_dart_math'] =
-      'import \'dart:math\' as Math;';
-  if (operator == 'ABS' || operator.substring(0, 5) == 'ROUND') {
+  if (operator == 'ABS') {
     arg = Blockly.Dart.valueToCode(block, 'NUM',
         Blockly.Dart.ORDER_UNARY_POSTFIX) || '0';
-  } else if (operator == 'SIN' || operator == 'COS' || operator == 'TAN') {
-    arg = Blockly.Dart.valueToCode(block, 'NUM',
-        Blockly.Dart.ORDER_MULTIPLICATIVE) || '0';
-  } else {
-    arg = Blockly.Dart.valueToCode(block, 'NUM',
-        Blockly.Dart.ORDER_NONE) || '0';
-  }
-  // First, handle cases which generate values that don't need parentheses
-  // wrapping the code.
-  switch (operator) {
-    case 'ABS':
-      code = arg + 'ABS R1 R1\n';
-      break;
-    case 'ROOT':
-      code = 'Math.sqrt(' + arg + ')';
-      break;
-    case 'LN':
-      code = 'Math.log(' + arg + ')';
-      break;
-    case 'EXP':
-      code = 'Math.exp(' + arg + ')';
-      break;
-    case 'POW10':
-      code = 'Math.pow(10,' + arg + ')';
-      break;
-    case 'ROUND':
-      code = arg + '.round()';
-      break;
-    case 'ROUNDUP':
-      code = arg + '.ceil()';
-      break;
-    case 'ROUNDDOWN':
-      code = arg + '.floor()';
-      break;
-    case 'SIN':
-      code = 'Math.sin(' + arg + ' / 180 * Math.PI)';
-      break;
-    case 'COS':
-      code = 'Math.cos(' + arg + ' / 180 * Math.PI)';
-      break;
-    case 'TAN':
-      code = 'Math.tan(' + arg + ' / 180 * Math.PI)';
-      break;
-  }
+    code = arg + 'ABS R1 R1\n';
+  } 
+  
   if (code) {
     return [code, Blockly.Dart.ORDER_UNARY_POSTFIX];
   }
-  // Second, handle cases which generate values that may need parentheses
-  // wrapping the code.
-  switch (operator) {
-    case 'LOG10':
-      code = 'Math.log(' + arg + ') / Math.log(10)';
-      break;
-    case 'ASIN':
-      code = 'Math.asin(' + arg + ') / Math.PI * 180';
-      break;
-    case 'ACOS':
-      code = 'Math.acos(' + arg + ') / Math.PI * 180';
-      break;
-    case 'ATAN':
-      code = 'Math.atan(' + arg + ') / Math.PI * 180';
-      break;
-    default:
-      throw 'Unknown math operator: ' + operator;
-  }
-  return [code, Blockly.Dart.ORDER_MULTIPLICATIVE];
-};
-
+}
 Blockly.Dart['math_constant'] = function(block) {
   // Constants: PI, E, the Golden Ratio, sqrt(2), 1/sqrt(2), INFINITY.
   var CONSTANTS = {
@@ -476,7 +408,7 @@ Blockly.Dart['math_constrain'] = function(block) {
 
 Blockly.Dart['math_random_int'] = function(block) {
   // Random integer between -127 and 127.
-  var code = 'RANDOM\n'; // TBD
+  var code = 'Syscall RANDOM R1\n'; // TBD
   return [code, Blockly.Dart.ORDER_UNARY_POSTFIX];
 };
 

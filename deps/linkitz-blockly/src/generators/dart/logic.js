@@ -59,14 +59,14 @@ Blockly.Dart['controls_if'] = function(block) {
   var argument = Blockly.Dart.valueToCode(block, 'IF' + n, Blockly.Dart.ORDER_NONE) || 'false';      //argument is in R1
   var code = argument;
   var branch = Blockly.Dart.statementToCode(block, 'DO' + n); // branch = statements to be executed if argument is true/non-zero
-      if ((elseCount == 0) && (elseifcount == 0)) {
+      if ((elseCount == 0) && (elseifcount == 0)) { // this is simple if-then
         code += 'BTR1SNZ \n GOTO endif_label_' + ifCount + '\n'; // test value in R1, skip the instuction 'GOTO else_label' if non-zero
-        code += branch + 'GOTO endif_label_' + ifCount + '\n';
+        code += branch + 'GOTO endif_label_' + ifCount + '\n';   // do the then clause and go to end
       }
-      else if ((elseCount > 0 ) && (elseifcount == 0)) { // if this is a simple if-then-else
+      else if ((elseCount > 0 ) && (elseifcount == 0)) { // this is a simple if-then-else
         code += 'BTR1SNZ \n GOTO else_label_' + ifCount + '\n'; // test value in R1, skip the instuction 'GOTO else_label' if non-zero
         code += branch + 'GOTO endif_label_' + ifCount + '\n';
-      } else { // if there are nested if statements with out without an else
+      } else {                                           // there are nested if statements with out without an else
           code += 'BTR1SNZ \n GOTO elseif_label_' + ifCount + '_1\n'; // test value in R1, skip the instuction 'GOTO else_label' if non-zero
           code += branch + 'GOTO endif_label_' + ifCount + '\n';
      
@@ -76,18 +76,18 @@ Blockly.Dart['controls_if'] = function(block) {
             code += 'elseif_label_' + ifCount + '_' + n + ':\n' + argument +  'BTR1SNZ \n';
             var z = n + 1;
             if (z  > elseifcount) { 
-              if (elseCount > 0) {code += 'GOTO else_label_' + ifCount + '\n' + branch; }
+              if (elseCount > 0) {code += 'GOTO else_label_' + ifCount + '\n' + branch + 'GOTO endif_label_' + ifCount + '\n'; }
                 else {
-                  code += 'GOTO endif_label_' + ifCount + '\n' + branch;
+                  code += 'GOTO endif_label_' + ifCount + '\n' + branch + 'GOTO endif_label_' + ifCount + '\n';
                   }
               } else {
-                 code += 'GOTO elseif_label_' + ifCount + '_' + z +'\n' + branch;
+                 code += 'GOTO elseif_label_' + ifCount + '_' + z +'\n' + branch+ 'GOTO endif_label_' + ifCount + '\n';
             }
           }
       }
   if (elseCount > 0) {
     branch = Blockly.Dart.statementToCode(block, 'ELSE') || ' ';
-    code += ' else_label_' + ifCount + ':\n' + branch + '\n';
+    code += ' else_label_' + ifCount + ':\n' + branch + 'GOTO endif_label_' + ifCount + '\n'
   }
   return code + 'endif_label_' + ifCount + ':\n';
 };

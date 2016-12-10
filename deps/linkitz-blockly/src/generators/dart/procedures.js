@@ -29,7 +29,7 @@ goog.provide('Blockly.Dart.procedures');
 goog.require('Blockly.Dart');
 
 Blockly.Dart['procedures_defreturn'] = function(block) {
-  if (debug) {alert('in procedures def no return')};
+  if (debug) {alert('in procedures def [no] return')};
   // Define a procedure with a return value.
   var funcName = Blockly.Dart.variableDB_.getName(block.getFieldValue('NAME'),
       Blockly.Procedures.NAME_TYPE);
@@ -46,6 +46,12 @@ Blockly.Dart['procedures_defreturn'] = function(block) {
   var returnValue = Blockly.Dart.valueToCode(block, 'RETURN',
       Blockly.Dart.ORDER_NONE) || '';
   if (returnValue) {
+    // add proc name and return type to procs[funcName]
+    //var type;
+    //var item = this.getInputTargetBlock('VALUE');
+    //  if (item) {
+    //    type = item.getOutput();
+    //    }
     returnValue = Blockly.Dart.INDENT +  returnValue + ';\nsyscall return R1\n'; // value in R1
   }
     else {
