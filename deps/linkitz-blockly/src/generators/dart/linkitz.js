@@ -26,7 +26,21 @@ Blockly.Dart['flash_leds'] = function(block) {
     var targetBlock = block.getInputTargetBlock('COLOR');
      if (debug) {alert("in flash_leds: input is block type " + targetBlock.type)};
      switch (targetBlock.type) {
-      case 'math_number': //value is in R1
+      case 'math_number': // these all return a scalar, leaving the value in R1
+      case "math_arithmetic":
+      case "math_single":
+      case "math_binary":
+      case "math_random_int":
+      case "led_attached":
+      case "usb_attached":
+      case "motion_attached":
+      case "logic_compare":
+      case "logic_operation":
+      case "lists_length":
+      case "math_on_list":
+      case "lists_getIndex_nonMut": // Drew said just return a scalar and we can fix later - 11/27/2016
+      case "getbatterylevel":
+      case "getambientlight":
         var code = flash_arg + 'syscall flashHue R1' +  '\n';
         break;
       
@@ -37,6 +51,8 @@ Blockly.Dart['flash_leds'] = function(block) {
       case 'colour_picker':
       case 'getmotiondata':
       case 'array':
+      case 'lists_create_n':
+      case 'lists_create_with':
         var code = flash_arg + 'syscall flashRGB' +  '\n'; 
         break;
       case 'variables_get':
@@ -71,32 +87,33 @@ Blockly.Dart['flash_leds'] = function(block) {
 }
 
 Blockly.Dart['led_attached'] = function(block) {
-  alert("found 1");
   var found = global_scalar_variables.indexOf('led_attached');
   if (found >= 0) { // it better be!
     var code = 'Push R' + found + '\nPop R1\nset R2 '+ mask + '\n& R1 R2 R1\n'; // only look at the lower bits
     // the value in R1, if 0 then no led attached, else 2 4 8 tells you where
-    return [code, Blockly.Dart.ORDER_ATOMIC];
+    } else {
+      var code = 'Set R1 0\n'; // if you can't find led_attached in GSV, treat as no led attached
     }
+  return [code, Blockly.Dart.ORDER_ATOMIC];
 };
 
 Blockly.Dart['usb_attached'] = function(block) {
   var found = global_scalar_variables.indexOf('usb_attached');
   if (found >= 0) { // it better be!
     var code = 'Push R' + found + '\nPop R1\nset R2 '+ mask + '\n& R1 R2 R1\n'; // only look at the lower bits
-    // the value in R1, if 0 then no led attached, else 2 4 8 tells you where
-    return [code, Blockly.Dart.ORDER_ATOMIC];
+    // the value in R1, if 0 then no usb attached, else 2 4 8 tells you where
+    } else {
+      var code = 'Set R1 0\n'; // if you can't find usb_attached in GSV, treat as no usb attached
     }
+  return [code, Blockly.Dart.ORDER_ATOMIC];
 };
-
-
 
 // **************************************************************************************************
 // MOTION  MOTION  MOTION  MOTION  MOTION  MOTION  MOTION MOTION  MOTION  MOTION  MOTION
 // **************************************************************************************************
 
 
-Blockly.Dart['onmotiontrigger'] = function(block) {
+Blockly.Dart['on_motion_trigger'] = function(block) {
   var dothis = Blockly.Dart.statementToCode(block, 'NAME');
   var code = 'On_motion_trigger:\n' + dothis + 'syscall exit R0\n';
   return code;
@@ -117,9 +134,11 @@ Blockly.Dart['motion_attached'] = function(block) {
   var found = global_scalar_variables.indexOf('motion_attached');
   if (found >= 0) { // it better be!
     var code = 'Push R' + found + '\nPop R1\nset R2 '+ mask + '\n& R1 R2 R1\n'; // only look at the lower bits
-    // the value in R1, if 0 then no led attached, else 2 4 8 tells you where
-    return [code, Blockly.Dart.ORDER_ATOMIC];
+    // the value in R1, if 0 then no motion attached, else 2 4 8 tells you where
+    } else {
+      var code = 'Set R1 0\n'; // if you can't find motion_attached in GSV, treat as no motion attached
     }
+  return [code, Blockly.Dart.ORDER_ATOMIC];
 };
 
 // Advanced: Set Motion Trigger - POSTPONED
@@ -295,45 +314,41 @@ Blockly.Dart['on_regular_event'] = function(block) {
 };
 
 // Advanced: return the battery "life" or "health" -- however that is defined -- as an integer from 1= very bad to 10 = very good
+// return 0 is an error
 
 Blockly.Dart['getbatterylevel'] = function(block) {
-  var code = 'GETBATTERYLEVEL\n'; // format just like getmotionattached but no masking
+  var found = global_scalar_variables.indexOf('batterylevel');
+  if (found >= 0) { // it better be!
+    var code = 'Push R' + found + '\nPop R1\n'; // put current battery reading into R1
+    } else {
+      var code = 'Set R1 0\n'; // put 0 into R1
+    }
   return [code, Blockly.Dart.ORDER_ATOMIC];
 };
 
 // Advanced: returns a reading from the ambient light sensor in the hub
 
 Blockly.Dart['getambientlight'] = function(block) {
-  var code = 'GETAMBIENTLIGHT\n'; // format format just like getmotionattached but no masking
+  var found = global_scalar_variables.indexOf('ambientlight');
+  if (found >= 0) { // it better be!
+    var code = 'Push R' + found + '\nPop R1\n'; // put current ambient light reading into R1
+    } else { 
+      var code = 'Set R1 0\n'; // put 0 into R1 
+    }
   return [code, Blockly.Dart.ORDER_ATOMIC];
 };
 
 
-// the ROSTER is a list of links connected to the hub. it is represented by a 3-tuple where position in the list
-// corrresponds to port number and the link type is repsented by an integer
-// 1=LED, 2=Motion, 3=Mic, 4=Spkr, 5=Radio, 0=no link connected at this position
-// example: hub with LED at port2 and motion at port3 returns (0,1,2)
-
-Blockly.Dart['getroster'] = function(block) {
-  // TODO: Assemble JavaScript into code variable.
-  var code = '...';
-  // TODO: Change ORDER_NONE to the correct strength.
-  return [code, Blockly.Dart.ORDER_NONE];
-};
-
 Blockly.Dart['RegularEventSpeed'] = function(block) {
-  var argument0 = Blockly.Dart.valueToCode(block, 'PERIOD', Blockly.Dart.ORDER_ASSIGNMENT) || '0';
-  if (argument0 > 255) {
-    alert("max value for speed is 255");
-    code = 'Error in RegularEventSpeed\n;'
-    return code;
-  } else {
-    var code = argument0 + '\nSyscall SET_REG_EVENT_SPEED R1\n'; //finds it's argument in R1
-    return code;
-  }
+  var argument0 = Blockly.Dart.valueToCode(block, 'PERIOD', Blockly.Dart.ORDER_ASSIGNMENT);
+  if (!argument0) {argument0 = 'Set R1 0\n';}
+  var splitArg = argument0.split(" ",3); // separate the result into 3 words
+  var argNum = parseInt(splitArg[2]); // check the number
+  if (argNum > 127) {argument0 = 'Set R1 127\n';} //pin between 127 max
+    else if (argNum < -127) {argument0 = 'Set R1 -127\n';} // and -127 min
+  var code = argument0 + 'Syscall SET_REG_EVENT_SPEED R1\n'; //finds it's argument in R1
+  return code;
 };
-
-
 
 
 Blockly.JavaScript['roster_event_two'] = function(block) {
@@ -415,153 +430,11 @@ Blockly.Dart['check_type'] = function(block) {
 //******************* LIST GENERATORS
 
 Blockly.Dart['lists_create_n'] = function(block) {
-  var value_num_items = Blockly.Dart.valueToCode(block, 'NUM_ITEMS', Blockly.Dart.ORDER_ATOMIC);
-  var code = new Array(value_num_items);
-  for (var n = 0; n < value_num_items; n++) {
-    code[n] = Blockly.Dart.valueToCode(block, 'ADD' + n,
-        Blockly.Dart.ORDER_NONE) || 'None';
-  }
-  code = '[' + code.join(', ') + ']';
+  if (debug) {alert("in lists_create_n")};
+  var code = ';; lists_create_n space allocated\n';
   return [code, Blockly.Dart.ORDER_ATOMIC];
 };
 
-Blockly.Dart['lists_getIndex_nonMut'] = function(block) {
-  // Get element at index.
-  // Note: Until January 2013 this block did not have MODE or WHERE inputs.
-  var mode = block.getFieldValue('MODE') || 'GET';
-  var where = block.getFieldValue('WHERE') || 'FROM_START';
-  var at = Blockly.Dart.valueToCode(block, 'AT',
-      Blockly.Dart.ORDER_UNARY_SIGN) || '1';
-  var list = Blockly.Dart.valueToCode(block, 'VALUE',
-      Blockly.Dart.ORDER_MEMBER) || '[]';
-
-  if (where == 'FIRST') {
-    if (mode == 'GET') {
-      var code = list + '[0]';
-      return [code, Blockly.Dart.ORDER_MEMBER];
-    } else {
-      var code = list + '.pop(0)';
-      if (mode == 'GET_REMOVE') {
-        return [code, Blockly.Dart.ORDER_FUNCTION_CALL];
-      } else if (mode == 'REMOVE') {
-        return code + '\n';
-      }
-    }
-  } else if (where == 'LAST') {
-    if (mode == 'GET') {
-      var code = list + '[-1]';
-      return [code, Blockly.Dart.ORDER_MEMBER];
-    } else {
-      var code = list + '.pop()';
-      if (mode == 'GET_REMOVE') {
-        return [code, Blockly.Dart.ORDER_FUNCTION_CALL];
-      } else if (mode == 'REMOVE') {
-        return code + '\n';
-      }
-    }
-  } else if (where == 'FROM_START') {
-    // Blockly uses one-based indicies.
-    if (Blockly.isNumber(at)) {
-      // If the index is a naked number, decrement it right now.
-      at = parseInt(at, 10) - 1;
-    } else {
-      // If the index is dynamic, decrement it in code.
-      at = 'int(' + at + ' - 1)';
-    }
-    if (mode == 'GET') {
-      var code = list + '[' + at + ']';
-      return [code, Blockly.Dart.ORDER_MEMBER];
-    } else {
-      var code = list + '.pop(' + at + ')';
-      if (mode == 'GET_REMOVE') {
-        return [code, Blockly.Dart.ORDER_FUNCTION_CALL];
-      } else if (mode == 'REMOVE') {
-        return code + '\n';
-      }
-    }
-  } else if (where == 'FROM_END') {
-    if (mode == 'GET') {
-      var code = list + '[-' + at + ']';
-      return [code, Blockly.Dart.ORDER_MEMBER];
-    } else {
-      var code = list + '.pop(-' + at + ')';
-      if (mode == 'GET_REMOVE') {
-        return [code, Blockly.Dart.ORDER_FUNCTION_CALL];
-      } else if (mode == 'REMOVE') {
-        return code + '\n';
-      }
-    }
-  } else if (where == 'RANDOM') {
-    Blockly.Dart.definitions_['import_random'] = 'import random';
-    if (mode == 'GET') {
-      code = 'random.choice(' + list + ')';
-      return [code, Blockly.Dart.ORDER_FUNCTION_CALL];
-    } else {
-      var functionName = Blockly.Dart.provideFunction_(
-          'lists_remove_random_item',
-          ['def ' + Blockly.Dart.FUNCTION_NAME_PLACEHOLDER_ + '(myList):',
-           '  x = int(random.random() * len(myList))',
-           '  return myList.pop(x)']);
-      code = functionName + '(' + list + ')';
-      if (mode == 'GET_REMOVE') {
-        return [code, Blockly.Dart.ORDER_FUNCTION_CALL];
-      } else if (mode == 'REMOVE') {
-        return code + '\n';
-      }
-    }
-  }
-  throw 'Unhandled combination (lists_getIndex_nonMut).';
-};
-
-Blockly.Dart['lists_setIndex_nonMut'] = function(block) {
-  // Set element at index.
-  var list = Blockly.Dart.valueToCode(block, 'LIST',
-      Blockly.Dart.ORDER_MEMBER) || '[]';
-  var mode = block.getFieldValue('MODE') || 'GET';
-  var where = block.getFieldValue('WHERE') || 'FROM_START';
-  var at = Blockly.Dart.valueToCode(block, 'AT',
-      Blockly.Dart.ORDER_NONE) || '1';
-  var value = Blockly.Dart.valueToCode(block, 'TO',
-      Blockly.Dart.ORDER_NONE) || 'None';
-  // Cache non-trivial values to variables to prevent repeated look-ups.
-  // Closure, which accesses and modifies 'list'.
-  function cacheList() {
-    if (list.match(/^\w+$/)) {
-      return '';
-    }
-    var listVar = Blockly.Dart.variableDB_.getDistinctName(
-        'tmp_list', Blockly.Variables.NAME_TYPE);
-    var code = listVar + ' = ' + list + '\n';
-    list = listVar;
-    return code;
-  }
-  if (where == 'FIRST') {
-      return list + '[0] = ' + value + '\n';
-  } else if (where == 'LAST') {
-     return list + '[-1] = ' + value + '\n';
-  } else if (where == 'FROM_START') {
-    // Blockly uses one-based indicies.
-    if (Blockly.isNumber(at)) {
-      // If the index is a naked number, decrement it right now.
-      at = parseInt(at, 10) - 1;
-    } else {
-      // If the index is dynamic, decrement it in code.
-      at = 'int(' + at + ' - 1)';
-    }
-    return list + '[' + at + '] = ' + value + '\n';
-  } else if (where == 'FROM_END') {
-    return list + '[-' + at + '] = ' + value + '\n';
-  } else if (where == 'RANDOM') {
-    Blockly.Dart.definitions_['import_random'] = 'import random';
-    var code = cacheList();
-    var xVar = Blockly.Dart.variableDB_.getDistinctName(
-        'tmp_x', Blockly.Variables.NAME_TYPE);
-    code += xVar + ' = int(random.random() * len(' + list + '))\n';
-    code += list + '[' + xVar + '] = ' + value + '\n';
-    return code;
-  }
-  throw 'Unhandled combination (lists_setIndex_nonMut).';
-};
 
 // ******************* Loops
 
