@@ -144,7 +144,7 @@ Blockly.Dart['motion_attached'] = function(block) {
 // Advanced: Set Motion Trigger - POSTPONED
 
 Blockly.Dart['setmotiontrigger'] = function(block) {
-  // TODO: Assemble JavaScript into code variable.
+  // TODO: Assemble Dart into code variable.
   var code = '...';
   return code;
 };
@@ -169,16 +169,16 @@ Blockly.Dart['getmicdata'] = function(block) {
 // Advanced: POSTPONED
 
 Blockly.Dart['set_mic_threshold'] = function(block) {
-  // TODO: Assemble JavaScript into code variable.
+  // TODO: Assemble Dart into code variable.
   var code = '...';
   return code;
 };
 
-Blockly.JavaScript['read_sound_levels'] = function(block) {
-  // TODO: Assemble JavaScript into code variable.
+Blockly.dart['read_sound_levels'] = function(block) {
+  // TODO: Assemble Dart into code variable.
   var code = '...';
   // TODO: Change ORDER_NONE to the correct strength.
-  return [code, Blockly.JavaScript.ORDER_NONE];
+  return [code, Blockly.Dart.ORDER_NONE];
 };
 
 
@@ -193,7 +193,7 @@ Blockly.JavaScript['read_sound_levels'] = function(block) {
 Blockly.Dart['speaker_play_sound'] = function(block) {
   var value_name = Blockly.Dart.valueToCode(block, 'NAME', Blockly.Dart.ORDER_ATOMIC);
   
-  // TODO: Assemble JavaScript into code variable.
+  // TODO: Assemble Dart into code variable.
   var code = 'syscall Play_sound' + value_name + '\n';
   return code;
 };
@@ -202,7 +202,7 @@ Blockly.Dart['speaker_play_sound'] = function(block) {
 
 Blockly.Dart['sound_from_file'] = function(block) {
   var dropdown_name = block.getFieldValue('NAME');
-  // TODO: Assemble JavaScript into code variable.
+  // TODO: Assemble Dart into code variable.
   var code = '...';
   // TODO: Change ORDER_NONE to the correct strength.
   return [code, Blockly.Dart.ORDER_NONE];
@@ -212,7 +212,7 @@ Blockly.Dart['sound_from_file'] = function(block) {
 
 Blockly.Dart['playdatastream'] = function(block) {
   var value_name = Blockly.Dart.valueToCode(block, 'NAME', Blockly.Dart.ORDER_ATOMIC);
-  // TODO: Assemble JavaScript into code variable.
+  // TODO: Assemble Dart into code variable.
   var code = '...';
   return code;
 };
@@ -223,7 +223,7 @@ Blockly.Dart['sound_fdv'] = function(block) {
   var value_frequency = Blockly.Dart.valueToCode(block, 'Frequency', Blockly.Dart.ORDER_ATOMIC);
   var value_duration = Blockly.Dart.valueToCode(block, 'Duration', Blockly.Dart.ORDER_ATOMIC);
   var value_volume = Blockly.Dart.valueToCode(block, 'Volume', Blockly.Dart.ORDER_ATOMIC);
-  // TODO: Assemble JavaScript into code variable.
+  // TODO: Assemble Dart into code variable.
   var code = '...';
   // TODO: Change ORDER_NONE to the correct strength.
   return [code, Blockly.Dart.ORDER_NONE];
@@ -265,7 +265,7 @@ Blockly.Dart['radiogetrange'] = function(block) {
 // If no radio is present, it returns the empty list
 
 Blockly.Dart['getradiodata'] = function(block) {
-  // TODO: Assemble JavaScript into code variable.
+  // TODO: Assemble Dart into code variable.
   var code = '...';
   // TODO: Change ORDER_NONE to the correct strength.
   return [code, Blockly.Dart.ORDER_NONE];
@@ -274,7 +274,7 @@ Blockly.Dart['getradiodata'] = function(block) {
 // Advanced: getidfromradio returns the ID stored in the attached radio petal as an integer. If not radio petal is attached, returns -1
 
 Blockly.Dart['getidfromradio'] = function(block) {
-  // TODO: Assemble JavaScript into code variable.
+  // TODO: Assemble Dart into code variable.
   var code = '...';
   // TODO: Change ORDER_NONE to the correct strength.
   return [code, Blockly.Dart.ORDER_NONE];
@@ -284,16 +284,16 @@ Blockly.Dart['getidfromradio'] = function(block) {
 
 Blockly.Dart['setradioeventtrigger'] = function(block) {
   var value_name = Blockly.Dart.valueToCode(block, 'NAME', Blockly.Dart.ORDER_ATOMIC);
-  // TODO: Assemble JavaScript into code variable.
+  // TODO: Assemble Dart into code variable.
   var code = '...';
   return code;
 };
 
-Blockly.JavaScript['getidfromradioatport'] = function(block) {
-  // TODO: Assemble JavaScript into code variable.
+Blockly.Dart['getidfromradioatport'] = function(block) {
+  // TODO: Assemble Dart into code variable.
   var code = '...';
   // TODO: Change ORDER_NONE to the correct strength.
-  return [code, Blockly.JavaScript.ORDER_NONE];
+  return [code, Blockly.Dart.ORDER_NONE];
 };
 
 // **************************************************************************************************
@@ -351,12 +351,12 @@ Blockly.Dart['RegularEventSpeed'] = function(block) {
 };
 
 
-Blockly.JavaScript['roster_event_two'] = function(block) {
+Blockly.Dart['roster_event_two'] = function(block) {
   var dropdown_link3 = block.getFieldValue('Link3');
   var dropdown_link2 = block.getFieldValue('Link2');
   var dropdown_link1 = block.getFieldValue('Link1');
-  var statements_script = Blockly.JavaScript.statementToCode(block, 'Script');
-  // TODO: Assemble JavaScript into code variable.
+  var statements_script = Blockly.Dart.statementToCode(block, 'Script');
+  // TODO: Assemble Dart into code variable.
   var linkRoster =[]
   // TODO: append non 'None' values to this list
   var priority= 4-length(linkRoster)
@@ -365,10 +365,10 @@ Blockly.JavaScript['roster_event_two'] = function(block) {
   return code;
 };
 
-Blockly.JavaScript['connection_event'] = function(block) {
+Blockly.Dart['connection_event'] = function(block) {
   var dropdown_name = block.getFieldValue('NAME');
-  var statements_script = Blockly.JavaScript.statementToCode(block, 'script');
-  // TODO: Assemble JavaScript into code variable.
+  var statements_script = Blockly.Dart.statementToCode(block, 'script');
+  // TODO: Assemble Dart into code variable.
   var code = 'pass  // execute this script once when this link is plugged in';
   return code;
 };
@@ -376,7 +376,7 @@ Blockly.JavaScript['connection_event'] = function(block) {
 // getmyid returns a number that is the ID of this hub
 
 Blockly.Dart['getmyid'] = function(block) {
-  // TODO: Assemble JavaScript into code variable.
+  // TODO: Assemble Dart into code variable.
   var code = '...';
   // TODO: Change ORDER_NONE to the correct strength.
   return [code, Blockly.Dart.ORDER_NONE];
@@ -385,7 +385,7 @@ Blockly.Dart['getmyid'] = function(block) {
 // writeidtoradio writes this hub's ID to the radio petal. see below for alternate version write_this_idtoradio
 
 Blockly.Dart['writeidtoradio'] = function(block) {
-  // TODO: Assemble JavaScript into code variable.
+  // TODO: Assemble Dart into code variable.
   var code = '...';
   return code;
 };
@@ -395,14 +395,14 @@ Blockly.Dart['writeidtoradio'] = function(block) {
 
 Blockly.Dart['write_this_idtoradio'] = function(block) {
   var value_id = Blockly.Dart.valueToCode(block, 'ID', Blockly.Dart.ORDER_ATOMIC);
-  // TODO: Assemble JavaScript into code variable.
+  // TODO: Assemble Dart into code variable.
   var code = '...';
   return code;
 };
 
 Blockly.Dart['initialize'] = function(block) {
   var statements_name = Blockly.Dart.statementToCode(block, 'NAME');
-  // TODO: Assemble JavaScript into code variable.
+  // TODO: Assemble Dart into code variable.
   var code = '...';
   return code;
 };
@@ -410,7 +410,7 @@ Blockly.Dart['initialize'] = function(block) {
 
 Blockly.Dart['delay'] = function(block) {
   var value_delay_in_ms = Blockly.Dart.valueToCode(block, 'delay_in_ms', Blockly.Dart.ORDER_ATOMIC);
-  // TODO: Assemble JavaScript into code variable.
+  // TODO: Assemble Dart into code variable.
   var code = '...';
   return code;
 };
@@ -421,7 +421,7 @@ Blockly.Dart['delay'] = function(block) {
 Blockly.Dart['check_type'] = function(block) {
   var dropdown_different_messages = block.getFieldValue('different messages');
   var value_message = Blockly.Dart.valueToCode(block, 'message', Blockly.Dart.ORDER_ATOMIC);
-  // TODO: Assemble JavaScript into code variable.
+  // TODO: Assemble Dart into code variable.
   var code = '...';
   // TODO: Change ORDER_NONE to the correct strength.
   return [code, Blockly.Dart.ORDER_NONE];
