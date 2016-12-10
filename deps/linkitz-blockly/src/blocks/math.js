@@ -43,8 +43,7 @@ Blockly.Blocks['math_number'] = {
     this.setHelpUrl(Blockly.Msg.MATH_NUMBER_HELPURL);
     this.setColour(Blockly.Blocks.math.HUE);
     this.appendDummyInput()
-        .appendField(new Blockly.FieldTextInput('0',
-        Blockly.FieldTextInput.numberValidator), 'NUM');
+        .appendField(new Blockly.FieldTextInput('0', Blockly.FieldTextInput.numberValidator), 'NUM');
     this.setOutput(true, 'Number');
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
@@ -118,13 +117,8 @@ Blockly.Blocks['math_single'] = {
     this.setTooltip(function() {
       var mode = thisBlock.getFieldValue('OP');
       var TOOLTIPS = {
-        'ROOT': Blockly.Msg.MATH_SINGLE_TOOLTIP_ROOT,
         'ABS': Blockly.Msg.MATH_SINGLE_TOOLTIP_ABS,
-        'NEG': Blockly.Msg.MATH_SINGLE_TOOLTIP_NEG,
-        'LN': Blockly.Msg.MATH_SINGLE_TOOLTIP_LN,
-        'LOG10': Blockly.Msg.MATH_SINGLE_TOOLTIP_LOG10,
-        'EXP': Blockly.Msg.MATH_SINGLE_TOOLTIP_EXP,
-        'POW10': Blockly.Msg.MATH_SINGLE_TOOLTIP_POW10
+        'NEG': Blockly.Msg.MATH_SINGLE_TOOLTIP_NEG
       };
       return TOOLTIPS[mode];
     });
