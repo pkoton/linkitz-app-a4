@@ -160,7 +160,7 @@ Blockly.Blocks['ledoutput'] = {
 // MOTION  MOTION  MOTION  MOTION  MOTION  MOTION  MOTION MOTION  MOTION  MOTION  MOTION
 // **************************************************************************************************
 
-Blockly.Blocks['onmotiontrigger'] = {
+Blockly.Blocks['on_motion_trigger'] = {
   init: function() {
     this.appendDummyInput()
         .appendField("When");
@@ -188,28 +188,12 @@ Blockly.Blocks['motion_attached'] = {
   }
 };
 
-/* Blockly.Blocks['onmotiontrigger'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField("When");
-    this.appendDummyInput()
-		.appendField(new Blockly.FieldImage("../../images/LZ_Icons_07012015_1_Motion.png", 50, 50, "On Motion Trigger"));
-    //this.appendDummyInput()
-    //    .appendField("On Motion Trigger");
-    //this.appendDummyInput()
-	//	.appendField(new Blockly.FieldDropdown([["tap","tap"],["click","click"],["donemoving","done moving"]]),"interruptModes");	
-    this.appendStatementInput("NAME");
-    this.setColour('#0083CA');
-    this.setTooltip('Use this to define response to motion input');
-    this.setHelpUrl('http://www.example.com/');
-  }
-};
-*/
+
 
 // https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#6tyi6z (change setColour value)
-// Reads motion sensor and reurns a list (magnitude, x,y,z)
-// If no motion link is present, returns an empty list
-// If more then one motion sensor is present
+// Reads motion sensor and pushes a list (magnitude, x,y,z) onto the stack
+// If no motion link is present, returns (0,0,0,0)
+// If more then one motion sensor is present, behavior is undefined
 
 Blockly.Blocks['getmotiondata'] = {
   init: function() {
@@ -564,7 +548,7 @@ Blockly.Blocks['RegularEventSpeed'] = {
         .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
     this.appendDummyInput()
         .appendField("Set Regular Event Speed");
-    this.appendValueInput("PERIOD")
+   this.appendValueInput("PERIOD")
         .setCheck("Number");
     this.setPreviousStatement(true);
     this.setNextStatement(true);
@@ -646,6 +630,7 @@ Blockly.Blocks['getbatterylevel'] = {
   }
 };
 
+// NOT USED
 // the ROSTER is a list of links connected to the hub. it is represented by a 3-tuple where position in the list
 // corrresponds to port number and the link type is repsented by an integer
 // 1=LED, 2=Motion, 3=Mic, 4=Spkr, 5=Radio, 0=no link connected at this position
@@ -718,82 +703,6 @@ Blockly.Blocks['write_this_idtoradio'] = {
 };
 
 
-/*
-Here are my blocks to handle connection and/or 'roster' events.  What I'm calling the 'Roster' is a list of links that the hub creates.  
-When a link is connected/detatched, it is added to/removed from the roster.  
-*/
-
-/*Roster Event-- input will be a custom list that only accepts names of links
-currently set up to accept the list of event handlers as a statement input, can easily be changed to a block that accepts connections at the bottom.
-Creates a hidden variable called "priority"
-The idea is this, users will want to have scripts tied to every possible roster permutation.  
-Some of those will involve only 1 or two links.  That means that any toy comprised of three links will be colliding with two other possible toys. 
-eg. speaker=siren, speaker+mic=voice distortion, speaker+mic+radio=walkie talkie
-With priority, we can end that collision.  Only the highest priority script is triggered
-*/
-
-
-Blockly.Blocks['roster_event'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
-    this.setHelpUrl('http://www.example.com/');
-    this.setColour(LinkitzHue,LinkitzSaturation,LinkitzValue);
-    this.appendDummyInput()
-        .appendField("Roster Event Hander: ");
-    this.appendDummyInput()
-        .appendField("I go off when These Links Are Connected");
-    this.appendValueInput("LinkRoster")
-        .setCheck("Array");  //I wonder if I can just create my own type and use it here?
-    this.appendStatementInput("Script");
-  }
-};
-
-
-
-//Special list to be the roster
-//will try to give it a unique type, and make the inputs unique types-- might be smarter to get around this with a dropdown menu?
-Blockly.Blocks['roster_list'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
-    this.setHelpUrl('http://www.example.com/');
-    this.setColour(LinkitzHue,LinkitzSaturation,LinkitzValue);
-    this.appendDummyInput()
-        .appendField("Roster:");
-    this.appendValueInput("Link1")
-        .setCheck("Array");
-    this.appendValueInput("Link2")
-        .setCheck("Array");
-    this.appendValueInput("Link3")
-        .setCheck("Array");
-    this.appendStatementInput("Rostercode");
-    this.setInputsInline(true);
-    this.setTooltip('');
-  }
-};
-
-//tidier in some ways, but it seems less fun to use
-
-Blockly.Blocks['roster_event_two'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
-    this.setHelpUrl('http://www.example.com/');
-    this.setColour(LinkitzHue,LinkitzSaturation,LinkitzValue);
-    this.appendDummyInput()
-        .appendField("Roster:");
-    this.appendDummyInput()
-        .appendField(new Blockly.FieldDropdown([["none", "None"], ["Motion", "Motion"], ["LED", "LED"], ["Friend", "Friend"], ["Mic", "Mic"], ["Speaker", "Speaker"]]), "Link1");
-    this.appendDummyInput()
-        .appendField(new Blockly.FieldDropdown([["none", "None"], ["Motion", "Motion"], ["LED", "LED"], ["Friend", "Friend"], ["Mic", "Mic"], ["Speaker", "Speaker"]]), "Link2");
-    this.appendDummyInput()
-        .appendField(new Blockly.FieldDropdown([["none", "None"], ["Motion", "Motion"], ["LED", "LED"], ["Friend", "Friend"], ["Mic", "Mic"], ["Speaker", "Speaker"]]), "Link3");
-    this.appendStatementInput("Script");
-    this.setInputsInline(true);
-    this.setTooltip('');
-  }
-};
 //Single connection event-- I imagine these being ONE TIME executions-- for continual execution, use the roster
 
 Blockly.Blocks['connection_event'] = {
