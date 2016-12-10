@@ -89,26 +89,37 @@ Blockly.Generator.prototype.workspaceToCode = function(workspace) {
   }
   else {
     if (debug){alert("out of resolve var refs")};
-  for (var x = 0, block; block = blocks[x]; x++) {
-    var blocktype = block.type;
-    // alert('top block of type ' + blocktype);
-    if (blocktype == 'on_initialization' || blocktype == 'on_regular_event' || blocktype == 'onmotiontrigger' || blocktype == 'procedures_defreturn' || blocktype == 'procedures_defnoreturn') {
-      var line = this.blockToCode(block);
-      if (goog.isArray(line)) {
-       // Value blocks return tuples of code and operator order.
-       // Top-level blocks don't care about operator order.
-       line = line[0];
-      }
-      if (line) {
-        if (block.outputConnection && this.scrubNakedValue) {
-         // This block is a naked value.  Ask the language's code generator if
-          // it wants to append a semicolon, or something.
-         line = this.scrubNakedValue(line);
+    // put in entrypoints
+    for (var x = 0, block; block = blocks[x]; x++) {
+      var blocktype = block.type;
+      if (blocktype == 'on_motion_trigger') {var entrypoint1 = 1};
+      if (blocktype == 'on_regular_event') {var entrypoint2 = 1};
+      if (blocktype == 'on_initialization') {var entrypoint3 = 1};
+    }
+    if (entrypoint1) {code.push('GOTO on_motion_trigger');} else {code.push('Syscall exit R0');}
+    if (entrypoint2) {code.push('GOTO on_regular_event');} else {code.push('Syscall exit R0');}
+    if (entrypoint3) {code.push('GOTO on_initialization');} else {code.push('Syscall exit R0');}
+    
+    for (var x = 0, block; block = blocks[x]; x++) {
+      var blocktype = block.type;
+      // alert('top block of type ' + blocktype);
+      if (blocktype == 'on_initialization' || blocktype == 'on_regular_event' || blocktype == 'on_motion_trigger' || blocktype == 'procedures_defreturn' || blocktype == 'procedures_defnoreturn') {
+        var line = this.blockToCode(block);
+        if (goog.isArray(line)) {
+         // Value blocks return tuples of code and operator order.
+         // Top-level blocks don't care about operator order.
+         line = line[0];
         }
-        code.push(line);
+        if (line) {
+          if (block.outputConnection && this.scrubNakedValue) {
+           // This block is a naked value.  Ask the language's code generator if
+            // it wants to append a semicolon, or something.
+           line = this.scrubNakedValue(line);
+          }
+          code.push(line);
+        }
       }
     }
-  }
   code = code.join('\n');  // Blank line between each section.
   code = this.finish(code);
   // Final scrubbing of whitespace.

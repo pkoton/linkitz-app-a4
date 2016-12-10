@@ -15,15 +15,13 @@ Blockly.Blocks['lists_getIndex_nonMut'] = {
         [[Blockly.Msg.LISTS_GET_INDEX_FROM_START, 'FROM_START'],
          [Blockly.Msg.LISTS_GET_INDEX_FROM_END, 'FROM_END'],
          [Blockly.Msg.LISTS_GET_INDEX_FIRST, 'FIRST'],
-         [Blockly.Msg.LISTS_GET_INDEX_LAST, 'LAST'],
-         [Blockly.Msg.LISTS_GET_INDEX_RANDOM, 'RANDOM']];
+         [Blockly.Msg.LISTS_GET_INDEX_LAST, 'LAST']];
     this.setHelpUrl(Blockly.Msg.LISTS_GET_INDEX_HELPURL);
     this.appendDummyInput()
       .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_12_Lists.png",50,50,"*"));
     this.setColour('#33CC66');
     this.appendDummyInput()
-        .appendField("get");
-        
+        .appendField("get");    
     this.appendValueInput('VALUE') // check to make sure input is a list
         .setCheck('Array');
     this.appendDummyInput('AT');
@@ -32,7 +30,7 @@ Blockly.Blocks['lists_getIndex_nonMut'] = {
           .appendField(Blockly.Msg.LISTS_GET_INDEX_TAIL);
     }
     this.setInputsInline(true);
-    this.setOutput(true);
+    this.setOutput(true, "Number"); //**** currently all lists are lists of scalars
     this.updateAt_(true);
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
@@ -140,8 +138,7 @@ Blockly.Blocks['lists_setIndex_nonMut'] = {
         [[Blockly.Msg.LISTS_GET_INDEX_FROM_START, 'FROM_START'],
          [Blockly.Msg.LISTS_GET_INDEX_FROM_END, 'FROM_END'],
          [Blockly.Msg.LISTS_GET_INDEX_FIRST, 'FIRST'],
-         [Blockly.Msg.LISTS_GET_INDEX_LAST, 'LAST'],
-         [Blockly.Msg.LISTS_GET_INDEX_RANDOM, 'RANDOM']];
+         [Blockly.Msg.LISTS_GET_INDEX_LAST, 'LAST']];
     this.setHelpUrl(Blockly.Msg.LISTS_SET_INDEX_HELPURL);
     this.setColour('#33CC66');
     this.appendDummyInput()
@@ -233,6 +230,8 @@ Blockly.Blocks['lists_setIndex_nonMut'] = {
 
 Blockly.Blocks['lists_create_n'] = {
   init: function() {
+    this.appendDummyInput()
+      .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_12_Lists.png",50,50,"*"));
     this.appendDummyInput()
         .appendField("Create list of length");
     this.appendValueInput("NUM_ITEMS", 1)
