@@ -57,6 +57,7 @@ goog.require('Blockly.Dart');
           } else { // NEW VARIABLE, add it to the correct variables list
             if (debug) {alert("new var")};
             var targetBlock = current_block.getInputTargetBlock('VALUE');
+            if (debug&&targetBlock) {alert('testing getOutput: ' + targetBlock.getOutput());}
             var inputType = targetBlock.type;
             if (debug) {
               var assigned_value = Blockly.Dart.valueToCode(targetBlock, 'VALUE', Blockly.Dart.ORDER_ASSIGNMENT) || '0';
@@ -90,21 +91,26 @@ goog.require('Blockly.Dart');
                 addNewListVar(varName,3); // color always a list of length 3
                 break;
               case 'lists_create_n':
-                var l1 = targetBlock.getInputTargetBlock("NUM_ITEMS");
-                var l2 = parseInt(l1.getFieldValue("NUM"));
-                if (debug){  alert("in lists_create_n " + targetBlock + " NUM_ITEMS is " + l2)};
-                addNewListVar(varName, l2);
+                var numItems = targetBlock.getInputTargetBlock("NUM_ITEMS");
+                var numItems_num = parseInt(numItems.getFieldValue("NUM"));
+                if (debug){  alert("in lists_create_n " + targetBlock + " NUM_ITEMS is " + numItems_num)};
+                addNewListVar(varName, numItems_num);
                 break;
-              case 'lists_create_with':
-                var l1 = parseInt(targetBlock.itemCount_);
-                if (debug){  alert("in lists_create_with " + targetBlock + " itemCount_ is " + l1)};
-                addNewListVar(varName, l1);
+              case 'lists_create_with': // this one is tricky because user could attach a color
+                var eltCountOrig = parseInt(targetBlock.itemCount_);
+                var eltCountFixed = eltCountOrig;
+                for (var n = 0; n < eltCountOrig; n++) {
+                  var elt_n = targetBlock.getInputTargetBlock('ADD' + n);
+                  var inputType = elt_n.type;
+                  if (inputType == 'colour_picker') {
+                    eltCountFixed = eltCountFixed + 2; // we only allocated one space but a color takes 3 spaces
+                  }
+                }
+                if (debug){  alert("in lists_create_with " + targetBlock + " itemCount_ is " + eltCountFixed)};
+                addNewListVar(varName, eltCountFixed);
                 break;
               case 'getmotiondata':
                 addNewListVar(varName,4); // getmotiondata returns MagLNK, a list of length 4
-                break;
-              case 'Array':
-                
                 break;
               case 'variables_get':
                   if (debug) {alert(varName + " is assigned to a variable")};
@@ -203,7 +209,7 @@ Blockly.Dart['variables_set'] = function(block) {
   var inputType = targetBlock.type;
   var varName = Blockly.Dart.variableDB_.getName(block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
   if (debug) {alert("in variables_set: input is of type " + inputType + ", varName is " + varName + ", value is " + argument0)};
-  if (debug) {alert("GLV is " + JSON.stringify(global_list_variables));}
+  if (debug) {alert("in variables_set: GLV is " + JSON.stringify(global_list_variables));}
   var found = global_scalar_variables.indexOf(varName);
   if (found >= 0) { // setting a scalar, value is in R1
     if (debug) {alert("in variables_set, scalar variable " + varName + " defined at R" + found)};
@@ -271,7 +277,48 @@ Blockly.Dart['variables_set'] = function(block) {
   return(contents);
  }
  
+ // these are blocks that we know return a scalar variable
  
+ function is_scalar (block) {  
+    var blocktype = block.type;
+    var res = 0;
+    switch (blocktype) {
+      case "math_number": // falls through to next
+      case "math_arithmetic":
+      case "math_single":
+      case "math_binary":
+      case "math_random_int":
+      case "led_attached":
+      case "usb_attached":
+      case "motion_attached":
+      case "logic_compare":
+      case "logic_operation":
+      case "lists_length":
+      case "math_on_list":
+      case "lists_getIndex_nonMut": // Drew said just return a scalar and we can fix later - 11/27/2016
+      case "getbatterylevel":
+      case "getambientlight":
+        res = 1;
+        break;
+      default:
+        break;
+    }
+    return(res);
+ }
 
- 
+ function is_list (block) {
+  var blocktype = block.type;
+    var res = 0;
+    switch (blocktype) {
+      case 'colour_picker':
+      case 'lists_create_n':
+      case 'lists_create_with':
+      case 'getmotiondata':
+        res = 1;
+        break;
+      default:
+          break;
+    }
+    return(res);
+ }
  
