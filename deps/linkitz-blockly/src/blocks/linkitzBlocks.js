@@ -286,16 +286,16 @@ Blockly.Blocks['on_mic_event'] = {
   }
 };
 
-Blockly.Blocks['read_sound_levels'] = {
-  init: function() {
-    this.setHelpUrl('http://www.example.com/');
-    this.setColour(LinkitzHue,LinkitzSaturation,LinkitzValue);
-    this.appendDummyInput()
-        .appendField("Read Sound Levels");
-    this.setOutput(true, "Array");
-    this.setTooltip('');
-  }
-};
+//Blockly.Blocks['read_sound_levels'] = {
+//  init: function() {
+//    this.setHelpUrl('http://www.example.com/');
+//    this.setColour('#FF9903');
+//    this.appendDummyInput()
+//        .appendField("Read Sound Levels");
+//    this.setOutput(true, "Array");
+//    this.setTooltip('');
+//  }
+//};
 
 // https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#56jkef
 
@@ -476,7 +476,7 @@ Blockly.Blocks['check_type'] = {
         .appendField("Check if inputted message is")
         .appendField(new Blockly.FieldDropdown([["Output a microphone signal", "requestForMicrophone"], ["Output a motion signal", "requestForMotion"], ["Motion signal", "motion signal"], ["Microphone signal", "microphone signal"], ["LED signal", "LED signal"], ["Speaker signal", "speaker signal"], ["Secret message", "secret message"], ["Nothing", "Nothing"]]), "different messages");
     this.setOutput(true, "Boolean");
-    this.setColour(LinkitzHue,LinkitzSaturation,LinkitzValue);
+    this.setColour('#FF9903');
     this.setTooltip('');
     this.setHelpUrl('http://www.example.com/');
   }
@@ -710,7 +710,7 @@ Blockly.Blocks['connection_event'] = {
     this.appendDummyInput()
         .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
     this.setHelpUrl('http://www.example.com/');
-    this.setColour(LinkitzHue,LinkitzSaturation,LinkitzValue);
+    this.setColour('#FF9903');
     this.appendDummyInput()
         .appendField("Connect Event")
         .appendField(new Blockly.FieldDropdown([["none", "None"], ["Motion", "Motion"], ["LED", "LED"], ["Friend", "Friend"], ["Mic", "Mic"], ["Speaker", "Speaker"]]), "Link");
@@ -759,7 +759,7 @@ Blockly.Blocks['radio_event'] = {
         .appendField("On Radio Event");
     this.appendDummyInput()
     .appendField(new Blockly.FieldImage("../../images/radio_icon2.png", 22, 18, "GetMicData"));
-    this.setColour(LinkitzHue,LinkitzSaturation,LinkitzValue);
+    this.setColour('#FF9903');
     this.appendValueInput("NAME")
         .appendField(new Blockly.FieldDropdown([["Msg_Color", "MSG_COLOR"], ["Msg_Sound", "MSG_SOUND"], ["Msg_Blank", "MSG_BLANK"]]), "NAME");
     this.setTooltip('');
