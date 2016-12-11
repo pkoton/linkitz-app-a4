@@ -400,7 +400,7 @@ Blockly.Flyout.prototype.show = function(xmlList) {
         case 'on_initialization':
           hide_onInit = true;
           break;
-        case 'onmotiontrigger':
+        case 'on_motion_trigger':
           hide_onMotion = true;
           break;
         case 'on_mic_event':
@@ -425,7 +425,7 @@ Blockly.Flyout.prototype.show = function(xmlList) {
           continue;
         } else if (blockType == "on_regular_event" && hide_onReg) {
           continue;
-        } else if (blockType == 'onmotiontrigger' && hide_onMotion) {
+        } else if (blockType == 'on_motion_trigger' && hide_onMotion) {
          continue;
         } else if (blockType == 'on_mic_event' && hide_onMic) {
           continue;
