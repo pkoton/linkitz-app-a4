@@ -174,12 +174,12 @@ Blockly.Dart['set_mic_threshold'] = function(block) {
   return code;
 };
 
-Blockly.dart['read_sound_levels'] = function(block) {
-  // TODO: Assemble Dart into code variable.
-  var code = '...';
-  // TODO: Change ORDER_NONE to the correct strength.
-  return [code, Blockly.Dart.ORDER_NONE];
-};
+//Blockly.dart['read_sound_levels'] = function(block) {
+//  // TODO: Assemble Dart into code variable.
+//  var code = '...';
+//  // TODO: Change ORDER_NONE to the correct strength.
+//  return [code, Blockly.Dart.ORDER_NONE];
+//};
 
 
 // **************************************************************************************************
