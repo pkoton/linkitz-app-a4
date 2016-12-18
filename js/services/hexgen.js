@@ -52,7 +52,7 @@ linkitzApp.factory('HexGenerator', ['$rootScope', 'LogService', '$q', function($
     }
 
     function pad_words(byte){
-        return byte_2_hex(byte)+"38"
+        return byte_2_hex(byte)+"38";
     }
 
     function generate_hex(assembly_code) {
@@ -72,7 +72,11 @@ linkitzApp.factory('HexGenerator', ['$rootScope', 'LogService', '$q', function($
         //we're prepared for parsing
         var assembly_lines = assembly_code.split("\n");
         var line_ptr;
-        for(line_ptr=0;line_ptr<assembly_lines.length;line_ptr++){
+        //first three lines store
+        	//list of list variables
+        	//list of scalar variables
+        	//list of all registers
+        for(line_ptr=3;line_ptr<assembly_lines.length;line_ptr++){
             //Parse a line
             var line = assembly_lines[line_ptr];
             var token_list;
@@ -81,13 +85,14 @@ linkitzApp.factory('HexGenerator', ['$rootScope', 'LogService', '$q', function($
 
             //line is of the form "label:data"
             if(line.match(/.+:.*/)){
-                var label_and_data=line.split(":")
+                var label_and_data=line.split(":");
                 labels[label_and_data] = address;
                 token_list = label_and_data[1].trim().split(/\s+/);
             } else {//line is of the form data
                 token_list=line.trim().split(/\s+/);
             }
-
+/*
+//Following format is depricated for now
             //line is of the form "var item"
             if(token_list[0].match(/var/i)){
                 //FIXME I shouldn't be hardcoded at length 3
@@ -96,44 +101,48 @@ linkitzApp.factory('HexGenerator', ['$rootScope', 'LogService', '$q', function($
                 //throw("variable "+token_list[1]+" declared");
                 //stackptr+=3;
             }
-
+*/
         var hex_line="";
         //throw("token_list is:"+token_list);
-            if(token_list[0].match(/syscall/i)){
+        	if(token_list.length==0||token_list[0]==""){
+        	} else if(token_list[0].match(/syscall/i)){
                 hex_line+=pad_words("05");
 
                 //identify syscall type
                 if(token_list[1].match(/exit/i)){
                     hex_line+=pad_words("00");
-                } else if(token_list[1].match(/flash/i)){
+                } else if(token_list[1].match(/flashRGB/i)){
+                //flashRGB takes it's arguments from the top of the stack. 
+                //it implicitly pops a list off of the stack.
                     hex_line+=pad_words("01");
+                } else if(token_list[1].match(/flashHue/i)){
+                //flashHue 
+                    hex_line+=pad_words("02");
                 }  else {
                     throw("could not match second token of syscall in line:"+line);
                 }
 
                 //identify source
-            if(token_list[2].match(/r0/i)){
-                    hex_line+=pad_words("00");
-                } else {
-                    if(!(token_list[2] in variable_list))
-                    {
-                        throw("could not find source:"+token_list[2]);
-                    }
-                    hex_line+=pad_words(variable_list[token_list[2]]);
-                }//FIXME see if I can match the token to the variableList
-                hex_output+=make_hex_line(address,hex_line);
-                address+=6;
-            }
+	            if(token_list[2].match(/r0/i)){
+	                hex_line+=pad_words("00");
+	            } else {
+	                if(!(token_list[2] in variable_list)){
+	                    throw("could not find source:"+token_list[2]);
+	                }
+	                hex_line+=pad_words(variable_list[token_list[2]]);
+	            }//FIXME see if I can match the token to the variableList
+	            hex_output+=make_hex_line(address,hex_line);
+	            address+=6;
 
-            else if(token_list[0].match(/set/i)){
-                hex_line+=pad_words("08")
+	        } else if(token_list[0].match(/set/i)){
+                hex_line+=pad_words("08");
                 //identify source
                 if(!token_list[1].match(/.+\+.+/)){
                     if(!(token_list[1] in variable_list))//can't find source but I can create it
                     {
                         variable_list[token_list[1]]=stackptr;
                         //throw("variable_list["+token_list[1]+"]="+variable_list[token_list[1]]);
-                        stackptr+=token_list[2]//FIXME should probably convert to int
+                        stackptr+=token_list[2];//FIXME should probably convert to int
                     }
                     hex_line+=pad_words(variable_list[token_list[1]])
                 } else {
@@ -149,6 +158,14 @@ linkitzApp.factory('HexGenerator', ['$rootScope', 'LogService', '$q', function($
                 hex_line+=pad_words(token_list[2]);
                 hex_output+=make_hex_line(address,hex_line);
                 address+=6;
+            } else if(token_list[0].match(/goto/i)){
+            	hex_line+=pad_words("09");
+            } else if(token_list[0].match(/push/i)){
+            	hex_line+=pad_words("0A");
+            } else if(token_list[0].match(/pop/i)){
+            	hex_line+=pad_words("0B");
+            } else {
+            	throw("Could not match token: \""+token_list[0]+"\" in: "+line);
             }
         }
 

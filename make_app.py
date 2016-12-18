@@ -8,7 +8,7 @@ if sys.version_info[0] != 2:
 import errno, glob, httplib, json, os, re, subprocess, threading, urllib
 import subprocess
 
-subprocess.call("python edit_manifest.py",shell=True)
+subprocess.call("python update_versionNumber.py",shell=True)
   #Open the build directory in Linkitz-app-a4...
   #Edit the file manifest.json
   #The one in the build directory
