@@ -76,7 +76,7 @@ linkitzApp.factory('HexGenerator', ['$rootScope', 'LogService', '$q', function($
         	//list of list variables
         	//list of scalar variables
         	//list of all registers
-        for(line_ptr=3;line_ptr<assembly_lines.length;line_ptr++){
+        for(line_ptr=2;line_ptr<assembly_lines.length;line_ptr++){
             //Parse a line
             var line = assembly_lines[line_ptr];
             var token_list;
