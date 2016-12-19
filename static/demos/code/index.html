@@ -32,19 +32,19 @@
   <script src="../../../deps/linkitz-blockly/src/generators/python/text.js"></script>
   <script src="../../../deps/linkitz-blockly/src/generators/python/variables.js"></script>
   <script src="../../../deps/linkitz-blockly/src/generators/python/linkitz.js"></script>
-  <script src="../../php_compressed.js"></script>
-  <!-- <script src="../../dart_compressed.js"></script> -->
-  <script src="../../../deps/linkitz-blockly/src/generators/dart.js"></script>
-  <script src="../../../deps/linkitz-blockly/src/generators/dart/colour.js"></script>
-  <script src="../../../deps/linkitz-blockly/src/generators/dart/lists.js"></script>
-  <script src="../../../deps/linkitz-blockly/src/generators/dart/logic.js"></script>
-  <script src="../../../deps/linkitz-blockly/src/generators/dart/loops.js"></script>
-  <script src="../../../deps/linkitz-blockly/src/generators/dart/math.js"></script>
-  <script src="../../../deps/linkitz-blockly/src/generators/dart/procedures.js"></script>
-  <script src="../../../deps/linkitz-blockly/src/generators/dart/text.js"></script>
-  <script src="../../../deps/linkitz-blockly/src/generators/dart/variables.js"></script>
-  <script src="../../../deps/linkitz-blockly/src/generators/dart/linkitz.js"></script>
-  <script src="../../../deps/linkitz-blockly/src/generators/dart/LinkitzLists.js"></script>
+  <!-- <script src="../../php_compressed.js"></script> -->
+  <!-- <script src="../../assembly_compressed.js"></script> -->
+  <script src="../../../deps/linkitz-blockly/src/generators/assembly.js"></script>
+  <script src="../../../deps/linkitz-blockly/src/generators/assembly/colour.js"></script>
+  <script src="../../../deps/linkitz-blockly/src/generators/assembly/lists.js"></script>
+  <script src="../../../deps/linkitz-blockly/src/generators/assembly/logic.js"></script>
+  <script src="../../../deps/linkitz-blockly/src/generators/assembly/loops.js"></script>
+  <script src="../../../deps/linkitz-blockly/src/generators/assembly/math.js"></script>
+  <script src="../../../deps/linkitz-blockly/src/generators/assembly/procedures.js"></script>
+  <script src="../../../deps/linkitz-blockly/src/generators/assembly/text.js"></script>
+  <script src="../../../deps/linkitz-blockly/src/generators/assembly/variables.js"></script>
+  <script src="../../../deps/linkitz-blockly/src/generators/assembly/linkitz.js"></script>
+  <script src="../../../deps/linkitz-blockly/src/generators/assembly/LinkitzLists.js"></script>
   <script src="code.js"></script>
 </head>
 <body>
@@ -66,13 +66,13 @@
           <tr id="tabRow" height="1em">
             <td id="tab_blocks" class="tabon">...</td>
             <td class="tabmin">&nbsp;</td>
-            <td id="tab_javascript" class="taboff">JavaScript</td>
-            <td class="tabmin">&nbsp;</td>
+            <!-- <td id="tab_javascript" class="taboff">JavaScript</td> -->
+            <!-- <td class="tabmin">&nbsp;</td> -->
             <td id="tab_python" class="taboff">Python</td>
             <td class="tabmin">&nbsp;</td>
-            <td id="tab_php" class="taboff">PHP</td>
+            <td id="tab_assembly" class="taboff">Assembly</td>
             <td class="tabmin">&nbsp;</td>
-            <td id="tab_dart" class="taboff">Assembly</td>
+            <td id="tab_bytecode" class="taboff">Bytecode</td>
             <td class="tabmin">&nbsp;</td>
             <td id="tab_xml" class="taboff">XML</td>
             <td class="tabmax">
@@ -96,11 +96,9 @@
     </tr>
   </table>
   <div id="content_blocks" class="content"></div>
-  <pre id="content_javascript" class="content"></pre>
-  <pre id="content_php" class="content"></pre>
+  <pre id="content_bytecode" class="content"></pre>
   <pre id="content_python" class="content"></pre>
   <pre id="content_assembly" class="content"></pre>
-  <pre id="content_dart" class="content"></pre>
   <textarea id="content_xml" class="content" wrap="off"></textarea>
 
   <xml id="toolbox" style="display: none">
