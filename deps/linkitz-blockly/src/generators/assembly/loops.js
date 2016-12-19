@@ -24,29 +24,29 @@
  */
 'use strict';
 
-goog.provide('Blockly.Dart.loops');
+goog.provide('Blockly.Assembly.loops');
 
-goog.require('Blockly.Dart');
+goog.require('Blockly.Assembly');
 
 
-Blockly.Dart['controls_repeat_ext'] = function(block) {
+Blockly.Assembly['controls_repeat_ext'] = function(block) {
   // Repeat n times.
   if (block.getField('TIMES')) {
     // Internal number.
     var repeats = String(Number(block.getFieldValue('TIMES')));
   } else {
     // External number.
-    var repeats = Blockly.Dart.valueToCode(block, 'TIMES',
-        Blockly.Dart.ORDER_ASSIGNMENT) || '0';
+    var repeats = Blockly.Assembly.valueToCode(block, 'TIMES',
+        Blockly.Assembly.ORDER_ASSIGNMENT) || '0';
   }
-  var branch = Blockly.Dart.statementToCode(block, 'DO');
-  branch = Blockly.Dart.addLoopTrap(branch, block.id);
+  var branch = Blockly.Assembly.statementToCode(block, 'DO');
+  branch = Blockly.Assembly.addLoopTrap(branch, block.id);
   var code = '';
-  var loopVar = Blockly.Dart.variableDB_.getDistinctName(
+  var loopVar = Blockly.Assembly.variableDB_.getDistinctName(
       'count', Blockly.Variables.NAME_TYPE);
   var endVar = repeats;
   if (!repeats.match(/^\w+$/) && !Blockly.isNumber(repeats)) {
-    var endVar = Blockly.Dart.variableDB_.getDistinctName(
+    var endVar = Blockly.Assembly.variableDB_.getDistinctName(
         'repeat_end', Blockly.Variables.NAME_TYPE);
     code += 'var ' + endVar + ' = ' + repeats + ';\n';
   }
@@ -57,34 +57,34 @@ Blockly.Dart['controls_repeat_ext'] = function(block) {
   return code;
 };
 
-Blockly.Dart['controls_repeat'] = Blockly.Dart['controls_repeat_ext'];
+Blockly.Assembly['controls_repeat'] = Blockly.Assembly['controls_repeat_ext'];
 
-Blockly.Dart['controls_whileUntil'] = function(block) {
+Blockly.Assembly['controls_whileUntil'] = function(block) {
   // Do while/until loop.
   var until = block.getFieldValue('MODE') == 'UNTIL';
-  var argument0 = Blockly.Dart.valueToCode(block, 'TEST',
-      until ? Blockly.Dart.ORDER_UNARY_PREFIX :
-      Blockly.Dart.ORDER_NONE) || 'false';
-  var branch = Blockly.Dart.statementToCode(block, 'DO');
-  branch = Blockly.Dart.addLoopTrap(branch, block.id);
+  var argument0 = Blockly.Assembly.valueToCode(block, 'TEST',
+      until ? Blockly.Assembly.ORDER_UNARY_PREFIX :
+      Blockly.Assembly.ORDER_NONE) || 'false';
+  var branch = Blockly.Assembly.statementToCode(block, 'DO');
+  branch = Blockly.Assembly.addLoopTrap(branch, block.id);
   if (until) {
     argument0 = '!' + argument0;
   }
   return 'while (' + argument0 + ') {\n' + branch + '}\n';
 };
 
-Blockly.Dart['controls_for'] = function(block) {
+Blockly.Assembly['controls_for'] = function(block) {
   // For loop.
-  var variable0 = Blockly.Dart.variableDB_.getName(
+  var variable0 = Blockly.Assembly.variableDB_.getName(
       block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
-  var argument0 = Blockly.Dart.valueToCode(block, 'FROM',
-      Blockly.Dart.ORDER_ASSIGNMENT) || '0';
-  var argument1 = Blockly.Dart.valueToCode(block, 'TO',
-      Blockly.Dart.ORDER_ASSIGNMENT) || '0';
-  var increment = Blockly.Dart.valueToCode(block, 'BY',
-      Blockly.Dart.ORDER_ASSIGNMENT) || '1';
-  var branch = Blockly.Dart.statementToCode(block, 'DO');
-  branch = Blockly.Dart.addLoopTrap(branch, block.id);
+  var argument0 = Blockly.Assembly.valueToCode(block, 'FROM',
+      Blockly.Assembly.ORDER_ASSIGNMENT) || '0';
+  var argument1 = Blockly.Assembly.valueToCode(block, 'TO',
+      Blockly.Assembly.ORDER_ASSIGNMENT) || '0';
+  var increment = Blockly.Assembly.valueToCode(block, 'BY',
+      Blockly.Assembly.ORDER_ASSIGNMENT) || '1';
+  var branch = Blockly.Assembly.statementToCode(block, 'DO');
+  branch = Blockly.Assembly.addLoopTrap(branch, block.id);
   var code;
   if (Blockly.isNumber(argument0) && Blockly.isNumber(argument1) &&
       Blockly.isNumber(increment)) {
@@ -105,19 +105,19 @@ Blockly.Dart['controls_for'] = function(block) {
     // Cache non-trivial values to variables to prevent repeated look-ups.
     var startVar = argument0;
     if (!argument0.match(/^\w+$/) && !Blockly.isNumber(argument0)) {
-      var startVar = Blockly.Dart.variableDB_.getDistinctName(
+      var startVar = Blockly.Assembly.variableDB_.getDistinctName(
           variable0 + '_start', Blockly.Variables.NAME_TYPE);
       code += 'var ' + startVar + ' = ' + argument0 + ';\n';
     }
     var endVar = argument1;
     if (!argument1.match(/^\w+$/) && !Blockly.isNumber(argument1)) {
-      var endVar = Blockly.Dart.variableDB_.getDistinctName(
+      var endVar = Blockly.Assembly.variableDB_.getDistinctName(
           variable0 + '_end', Blockly.Variables.NAME_TYPE);
       code += 'var ' + endVar + ' = ' + argument1 + ';\n';
     }
     // Determine loop direction at start, in case one of the bounds
     // changes during loop execution.
-    var incVar = Blockly.Dart.variableDB_.getDistinctName(
+    var incVar = Blockly.Assembly.variableDB_.getDistinctName(
         variable0 + '_inc', Blockly.Variables.NAME_TYPE);
     code += 'num ' + incVar + ' = ';
     if (Blockly.isNumber(increment)) {
@@ -126,7 +126,7 @@ Blockly.Dart['controls_for'] = function(block) {
       code += '(' + increment + ').abs();\n';
     }
     code += 'if (' + startVar + ' > ' + endVar + ') {\n';
-    code += Blockly.Dart.INDENT + incVar + ' = -' + incVar + ';\n';
+    code += Blockly.Assembly.INDENT + incVar + ' = -' + incVar + ';\n';
     code += '}\n';
     code += 'for (' + variable0 + ' = ' + startVar + ';\n' +
         '     ' + incVar + ' >= 0 ? ' +
@@ -138,20 +138,20 @@ Blockly.Dart['controls_for'] = function(block) {
   return code;
 };
 
-Blockly.Dart['controls_forEach'] = function(block) {
+Blockly.Assembly['controls_forEach'] = function(block) {
   // For each loop.
-  var variable0 = Blockly.Dart.variableDB_.getName(
+  var variable0 = Blockly.Assembly.variableDB_.getName(
       block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
-  var argument0 = Blockly.Dart.valueToCode(block, 'LIST',
-      Blockly.Dart.ORDER_ASSIGNMENT) || '[]';
-  var branch = Blockly.Dart.statementToCode(block, 'DO');
-  branch = Blockly.Dart.addLoopTrap(branch, block.id);
+  var argument0 = Blockly.Assembly.valueToCode(block, 'LIST',
+      Blockly.Assembly.ORDER_ASSIGNMENT) || '[]';
+  var branch = Blockly.Assembly.statementToCode(block, 'DO');
+  branch = Blockly.Assembly.addLoopTrap(branch, block.id);
   var code = 'for (var ' + variable0 + ' in ' + argument0 + ') {\n' +
       branch + '}\n';
   return code;
 };
 
-Blockly.Dart['controls_flow_statements'] = function(block) {
+Blockly.Assembly['controls_flow_statements'] = function(block) {
   // Flow statements: continue, break.
   switch (block.getFieldValue('FLOW')) {
     case 'BREAK':

@@ -15,8 +15,8 @@
 // - a variable
 // If no input, treats as Hue = 0 and calls flashHue
 
-Blockly.Dart['flash_leds'] = function(block) {
-  var flash_arg = Blockly.Dart.valueToCode(block, 'COLOR', Blockly.Dart.ORDER_ATOMIC) ;
+Blockly.Assembly['flash_leds'] = function(block) {
+  var flash_arg = Blockly.Assembly.valueToCode(block, 'COLOR', Blockly.Assembly.ORDER_ATOMIC) ;
   if (debug) {alert("in flash_leds: input is *" + flash_arg +'*')};
   if (flash_arg == 'None' || flash_arg =='') { // input is blank or null
     //alert('input is null');
@@ -86,7 +86,7 @@ Blockly.Dart['flash_leds'] = function(block) {
   return code;
 }
 
-Blockly.Dart['led_attached'] = function(block) {
+Blockly.Assembly['led_attached'] = function(block) {
   var found = global_scalar_variables.indexOf('led_attached');
   if (found >= 0) { // it better be!
     var code = 'Push R' + found + '\nPop R1\nset R2 '+ mask + '\n& R1 R2 R1\n'; // only look at the lower bits
@@ -94,10 +94,10 @@ Blockly.Dart['led_attached'] = function(block) {
     } else {
       var code = 'Set R1 0\n'; // if you can't find led_attached in GSV, treat as no led attached
     }
-  return [code, Blockly.Dart.ORDER_ATOMIC];
+  return [code, Blockly.Assembly.ORDER_ATOMIC];
 };
 
-Blockly.Dart['usb_attached'] = function(block) {
+Blockly.Assembly['usb_attached'] = function(block) {
   var found = global_scalar_variables.indexOf('usb_attached');
   if (found >= 0) { // it better be!
     var code = 'Push R' + found + '\nPop R1\nset R2 '+ mask + '\n& R1 R2 R1\n'; // only look at the lower bits
@@ -105,7 +105,7 @@ Blockly.Dart['usb_attached'] = function(block) {
     } else {
       var code = 'Set R1 0\n'; // if you can't find usb_attached in GSV, treat as no usb attached
     }
-  return [code, Blockly.Dart.ORDER_ATOMIC];
+  return [code, Blockly.Assembly.ORDER_ATOMIC];
 };
 
 // **************************************************************************************************
@@ -113,8 +113,8 @@ Blockly.Dart['usb_attached'] = function(block) {
 // **************************************************************************************************
 
 
-Blockly.Dart['on_motion_trigger'] = function(block) {
-  var dothis = Blockly.Dart.statementToCode(block, 'NAME');
+Blockly.Assembly['on_motion_trigger'] = function(block) {
+  var dothis = Blockly.Assembly.statementToCode(block, 'NAME');
   var code = 'On_motion_trigger:\n' + dothis + 'syscall exit R0\n';
   return code;
 };
@@ -125,12 +125,12 @@ Blockly.Dart['on_motion_trigger'] = function(block) {
 // If more then one motion sensor is present, value is not defined
 // future work: if assigning to a scalar, return M
 
-Blockly.Dart['getmotiondata'] = function(block) {
+Blockly.Assembly['getmotiondata'] = function(block) {
   var code = 'GETMOTIONDATA\n';// this puts motion data on the stack in order top{4,M,L,N,K,...} 4 is length of data
-  return [code, Blockly.Dart.ORDER_ATOMIC];
+  return [code, Blockly.Assembly.ORDER_ATOMIC];
 };
 
-Blockly.Dart['motion_attached'] = function(block) {
+Blockly.Assembly['motion_attached'] = function(block) {
   var found = global_scalar_variables.indexOf('motion_attached');
   if (found >= 0) { // it better be!
     var code = 'Push R' + found + '\nPop R1\nset R2 '+ mask + '\n& R1 R2 R1\n'; // only look at the lower bits
@@ -138,12 +138,12 @@ Blockly.Dart['motion_attached'] = function(block) {
     } else {
       var code = 'Set R1 0\n'; // if you can't find motion_attached in GSV, treat as no motion attached
     }
-  return [code, Blockly.Dart.ORDER_ATOMIC];
+  return [code, Blockly.Assembly.ORDER_ATOMIC];
 };
 
 // Advanced: Set Motion Trigger - POSTPONED
 
-Blockly.Dart['setmotiontrigger'] = function(block) {
+Blockly.Assembly['setmotiontrigger'] = function(block) {
   // TODO: Assemble Dart into code variable.
   var code = '...';
   return code;
@@ -153,32 +153,32 @@ Blockly.Dart['setmotiontrigger'] = function(block) {
 // MICROPHONE MICROPHONE MICROPHONE MICROPHONE MICROPHONE MICROPHONE MICROPHONE MICROPHONE
 // **************************************************************************************************
 
-Blockly.Dart['on_microphone_trigger'] = function(block) {
-  var statements_name = Blockly.Dart.statementToCode(block, 'NAME');
+Blockly.Assembly['on_microphone_trigger'] = function(block) {
+  var statements_name = Blockly.Assembly.statementToCode(block, 'NAME');
   var code = 'On_microphone_trigger:\n' + statements_name + '\n' + 'syscall exit R0\n';
   return code;
 };
 
 // Advanced:
 
-Blockly.Dart['getmicdata'] = function(block) {
+Blockly.Assembly['getmicdata'] = function(block) {
   var code = 'GETMICDATA\n'; // format TBD
   return code;
 };
 
 // Advanced: POSTPONED
 
-Blockly.Dart['set_mic_threshold'] = function(block) {
+Blockly.Assembly['set_mic_threshold'] = function(block) {
   // TODO: Assemble Dart into code variable.
   var code = '...';
   return code;
 };
 
-//Blockly.dart['read_sound_levels'] = function(block) {
+//Blockly.Assembly['read_sound_levels'] = function(block) {
 //  // TODO: Assemble Dart into code variable.
 //  var code = '...';
 //  // TODO: Change ORDER_NONE to the correct strength.
-//  return [code, Blockly.Dart.ORDER_NONE];
+//  return [code, Blockly.Assembly.ORDER_NONE];
 //};
 
 
@@ -190,8 +190,8 @@ Blockly.Dart['set_mic_threshold'] = function(block) {
 
 // Call for speaker to play a sound file
 
-Blockly.Dart['speaker_play_sound'] = function(block) {
-  var value_name = Blockly.Dart.valueToCode(block, 'NAME', Blockly.Dart.ORDER_ATOMIC);
+Blockly.Assembly['speaker_play_sound'] = function(block) {
+  var value_name = Blockly.Assembly.valueToCode(block, 'NAME', Blockly.Assembly.ORDER_ATOMIC);
   
   // TODO: Assemble Dart into code variable.
   var code = 'syscall Play_sound' + value_name + '\n';
@@ -200,18 +200,18 @@ Blockly.Dart['speaker_play_sound'] = function(block) {
 
 // Use a pre-defined sound
 
-Blockly.Dart['sound_from_file'] = function(block) {
+Blockly.Assembly['sound_from_file'] = function(block) {
   var dropdown_name = block.getFieldValue('NAME');
   // TODO: Assemble Dart into code variable.
   var code = '...';
   // TODO: Change ORDER_NONE to the correct strength.
-  return [code, Blockly.Dart.ORDER_NONE];
+  return [code, Blockly.Assembly.ORDER_NONE];
 };
 
 // Advanced: Play data stream - Play a list of samples as it is being received 
 
-Blockly.Dart['playdatastream'] = function(block) {
-  var value_name = Blockly.Dart.valueToCode(block, 'NAME', Blockly.Dart.ORDER_ATOMIC);
+Blockly.Assembly['playdatastream'] = function(block) {
+  var value_name = Blockly.Assembly.valueToCode(block, 'NAME', Blockly.Assembly.ORDER_ATOMIC);
   // TODO: Assemble Dart into code variable.
   var code = '...';
   return code;
@@ -219,44 +219,44 @@ Blockly.Dart['playdatastream'] = function(block) {
 
 // Advanced: Sound with frequency - make a sound with provided FDV
 
-Blockly.Dart['sound_fdv'] = function(block) {
-  var value_frequency = Blockly.Dart.valueToCode(block, 'Frequency', Blockly.Dart.ORDER_ATOMIC);
-  var value_duration = Blockly.Dart.valueToCode(block, 'Duration', Blockly.Dart.ORDER_ATOMIC);
-  var value_volume = Blockly.Dart.valueToCode(block, 'Volume', Blockly.Dart.ORDER_ATOMIC);
+Blockly.Assembly['sound_fdv'] = function(block) {
+  var value_frequency = Blockly.Assembly.valueToCode(block, 'Frequency', Blockly.Assembly.ORDER_ATOMIC);
+  var value_duration = Blockly.Assembly.valueToCode(block, 'Duration', Blockly.Assembly.ORDER_ATOMIC);
+  var value_volume = Blockly.Assembly.valueToCode(block, 'Volume', Blockly.Assembly.ORDER_ATOMIC);
   // TODO: Assemble Dart into code variable.
   var code = '...';
   // TODO: Change ORDER_NONE to the correct strength.
-  return [code, Blockly.Dart.ORDER_NONE];
+  return [code, Blockly.Assembly.ORDER_NONE];
 };
 
 // **************************************************************************************************
 // RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO
 // **************************************************************************************************
 
-Blockly.Dart['radio_onreceive'] = function(block) {
-  var statements_name = Blockly.Dart.statementToCode(block, 'NAME');
+Blockly.Assembly['radio_onreceive'] = function(block) {
+  var statements_name = Blockly.Assembly.statementToCode(block, 'NAME');
   var code = 'Radio_onreceive:\n' + statements_name + '\n' + 'syscall return R0\n';
   return code;
 };
 
-Blockly.Dart['createmessage'] = function(block) {
-  var value_messagename = Blockly.Dart.valueToCode(block, 'MessageName', Blockly.Dart.ORDER_ATOMIC);
-  var statements_name = Blockly.Dart.statementToCode(block, 'NAME');
+Blockly.Assembly['createmessage'] = function(block) {
+  var value_messagename = Blockly.Assembly.valueToCode(block, 'MessageName', Blockly.Assembly.ORDER_ATOMIC);
+  var statements_name = Blockly.Assembly.statementToCode(block, 'NAME');
   var code = value_messagename + ' = ' + statements_name +'\n'; // statements name is just a string
   return code;
 };
 
-Blockly.Dart['transmit2'] = function(block) {
-  var value_targetid = Blockly.Dart.valueToCode(block, 'targetid', Blockly.Dart.ORDER_ATOMIC) || 0;
-  var value_message = Blockly.Dart.valueToCode(block, 'message', Blockly.Dart.ORDER_ATOMIC);
-  // var value_range = Blockly.Dart.valueToCode(block, 'range', Blockly.Dart.ORDER_ATOMIC);
+Blockly.Assembly['transmit2'] = function(block) {
+  var value_targetid = Blockly.Assembly.valueToCode(block, 'targetid', Blockly.Assembly.ORDER_ATOMIC) || 0;
+  var value_message = Blockly.Assembly.valueToCode(block, 'message', Blockly.Assembly.ORDER_ATOMIC);
+  // var value_range = Blockly.Assembly.valueToCode(block, 'range', Blockly.Assembly.ORDER_ATOMIC);
   var code = 'syscall Transmit' + value_targetid + ', ' + value_message +'\n';
   return code;
 };
 
 // Advanced: Read and return range estimate from radio
 
-Blockly.Dart['radiogetrange'] = function(block) {
+Blockly.Assembly['radiogetrange'] = function(block) {
   var code = 'GetRadioRange()\n';
   return code;
 };
@@ -264,83 +264,83 @@ Blockly.Dart['radiogetrange'] = function(block) {
 // Advanced: Get Radio Data returns the most recently received radio message as a list with the sender,  message and range
 // If no radio is present, it returns the empty list
 
-Blockly.Dart['getradiodata'] = function(block) {
+Blockly.Assembly['getradiodata'] = function(block) {
   // TODO: Assemble Dart into code variable.
   var code = '...';
   // TODO: Change ORDER_NONE to the correct strength.
-  return [code, Blockly.Dart.ORDER_NONE];
+  return [code, Blockly.Assembly.ORDER_NONE];
 };
 
 // Advanced: getidfromradio returns the ID stored in the attached radio petal as an integer. If not radio petal is attached, returns -1
 
-Blockly.Dart['getidfromradio'] = function(block) {
+Blockly.Assembly['getidfromradio'] = function(block) {
   // TODO: Assemble Dart into code variable.
   var code = '...';
   // TODO: Change ORDER_NONE to the correct strength.
-  return [code, Blockly.Dart.ORDER_NONE];
+  return [code, Blockly.Assembly.ORDER_NONE];
 };
 
 // Advanced:
 
-Blockly.Dart['setradioeventtrigger'] = function(block) {
-  var value_name = Blockly.Dart.valueToCode(block, 'NAME', Blockly.Dart.ORDER_ATOMIC);
+Blockly.Assembly['setradioeventtrigger'] = function(block) {
+  var value_name = Blockly.Assembly.valueToCode(block, 'NAME', Blockly.Assembly.ORDER_ATOMIC);
   // TODO: Assemble Dart into code variable.
   var code = '...';
   return code;
 };
 
-Blockly.Dart['getidfromradioatport'] = function(block) {
+Blockly.Assembly['getidfromradioatport'] = function(block) {
   // TODO: Assemble Dart into code variable.
   var code = '...';
   // TODO: Change ORDER_NONE to the correct strength.
-  return [code, Blockly.Dart.ORDER_NONE];
+  return [code, Blockly.Assembly.ORDER_NONE];
 };
 
 // **************************************************************************************************
 // HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  
 // **************************************************************************************************
 
-Blockly.Dart['on_initialization'] = function(block) {
-  var dothis = Blockly.Dart.statementToCode(block, 'NAME');
+Blockly.Assembly['on_initialization'] = function(block) {
+  var dothis = Blockly.Assembly.statementToCode(block, 'NAME');
   if (debug) {alert("In on_initialization, code is " + dothis + "Syscall exit R0")};
-  var code = 'On_initialization:\n' + dothis + Blockly.Dart.INDENT + 'syscall exit R0\n';;
+  var code = 'On_initialization:\n' + dothis + Blockly.Assembly.INDENT + 'syscall exit R0\n';;
   return code;
 };
 
-Blockly.Dart['on_regular_event'] = function(block) {
-  var dothis = Blockly.Dart.statementToCode(block, 'NAME');
-  var code = 'OnRegularEvent:\n' + dothis + Blockly.Dart.INDENT + 'syscall exit R0\n';
+Blockly.Assembly['on_regular_event'] = function(block) {
+  var dothis = Blockly.Assembly.statementToCode(block, 'NAME');
+  var code = 'OnRegularEvent:\n' + dothis + Blockly.Assembly.INDENT + 'syscall exit R0\n';
   return code;
 };
 
 // Advanced: return the battery "life" or "health" -- however that is defined -- as an integer from 1= very bad to 10 = very good
 // return 0 is an error
 
-Blockly.Dart['getbatterylevel'] = function(block) {
+Blockly.Assembly['getbatterylevel'] = function(block) {
   var found = global_scalar_variables.indexOf('batterylevel');
   if (found >= 0) { // it better be!
     var code = 'Push R' + found + '\nPop R1\n'; // put current battery reading into R1
     } else {
       var code = 'Set R1 0\n'; // put 0 into R1
     }
-  return [code, Blockly.Dart.ORDER_ATOMIC];
+  return [code, Blockly.Assembly.ORDER_ATOMIC];
 };
 
 // Advanced: returns a reading from the ambient light sensor in the hub
 
-Blockly.Dart['getambientlight'] = function(block) {
+Blockly.Assembly['getambientlight'] = function(block) {
   var found = global_scalar_variables.indexOf('ambientlight');
   if (found >= 0) { // it better be!
     var code = 'Push R' + found + '\nPop R1\n'; // put current ambient light reading into R1
     } else { 
       var code = 'Set R1 0\n'; // put 0 into R1 
     }
-  return [code, Blockly.Dart.ORDER_ATOMIC];
+  return [code, Blockly.Assembly.ORDER_ATOMIC];
 };
 
 
-Blockly.Dart['RegularEventSpeed'] = function(block) {
-  var argument0 = Blockly.Dart.valueToCode(block, 'PERIOD', Blockly.Dart.ORDER_ASSIGNMENT);
+Blockly.Assembly['RegularEventSpeed'] = function(block) {
+  var argument0 = Blockly.Assembly.valueToCode(block, 'PERIOD', Blockly.Assembly.ORDER_ASSIGNMENT);
   if (!argument0) {argument0 = 'Set R1 0\n';}
   var splitArg = argument0.split(" ",3); // separate the result into 3 words
   var argNum = parseInt(splitArg[2]); // check the number
@@ -351,11 +351,11 @@ Blockly.Dart['RegularEventSpeed'] = function(block) {
 };
 
 
-Blockly.Dart['roster_event_two'] = function(block) {
+Blockly.Assembly['roster_event_two'] = function(block) {
   var dropdown_link3 = block.getFieldValue('Link3');
   var dropdown_link2 = block.getFieldValue('Link2');
   var dropdown_link1 = block.getFieldValue('Link1');
-  var statements_script = Blockly.Dart.statementToCode(block, 'Script');
+  var statements_script = Blockly.Assembly.statementToCode(block, 'Script');
   // TODO: Assemble Dart into code variable.
   var linkRoster =[]
   // TODO: append non 'None' values to this list
@@ -365,9 +365,9 @@ Blockly.Dart['roster_event_two'] = function(block) {
   return code;
 };
 
-Blockly.Dart['connection_event'] = function(block) {
+Blockly.Assembly['connection_event'] = function(block) {
   var dropdown_name = block.getFieldValue('NAME');
-  var statements_script = Blockly.Dart.statementToCode(block, 'script');
+  var statements_script = Blockly.Assembly.statementToCode(block, 'script');
   // TODO: Assemble Dart into code variable.
   var code = 'pass  // execute this script once when this link is plugged in';
   return code;
@@ -375,16 +375,16 @@ Blockly.Dart['connection_event'] = function(block) {
 
 // getmyid returns a number that is the ID of this hub
 
-Blockly.Dart['getmyid'] = function(block) {
+Blockly.Assembly['getmyid'] = function(block) {
   // TODO: Assemble Dart into code variable.
   var code = '...';
   // TODO: Change ORDER_NONE to the correct strength.
-  return [code, Blockly.Dart.ORDER_NONE];
+  return [code, Blockly.Assembly.ORDER_NONE];
 };
 
 // writeidtoradio writes this hub's ID to the radio petal. see below for alternate version write_this_idtoradio
 
-Blockly.Dart['writeidtoradio'] = function(block) {
+Blockly.Assembly['writeidtoradio'] = function(block) {
   // TODO: Assemble Dart into code variable.
   var code = '...';
   return code;
@@ -393,23 +393,23 @@ Blockly.Dart['writeidtoradio'] = function(block) {
 // alternate version write_this_idtoradio takes a number as input and writes that number to the attached radio petal
 // dangerous because it allows user to spoof being a different user, but might be useful for forwarding  in a mesh network
 
-Blockly.Dart['write_this_idtoradio'] = function(block) {
-  var value_id = Blockly.Dart.valueToCode(block, 'ID', Blockly.Dart.ORDER_ATOMIC);
+Blockly.Assembly['write_this_idtoradio'] = function(block) {
+  var value_id = Blockly.Assembly.valueToCode(block, 'ID', Blockly.Assembly.ORDER_ATOMIC);
   // TODO: Assemble Dart into code variable.
   var code = '...';
   return code;
 };
 
-Blockly.Dart['initialize'] = function(block) {
-  var statements_name = Blockly.Dart.statementToCode(block, 'NAME');
+Blockly.Assembly['initialize'] = function(block) {
+  var statements_name = Blockly.Assembly.statementToCode(block, 'NAME');
   // TODO: Assemble Dart into code variable.
   var code = '...';
   return code;
 };
 
 
-Blockly.Dart['delay'] = function(block) {
-  var value_delay_in_ms = Blockly.Dart.valueToCode(block, 'delay_in_ms', Blockly.Dart.ORDER_ATOMIC);
+Blockly.Assembly['delay'] = function(block) {
+  var value_delay_in_ms = Blockly.Assembly.valueToCode(block, 'delay_in_ms', Blockly.Assembly.ORDER_ATOMIC);
   // TODO: Assemble Dart into code variable.
   var code = '...';
   return code;
@@ -418,35 +418,35 @@ Blockly.Dart['delay'] = function(block) {
 
 // check what type of message is being sent
 
-Blockly.Dart['check_type'] = function(block) {
+Blockly.Assembly['check_type'] = function(block) {
   var dropdown_different_messages = block.getFieldValue('different messages');
-  var value_message = Blockly.Dart.valueToCode(block, 'message', Blockly.Dart.ORDER_ATOMIC);
+  var value_message = Blockly.Assembly.valueToCode(block, 'message', Blockly.Assembly.ORDER_ATOMIC);
   // TODO: Assemble Dart into code variable.
   var code = '...';
   // TODO: Change ORDER_NONE to the correct strength.
-  return [code, Blockly.Dart.ORDER_NONE];
+  return [code, Blockly.Assembly.ORDER_NONE];
 };
 
 //******************* LIST GENERATORS
 
-Blockly.Dart['lists_create_n'] = function(block) {
+Blockly.Assembly['lists_create_n'] = function(block) {
   if (debug) {alert("in lists_create_n")};
   var code = ';; lists_create_n space allocated\n';
-  return [code, Blockly.Dart.ORDER_ATOMIC];
+  return [code, Blockly.Assembly.ORDER_ATOMIC];
 };
 
 
 // ******************* Loops
 
-Blockly.Dart['controls_while'] = function(block) {
+Blockly.Assembly['controls_while'] = function(block) {
   // Do while loop.
   ifCount++;
-  var argument0 = Blockly.Dart.valueToCode(block, 'TEST', Blockly.Dart.ORDER_NONE) || 'False';
+  var argument0 = Blockly.Assembly.valueToCode(block, 'TEST', Blockly.Assembly.ORDER_NONE) || 'False';
   var code = 'while_label_' + ifCount + ':\n' + argument0;
   code += 'BTR1SNZ \n GOTO end_label_' + ifCount + '\n';
-  var branch = Blockly.Dart.statementToCode(block, 'DO');
-  branch = Blockly.Dart.addLoopTrap(branch, block.id) ||
-      Blockly.Dart.PASS;
+  var branch = Blockly.Assembly.statementToCode(block, 'DO');
+  branch = Blockly.Assembly.addLoopTrap(branch, block.id) ||
+      Blockly.Assembly.PASS;
   code += branch + 'GOTO ' + 'while_label_' + ifCount + '\n end_label_' + ifCount + ':\n';
   return code;
 };

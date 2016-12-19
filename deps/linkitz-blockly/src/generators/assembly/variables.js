@@ -26,9 +26,9 @@
  */
 'use strict';
 
-goog.provide('Blockly.Dart.variables');
+goog.provide('Blockly.Assembly.variables');
 
-goog.require('Blockly.Dart');
+goog.require('Blockly.Assembly');
 
 
  // This should run first, during blockly.init.
@@ -46,7 +46,7 @@ goog.require('Blockly.Dart');
     for (var i = 0; i < blocks.length; i++) {
       if (blocks[i].type == 'variables_set') {
         var current_block = blocks[i];
-        var varName = Blockly.Dart.variableDB_.getName(current_block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+        var varName = Blockly.Assembly.variableDB_.getName(current_block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
         if (debug) {alert(varName)};
         if (global_scalar_variables.indexOf(varName) >=0) {
           if (debug) {alert("found scalar")};
@@ -60,7 +60,7 @@ goog.require('Blockly.Dart');
             if (debug&&targetBlock) {alert('testing getOutput: ' + targetBlock.getOutput());}
             var inputType = targetBlock.type;
             if (debug) {
-              var assigned_value = Blockly.Dart.valueToCode(targetBlock, 'VALUE', Blockly.Dart.ORDER_ASSIGNMENT) || '0';
+              var assigned_value = Blockly.Assembly.valueToCode(targetBlock, 'VALUE', Blockly.Assembly.ORDER_ASSIGNMENT) || '0';
               alert("in resolve_var_refs:\nTarget Block is " + targetBlock + "\nvarName is " + varName + " is being assigned input of type " + inputType + " with value " + assigned_value);
             }
             switch (inputType) {
@@ -182,9 +182,9 @@ function addNewScalarVar(varName) {
   gsv_next++; // point to next empty space
   }
  
- Blockly.Dart['variables_get'] = function(block) {
+ Blockly.Assembly['variables_get'] = function(block) {
   // Variable getter.
-  var varName = Blockly.Dart.variableDB_.getName(block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+  var varName = Blockly.Assembly.variableDB_.getName(block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
   if (debug) {alert("in variables_get: name is " + varName)};
   var varName_undef = 1;
   var is_scalar = global_scalar_variables.indexOf(varName); // is it in global_scalar_variables
@@ -199,15 +199,15 @@ function addNewScalarVar(varName) {
     alert('in variables_get: ' + varName + ' is undefined');
     var code = varName  + ' UNDEFINED\n';
   }
-  return [code, Blockly.Dart.ORDER_ATOMIC];
+  return [code, Blockly.Assembly.ORDER_ATOMIC];
 }
 
-Blockly.Dart['variables_set'] = function(block) {
+Blockly.Assembly['variables_set'] = function(block) {
   // Variable setter
-  var argument0 = Blockly.Dart.valueToCode(block, 'VALUE', Blockly.Dart.ORDER_ASSIGNMENT) || '0';
+  var argument0 = Blockly.Assembly.valueToCode(block, 'VALUE', Blockly.Assembly.ORDER_ASSIGNMENT) || '0';
   var targetBlock = block.getInputTargetBlock('VALUE');
   var inputType = targetBlock.type;
-  var varName = Blockly.Dart.variableDB_.getName(block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+  var varName = Blockly.Assembly.variableDB_.getName(block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
   if (debug) {alert("in variables_set: input is of type " + inputType + ", varName is " + varName + ", value is " + argument0)};
   if (debug) {alert("in variables_set: GLV is " + JSON.stringify(global_list_variables));}
   var found = global_scalar_variables.indexOf(varName);

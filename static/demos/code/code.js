@@ -244,7 +244,7 @@ Code.LANG = Code.getLang();
  * List of tab names.
  * @private
  */
-Code.TABS_ = ['blocks', 'javascript', 'php', 'python', 'dart', 'xml'];
+Code.TABS_ = ['blocks', 'bytecode', 'python', 'assembly', 'xml'];
 
 Code.selected = 'blocks';
 
@@ -309,37 +309,29 @@ Code.renderContent = function() {
     var xmlText = Blockly.Xml.domToPrettyText(xmlDom);
     xmlTextarea.value = xmlText;
     xmlTextarea.focus();
-  } else if (content.id == 'content_javascript') {
-    var code = Blockly.JavaScript.workspaceToCode(Code.workspace);
-    content.textContent = code;
-    if (typeof prettyPrintOne == 'function') {
-      code = content.innerHTML;
-      code = prettyPrintOne(code, 'js');
-      content.innerHTML = code;
-    }
   } else if (content.id == 'content_python') {
-    code = Blockly.Python.workspaceToCode(Code.workspace);
+    var code = Blockly.Python.workspaceToCode(Code.workspace);
     content.textContent = code;
     if (typeof prettyPrintOne == 'function') {
       code = content.innerHTML;
       code = prettyPrintOne(code, 'py');
       content.innerHTML = code;
     }
-  } else if (content.id == 'content_php') {
-    code = Blockly.PHP.workspaceToCode(Code.workspace);
+  } else if (content.id == 'content_bytecode') {
+    var code = Blockly.Bytecode.workspaceToCode(Code.workspace);
     content.textContent = code;
     if (typeof prettyPrintOne == 'function') {
       code = content.innerHTML;
-      code = prettyPrintOne(code, 'php');
+      code = prettyPrintOne(code, 'bytecode');
       content.innerHTML = code;
     }
-  } else if (content.id == 'content_dart') {
-    code = Blockly.Dart.workspaceToCode(Code.workspace);
+  } else if (content.id == 'content_assembly') {
+    var code = Blockly.Assembly.workspaceToCode(Code.workspace);
     // code = generate_hex(code);
     content.textContent = code;
     if (typeof prettyPrintOne == 'function') {
       code = content.innerHTML;
-      code = prettyPrintOne(code, 'dart');
+      code = prettyPrintOne(code, 'assembly');
       content.innerHTML = code;
     }
   } 

@@ -24,27 +24,27 @@
  */
 'use strict';
 
-goog.provide('Blockly.Dart.procedures');
+goog.provide('Blockly.Assembly.procedures');
 
-goog.require('Blockly.Dart');
+goog.require('Blockly.Assembly');
 
-Blockly.Dart['procedures_defreturn'] = function(block) {
+Blockly.Assembly['procedures_defreturn'] = function(block) {
   if (debug) {alert('in procedures def [no] return')};
   // Define a procedure with a return value.
-  var funcName = Blockly.Dart.variableDB_.getName(block.getFieldValue('NAME'),
+  var funcName = Blockly.Assembly.variableDB_.getName(block.getFieldValue('NAME'),
       Blockly.Procedures.NAME_TYPE);
-  var branch = Blockly.Dart.statementToCode(block, 'STACK');
-  if (Blockly.Dart.STATEMENT_PREFIX) {
-    branch = Blockly.Dart.prefixLines(
-        Blockly.Dart.STATEMENT_PREFIX.replace(/%1/g,
-        '\'' + block.id + '\''), Blockly.Dart.INDENT) + branch;
+  var branch = Blockly.Assembly.statementToCode(block, 'STACK');
+  if (Blockly.Assembly.STATEMENT_PREFIX) {
+    branch = Blockly.Assembly.prefixLines(
+        Blockly.Assembly.STATEMENT_PREFIX.replace(/%1/g,
+        '\'' + block.id + '\''), Blockly.Assembly.INDENT) + branch;
   }
-  if (Blockly.Dart.INFINITE_LOOP_TRAP) {
-    branch = Blockly.Dart.INFINITE_LOOP_TRAP.replace(/%1/g,
+  if (Blockly.Assembly.INFINITE_LOOP_TRAP) {
+    branch = Blockly.Assembly.INFINITE_LOOP_TRAP.replace(/%1/g,
         '\'' + block.id + '\'') + branch;
   }
-  var returnValue = Blockly.Dart.valueToCode(block, 'RETURN',
-      Blockly.Dart.ORDER_NONE) || '';
+  var returnValue = Blockly.Assembly.valueToCode(block, 'RETURN',
+      Blockly.Assembly.ORDER_NONE) || '';
   if (returnValue) {
     // add proc name and return type to procs[funcName]
     //var type;
@@ -52,32 +52,32 @@ Blockly.Dart['procedures_defreturn'] = function(block) {
     //  if (item) {
     //    type = item.getOutput();
     //    }
-    returnValue = Blockly.Dart.INDENT +  returnValue + ';\nsyscall return R1\n'; // value in R1
+    returnValue = Blockly.Assembly.INDENT +  returnValue + ';\nsyscall return R1\n'; // value in R1
   }
     else {
-    returnValue = Blockly.Dart.INDENT + 'syscall return R0\n';  // no returned value, just return R0
+    returnValue = Blockly.Assembly.INDENT + 'syscall return R0\n';  // no returned value, just return R0
     }
   var returnType = returnValue ? 'dynamic' : 'void'; // we don't use this ATM
   var args = [];
   for (var x = 0; x < block.arguments_.length; x++) {
-    args[x] = Blockly.Dart.variableDB_.getName(block.arguments_[x],
+    args[x] = Blockly.Assembly.variableDB_.getName(block.arguments_[x],
         Blockly.Variables.NAME_TYPE);
   }
   var code =  funcName + //'(' + args.join(', ') + ') {\n'
    ':\n' + branch + returnValue ;
 if (debug) {alert('procedure code is ' + code)};
-  code = Blockly.Dart.scrub_(block, code);
-  Blockly.Dart.definitions_[funcName] = code;
+  code = Blockly.Assembly.scrub_(block, code);
+  Blockly.Assembly.definitions_[funcName] = code;
   return code;
 };
 
 // Defining a procedure without a return value uses the same generator as
 // a procedure with a return value.
-Blockly.Dart['procedures_defnoreturn'] = Blockly.Dart['procedures_defreturn'];
+Blockly.Assembly['procedures_defnoreturn'] = Blockly.Assembly['procedures_defreturn'];
 
-Blockly.Dart['procedures_callreturn'] = function(block) {
+Blockly.Assembly['procedures_callreturn'] = function(block) {
   // Call a procedure with a return value.
-  var funcName = Blockly.Dart.variableDB_.getName(block.getFieldValue('NAME'),
+  var funcName = Blockly.Assembly.variableDB_.getName(block.getFieldValue('NAME'),
       Blockly.Procedures.NAME_TYPE);
   var args = [];
   if (block.arguments_.length==0) {
@@ -86,18 +86,18 @@ Blockly.Dart['procedures_callreturn'] = function(block) {
   }
   else {
   for (var x = 0; x < block.arguments_.length; x++) {
-    args[x] = Blockly.Dart.valueToCode(block, 'ARG' + x,
-        Blockly.Dart.ORDER_NONE) || 'null';
+    args[x] = Blockly.Assembly.valueToCode(block, 'ARG' + x,
+        Blockly.Assembly.ORDER_NONE) || 'null';
   }
   // if there are args they have to be pushed on the stack - to be written!
   var code = funcName + '(' + args.join(', ') + ')';
   }
-  return [code, Blockly.Dart.ORDER_UNARY_POSTFIX];
+  return [code, Blockly.Assembly.ORDER_UNARY_POSTFIX];
 };
 
-Blockly.Dart['procedures_callnoreturn'] = function(block) {
+Blockly.Assembly['procedures_callnoreturn'] = function(block) {
   // Call a procedure with no return value.
-  var funcName = Blockly.Dart.variableDB_.getName(block.getFieldValue('NAME'),
+  var funcName = Blockly.Assembly.variableDB_.getName(block.getFieldValue('NAME'),
       Blockly.Procedures.NAME_TYPE);
   var args = [];
   if (block.arguments_.length==0) {
@@ -106,8 +106,8 @@ Blockly.Dart['procedures_callnoreturn'] = function(block) {
   }
   else {
   for (var x = 0; x < block.arguments_.length; x++) {
-    args[x] = Blockly.Dart.valueToCode(block, 'ARG' + x,
-        Blockly.Dart.ORDER_NONE) || 'null';
+    args[x] = Blockly.Assembly.valueToCode(block, 'ARG' + x,
+        Blockly.Assembly.ORDER_NONE) || 'null';
     }
   // if there are args they have to be pushed on the stack - to be written!
     var code = 'syscall fcall ' + funcName + '(' + args.join(', ') + ');\n';
@@ -115,14 +115,14 @@ Blockly.Dart['procedures_callnoreturn'] = function(block) {
   return code;
 };
 
-Blockly.Dart['procedures_ifreturn'] = function(block) {
+Blockly.Assembly['procedures_ifreturn'] = function(block) {
   // Conditionally return value from a procedure.
-  var condition = Blockly.Dart.valueToCode(block, 'CONDITION',
-      Blockly.Dart.ORDER_NONE) || 'false';
+  var condition = Blockly.Assembly.valueToCode(block, 'CONDITION',
+      Blockly.Assembly.ORDER_NONE) || 'false';
   var code = 'if (' + condition + ') {\n';
   if (block.hasReturnValue_) {
-    var value = Blockly.Dart.valueToCode(block, 'VALUE',
-        Blockly.Dart.ORDER_NONE) || 'null';
+    var value = Blockly.Assembly.valueToCode(block, 'VALUE',
+        Blockly.Assembly.ORDER_NONE) || 'null';
     code += '  return ' + value + ';\n';
   } else {
     code += '  return;\n';

@@ -24,7 +24,7 @@
  */
 'use strict';
 
-goog.provide('Blockly.Python');
+goog.provide('Blockly.Assembly');
 
 goog.require('Blockly.Generator');
 
@@ -33,7 +33,7 @@ goog.require('Blockly.Generator');
  * Python code generator.
  * @type {!Blockly.Generator}
  */
-Blockly.Python = new Blockly.Generator('Python');
+Blockly.Assembly = new Blockly.Generator('Assembly');
 
 /**
  * List of illegal variable names.
@@ -42,7 +42,7 @@ Blockly.Python = new Blockly.Generator('Python');
  * accidentally clobbering a built-in object or function.
  * @private
  */
-Blockly.Python.addReservedWords(
+Blockly.Assembly.addReservedWords(
     // import keyword
     // print ','.join(keyword.kwlist)
     // http://docs.python.org/reference/lexical_analysis.html#keywords
@@ -50,65 +50,109 @@ Blockly.Python.addReservedWords(
     //http://docs.python.org/library/constants.html
     'True,False,None,NotImplemented,Ellipsis,__debug__,quit,exit,copyright,license,credits,' +
     // http://docs.python.org/library/functions.html
-    'abs,divmod,input,open,staticmethod,all,enumerate,int,ord,str,any,eval,isinstance,pow,sum,basestring,execfile,issubclass,print,super,bin,file,iter,property,tuple,bool,filter,len,range,type,bytearray,float,list,raw_input,unichr,callable,format,locals,reduce,unicode,chr,frozenset,long,reload,vars,classmethod,getattr,map,repr,xrange,cmp,globals,max,reversed,zip,compile,hasattr,memoryview,round,__import__,complex,hash,min,set,apply,delattr,help,next,setattr,buffer,dict,hex,object,slice,coerce,dir,id,oct,sorted,intern');
+    'abs,divmod,input,open,staticmethod,all,enumerate,int,ord,str,any,eval,isinstance,pow,sum,basestring,execfile,issubclass,print,super,bin,file,iter,property,tuple,bool,filter,len,range,type,bytearray,float,list,raw_input,unichr,callable,format,locals,reduce,unicode,chr,frozenset,long,reload,vars,classmethod,getattr,map,repr,xrange,cmp,globals,max,reversed,zip,compile,hasattr,memoryview,round,__import__,complex,hash,min,set,apply,delattr,help,next,setattr,buffer,dict,hex,object,slice,coerce,dir,id,oct,sorted,intern' +
+
+ // https://www.dartlang.org/docs/spec/latest/dart-language-specification.pdf
+    // Section 16.1.1
+    'assert,break,case,catch,class,const,continue,default,do,else,enum,extends,false,final,finally,for,if,in,is,new,null,rethrow,return,super,switch,this,throw,true,try,var,void,while,with,' +
+    // https://api.dartlang.org/dart_core.html
+    'print,identityHashCode,identical,BidirectionalIterator,Comparable,double,Function,int,Invocation,Iterable,Iterator,List,Map,Match,num,Pattern,RegExp,Set,StackTrace,String,StringSink,Type,bool,DateTime,Deprecated,Duration,Expando,Null,Object,RuneIterator,Runes,Stopwatch,StringBuffer,Symbol,Uri,Comparator,AbstractClassInstantiationError,ArgumentError,AssertionError,CastError,ConcurrentModificationError,CyclicInitializationError,Error,Exception,FallThroughError,FormatException,IntegerDivisionByZeroException,NoSuchMethodError,NullThrownError,OutOfMemoryError,RangeError,StackOverflowError,StateError,TypeError,UnimplementedError,UnsupportedError');
 
 /**
  * Order of operation ENUMs.
- * http://docs.python.org/reference/expressions.html#summary
+ * https://www.dartlang.org/docs/dart-up-and-running/ch02.html#operator_table
  */
-Blockly.Python.ORDER_ATOMIC = 0;            // 0 "" ...
-Blockly.Python.ORDER_COLLECTION = 1;        // tuples, lists, dictionaries
-Blockly.Python.ORDER_STRING_CONVERSION = 1; // `expression...`
-Blockly.Python.ORDER_MEMBER = 2;            // . []
-Blockly.Python.ORDER_FUNCTION_CALL = 2;     // ()
-Blockly.Python.ORDER_EXPONENTIATION = 3;    // **
-Blockly.Python.ORDER_UNARY_SIGN = 4;        // + -
-Blockly.Python.ORDER_BITWISE_NOT = 4;       // ~
-Blockly.Python.ORDER_MULTIPLICATIVE = 5;    // * / // %
-Blockly.Python.ORDER_ADDITIVE = 6;          // + -
-Blockly.Python.ORDER_BITWISE_SHIFT = 7;     // << >>
-Blockly.Python.ORDER_BITWISE_AND = 8;       // &
-Blockly.Python.ORDER_BITWISE_XOR = 9;       // ^
-Blockly.Python.ORDER_BITWISE_OR = 10;       // |
-Blockly.Python.ORDER_RELATIONAL = 11;       // in, not in, is, is not,
-                                            //     <, <=, >, >=, <>, !=, ==
-Blockly.Python.ORDER_LOGICAL_NOT = 12;      // not
-Blockly.Python.ORDER_LOGICAL_AND = 13;      // and
-Blockly.Python.ORDER_LOGICAL_OR = 14;       // or
-Blockly.Python.ORDER_CONDITIONAL = 15;      // if else
-Blockly.Python.ORDER_LAMBDA = 16;           // lambda
-Blockly.Python.ORDER_NONE = 99;             // (...)
+Blockly.Assembly.ORDER_ATOMIC = 0;         // 0 "" ...
+Blockly.Assembly.ORDER_UNARY_POSTFIX = 1;  // expr++ expr-- () [] .
+Blockly.Assembly.ORDER_UNARY_PREFIX = 2;   // -expr !expr ~expr ++expr --expr
+Blockly.Assembly.ORDER_MULTIPLICATIVE = 3; // * / % ~/
+Blockly.Assembly.ORDER_ADDITIVE = 4;       // + -
+Blockly.Assembly.ORDER_SHIFT = 5;          // << >>
+Blockly.Assembly.ORDER_BITWISE_AND = 6;    // &
+Blockly.Assembly.ORDER_BITWISE_XOR = 7;    // ^
+Blockly.Assembly.ORDER_BITWISE_OR = 8;     // |
+Blockly.Assembly.ORDER_RELATIONAL = 9;     // >= > <= < as is is!
+Blockly.Assembly.ORDER_EQUALITY = 10;      // == !=
+Blockly.Assembly.ORDER_LOGICAL_AND = 11;   // &&
+Blockly.Assembly.ORDER_LOGICAL_OR = 12;    // ||
+Blockly.Assembly.ORDER_CONDITIONAL = 13;   // expr ? expr : expr
+Blockly.Assembly.ORDER_CASCADE = 14;       // ..
+Blockly.Assembly.ORDER_ASSIGNMENT = 15;    // = *= /= ~/= %= += -= <<= >>= &= ^= |=
+Blockly.Assembly.ORDER_NONE = 99;          // (...)
 
-/**
- * Empty loops or conditionals are not allowed in Python.
- */
-Blockly.Python.PASS = '  pass\n';
+Blockly.Assembly.INDENT = '   ';
+Blockly.Assembly.STATEMENT_PREFIX = null;
 
-/**
- * Initialise the database of variable names.
+//******************* LINKITZ STUFF *******************
+
+var debug = 0;
+
+// Linkitz SPECIAL REGISTERS R0 - R127 ARE SET HERE
+
+// We maintain a dictionary of all global_list_variables, each element is a list of [head addr, list size]
+// global_list_variables builds DOWN from R127 to R0
+
+var glv_next = 127; // glv_next points to the empty register at the bottom of list register space
+var global_list_variables = new Object();
+
+// We maintain an array of all global_scalar_variables.
+// The variable_name's index in the array indicates the register number which holds the value
+// e.g. the variable_name in global_scalar_variables[5] has its value stored in R5
+// the first three registers are special.
+// R0 is null/zero.
+// R1 and R2 are used as scratch registers.
+// global_scalar_variables builds UP from R0 to R127
+
+var global_scalar_variables = [];
+global_scalar_variables[0] = 'zero'; // R0
+global_scalar_variables[1] = 'scratch1'; // R1
+global_scalar_variables[2] = 'scratch2'; // R2
+global_scalar_variables[3] = 'led_attached'; // R3
+global_scalar_variables[4] = 'usb_attached'; // R4
+global_scalar_variables[5] = 'motion_attached'; // R5
+global_scalar_variables[6] = 'batterylevel'; // R6
+global_scalar_variables[7] = 'ambientlight'; // R7
+
+var gsv_next = 8 // gsv_next points to the next empty register index
+var global_scalar_variables_pp =''; // string for pretty printing the GSV list
+
+var procs = new Object(); // holds name and return type (scalar or list) for each user-defined function
+
+
+var mask = 14; // 00001110 corresponding to ports 1,2,3 for checking if a specific type link is attached
+
+// undef_vars list holds the names of variables that are used before generator has seen their value
+// once value is set, variable name is moved to correct global variable list (scalar or list)
+var undef_vars = [];
+var undef_vars_next = 0;
+
+var ifCount = 0; //global var for generating unique labels for conditionals
+
+ /* Initialise the database of variable names.
  * @param {!Blockly.Workspace} workspace Workspace to generate code from.
  */
-Blockly.Python.init = function(workspace) {
+Blockly.Assembly.init = function(workspace) {
   // Create a dictionary of definitions to be printed before the code.
-  Blockly.Python.definitions_ = Object.create(null);
+  Blockly.Assembly.definitions_ = Object.create(null);
   // Create a dictionary mapping desired function names in definitions_
   // to actual function names (to avoid collisions with user functions).
-  Blockly.Python.functionNames_ = Object.create(null);
-
-  if (!Blockly.Python.variableDB_) {
-    Blockly.Python.variableDB_ =
-        new Blockly.Names(Blockly.Python.RESERVED_WORDS_);
+  Blockly.Assembly.functionNames_ = Object.create(null);
+  
+  if (!Blockly.Assembly.variableDB_) {
+    Blockly.Assembly.variableDB_ =
+        new Blockly.Names(Blockly.Assembly.RESERVED_WORDS_);
   } else {
-    Blockly.Python.variableDB_.reset();
+    Blockly.Assembly.variableDB_.reset();
   }
 
   var defvars = [];
   var variables = Blockly.Variables.allVariables(workspace);
   for (var i = 0; i < variables.length; i++) {
-    defvars[i] = Blockly.Python.variableDB_.getName(variables[i],
-        Blockly.Variables.NAME_TYPE) + ' = None';
+    defvars[i] = 'var ' +
+        Blockly.Assembly.variableDB_.getName(variables[i],
+        Blockly.Variables.NAME_TYPE) + ';';
   }
-  Blockly.Python.definitions_['variables'] = defvars.join('\n');
+  Blockly.Assembly.definitions_['variables'] = defvars.join('\n');
 };
 
 /**
@@ -116,68 +160,80 @@ Blockly.Python.init = function(workspace) {
  * @param {string} code Generated code.
  * @return {string} Completed code.
  */
-Blockly.Python.finish = function(code) {
+Blockly.Assembly.finish = function(code) {
+  // Indent every line.
+  
+  if (code) {
+    global_scalar_variables_pp = global_scalar_variables.join(',');
+    code = 'global_scalar_variables=['+ global_scalar_variables_pp + ']\n' + code;
+    // code = Blockly.Assembly.prefixLines(code, Blockly.Assembly.INDENT);
+    // var global_list_variables_pp = global_list_variables.join('\n');
+     var global_list_variables_pp = JSON.stringify(global_list_variables);
+    code = 'global_list_variables=['+ global_list_variables_pp + ']\n' + code;
+  }
+
   // Convert the definitions dictionary into a list.
   var imports = [];
   var definitions = [];
-  for (var name in Blockly.Python.definitions_) {
-    var def = Blockly.Python.definitions_[name];
-    if (def.match(/^(from\s+\S+\s+)?import\s+\S+/)) {
+  for (var name in Blockly.Assembly.definitions_) {
+    var def = Blockly.Assembly.definitions_[name];
+    if (def.match(/^import\s/)) {
       imports.push(def);
     } else {
       definitions.push(def);
     }
   }
   // Clean up temporary data.
-  delete Blockly.Python.definitions_;
-  delete Blockly.Python.functionNames_;
-  Blockly.Python.variableDB_.reset();
-  var allDefs = imports.join('\n') + '\n\n' + definitions.join('\n\n');
+  delete Blockly.Assembly.definitions_;
+  delete Blockly.Assembly.functionNames_;
+  Blockly.Assembly.variableDB_.reset();
+  // var allDefs = imports.join('\n') + '\n\n' + definitions.join('\n\n');
+  var allDefs = imports.join('\n');
   return allDefs.replace(/\n\n+/g, '\n\n').replace(/\n*$/, '\n\n\n') + code;
 };
 
 /**
  * Naked values are top-level blocks with outputs that aren't plugged into
- * anything.
+ * anything.  A trailing semicolon is needed to make this legal.
  * @param {string} line Line of generated code.
  * @return {string} Legal line of code.
  */
-Blockly.Python.scrubNakedValue = function(line) {
-  return line + '\n';
+Blockly.Assembly.scrubNakedValue = function(line) {
+  return line + ';\n';
 };
 
 /**
- * Encode a string as a properly escaped Python string, complete with quotes.
+ * Encode a string as a properly escaped Dart string, complete with quotes.
  * @param {string} string Text to encode.
- * @return {string} Python string.
+ * @return {string} Dart string.
  * @private
  */
-Blockly.Python.quote_ = function(string) {
+Blockly.Assembly.quote_ = function(string) {
   // TODO: This is a quick hack.  Replace with goog.string.quote
   string = string.replace(/\\/g, '\\\\')
                  .replace(/\n/g, '\\\n')
-                 .replace(/\%/g, '\\%')
+                 .replace(/\$/g, '\\$')
                  .replace(/'/g, '\\\'');
   return '\'' + string + '\'';
 };
 
 /**
- * Common tasks for generating Python from blocks.
+ * Common tasks for generating Dart from blocks.
  * Handles comments for the specified block and any connected value blocks.
  * Calls any statements following this block.
  * @param {!Blockly.Block} block The current block.
- * @param {string} code The Python code created for this block.
- * @return {string} Python code with comments and subsequent blocks added.
+ * @param {string} code The Dart code created for this block.
+ * @return {string} Dart code with comments and subsequent blocks added.
  * @private
  */
-Blockly.Python.scrub_ = function(block, code) {
+Blockly.Assembly.scrub_ = function(block, code) {
   var commentCode = '';
   // Only collect comments for blocks that aren't inline.
   if (!block.outputConnection || !block.outputConnection.targetConnection) {
     // Collect comment for this block.
     var comment = block.getCommentText();
     if (comment) {
-      commentCode += Blockly.Python.prefixLines(comment, '# ') + '\n';
+      commentCode += Blockly.Assembly.prefixLines(comment, '// ') + '\n';
     }
     // Collect comments for all value arguments.
     // Don't collect comments for nested statements.
@@ -185,15 +241,16 @@ Blockly.Python.scrub_ = function(block, code) {
       if (block.inputList[x].type == Blockly.INPUT_VALUE) {
         var childBlock = block.inputList[x].connection.targetBlock();
         if (childBlock) {
-          var comment = Blockly.Python.allNestedComments(childBlock);
+          var comment = Blockly.Assembly.allNestedComments(childBlock);
           if (comment) {
-            commentCode += Blockly.Python.prefixLines(comment, '# ');
+            commentCode += Blockly.Assembly.prefixLines(comment, '// ');
           }
         }
       }
     }
   }
   var nextBlock = block.nextConnection && block.nextConnection.targetBlock();
-  var nextCode = Blockly.Python.blockToCode(nextBlock);
+  // alert("blockToCode called");
+  var nextCode = Blockly.Assembly.blockToCode(nextBlock);
   return commentCode + code + nextCode;
 };

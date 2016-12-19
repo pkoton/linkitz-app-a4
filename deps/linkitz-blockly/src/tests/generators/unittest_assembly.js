@@ -19,18 +19,18 @@
  */
 
 /**
- * @fileoverview Generating Dart for unit test blocks.
+ * @fileoverview Generating Assembly for unit test blocks.
  * @author fraser@google.com (Neil Fraser)
  */
 'use strict';
 
-Blockly.Dart['unittest_main'] = function(block) {
+Blockly.Assembly['unittest_main'] = function(block) {
   // Container for unit tests.
-  var resultsVar = Blockly.Dart.variableDB_.getName('unittestResults',
+  var resultsVar = Blockly.Assembly.variableDB_.getName('unittestResults',
       Blockly.Variables.NAME_TYPE);
-  var functionName = Blockly.Dart.provideFunction_(
+  var functionName = Blockly.Assembly.provideFunction_(
       'unittest_report',
-      [ 'String ' + Blockly.Dart.FUNCTION_NAME_PLACEHOLDER_ + '() {',
+      [ 'String ' + Blockly.Assembly.FUNCTION_NAME_PLACEHOLDER_ + '() {',
         '  // Create test report.',
         '  List report = [];',
         '  StringBuffer summary = new StringBuffer();',
@@ -60,9 +60,9 @@ Blockly.Dart['unittest_main'] = function(block) {
   // Setup global to hold test results.
   var code = resultsVar + ' = [];\n';
   // Run tests (unindented).
-  code += Blockly.Dart.statementToCode(block, 'DO')
+  code += Blockly.Assembly.statementToCode(block, 'DO')
       .replace(/^  /, '').replace(/\n  /g, '\n');
-  var reportVar = Blockly.Dart.variableDB_.getDistinctName(
+  var reportVar = Blockly.Assembly.variableDB_.getDistinctName(
       'report', Blockly.Variables.NAME_TYPE);
   code += 'String ' + reportVar + ' = ' + functionName + '();\n';
   // Destroy results.
@@ -72,12 +72,12 @@ Blockly.Dart['unittest_main'] = function(block) {
   return code;
 };
 
-Blockly.Dart['unittest_main'].defineAssert_ = function() {
-  var resultsVar = Blockly.Dart.variableDB_.getName('unittestResults',
+Blockly.Assembly['unittest_main'].defineAssert_ = function() {
+  var resultsVar = Blockly.Assembly.variableDB_.getName('unittestResults',
       Blockly.Variables.NAME_TYPE);
-  var functionName = Blockly.Dart.provideFunction_(
+  var functionName = Blockly.Assembly.provideFunction_(
       'unittest_assertequals',
-      [ 'void ' + Blockly.Dart.FUNCTION_NAME_PLACEHOLDER_ +
+      [ 'void ' + Blockly.Assembly.FUNCTION_NAME_PLACEHOLDER_ +
           '(dynamic actual, dynamic expected, String message) {',
         '  // Asserts that a value equals another value.',
         '  if (' + resultsVar + ' == null) {',
@@ -109,22 +109,22 @@ Blockly.Dart['unittest_main'].defineAssert_ = function() {
   return functionName;
 };
 
-Blockly.Dart['unittest_assertequals'] = function(block) {
+Blockly.Assembly['unittest_assertequals'] = function(block) {
   // Asserts that a value equals another value.
-  var message = Blockly.Dart.quote_(block.getFieldValue('MESSAGE'));
-  var actual = Blockly.Dart.valueToCode(block, 'ACTUAL',
-      Blockly.Dart.ORDER_NONE) || 'null';
-  var expected = Blockly.Dart.valueToCode(block, 'EXPECTED',
-      Blockly.Dart.ORDER_NONE) || 'null';
-  return Blockly.Dart['unittest_main'].defineAssert_() +
+  var message = Blockly.Assembly.quote_(block.getFieldValue('MESSAGE'));
+  var actual = Blockly.Assembly.valueToCode(block, 'ACTUAL',
+      Blockly.Assembly.ORDER_NONE) || 'null';
+  var expected = Blockly.Assembly.valueToCode(block, 'EXPECTED',
+      Blockly.Assembly.ORDER_NONE) || 'null';
+  return Blockly.Assembly['unittest_main'].defineAssert_() +
       '(' + actual + ', ' + expected + ', ' + message + ');\n';
 };
 
-Blockly.Dart['unittest_assertvalue'] = function(block) {
+Blockly.Assembly['unittest_assertvalue'] = function(block) {
   // Asserts that a value is true, false, or null.
-  var message = Blockly.Dart.quote_(block.getFieldValue('MESSAGE'));
-  var actual = Blockly.Dart.valueToCode(block, 'ACTUAL',
-      Blockly.Dart.ORDER_NONE) || 'null';
+  var message = Blockly.Assembly.quote_(block.getFieldValue('MESSAGE'));
+  var actual = Blockly.Assembly.valueToCode(block, 'ACTUAL',
+      Blockly.Assembly.ORDER_NONE) || 'null';
   var expected = block.getFieldValue('EXPECTED');
   if (expected == 'TRUE') {
     expected = 'true';
@@ -133,18 +133,18 @@ Blockly.Dart['unittest_assertvalue'] = function(block) {
   } else if (expected == 'NULL') {
     expected = 'null';
   }
-  return Blockly.Dart['unittest_main'].defineAssert_() +
+  return Blockly.Assembly['unittest_main'].defineAssert_() +
       '(' + actual + ', ' + expected + ', ' + message + ');\n';
 };
 
-Blockly.Dart['unittest_fail'] = function(block) {
+Blockly.Assembly['unittest_fail'] = function(block) {
   // Always assert an error.
-  var resultsVar = Blockly.Dart.variableDB_.getName('unittestResults',
+  var resultsVar = Blockly.Assembly.variableDB_.getName('unittestResults',
       Blockly.Variables.NAME_TYPE);
-  var message = Blockly.Dart.quote_(block.getFieldValue('MESSAGE'));
-  var functionName = Blockly.Dart.provideFunction_(
+  var message = Blockly.Assembly.quote_(block.getFieldValue('MESSAGE'));
+  var functionName = Blockly.Assembly.provideFunction_(
       'unittest_fail',
-      [ 'void ' + Blockly.Dart.FUNCTION_NAME_PLACEHOLDER_ +
+      [ 'void ' + Blockly.Assembly.FUNCTION_NAME_PLACEHOLDER_ +
           '(String message) {',
         '  // Always assert an error.',
         '  if (' + resultsVar + ' == null) {',

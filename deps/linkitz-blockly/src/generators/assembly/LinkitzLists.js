@@ -26,27 +26,27 @@
  */
 'use strict';
 
-goog.require('Blockly.Dart');
+goog.require('Blockly.Assembly');
 
-Blockly.Dart.addReservedWords('Math');
+Blockly.Assembly.addReservedWords('Math');
 
-Blockly.Dart['lists_getIndex_nonMut'] = function(block) {
+Blockly.Assembly['lists_getIndex_nonMut'] = function(block) {
   // Get element at index.
   // Note: Until January 2013 this block did not have MODE or WHERE inputs.
   var mode = 'GET';
   var where = block.getFieldValue('WHERE') || 'FROM_START';
-  var at = Blockly.Dart.valueToCode(block, 'AT',
-      Blockly.Dart.ORDER_UNARY_PREFIX) || '1';
+  var at = Blockly.Assembly.valueToCode(block, 'AT',
+      Blockly.Assembly.ORDER_UNARY_PREFIX) || '1';
   if (debug) {alert('(Blockly.isNumber(at)  = ' + Blockly.isNumber(at))};
-  var list = Blockly.Dart.valueToCode(block, 'VALUE',
-      Blockly.Dart.ORDER_UNARY_POSTFIX) || '[]';
+  var list = Blockly.Assembly.valueToCode(block, 'VALUE',
+      Blockly.Assembly.ORDER_UNARY_POSTFIX) || '[]';
 
     if (where == 'FIRST') {
         var code = list + '.first';
-        return [code, Blockly.Dart.ORDER_UNARY_POSTFIX];
+        return [code, Blockly.Assembly.ORDER_UNARY_POSTFIX];
     } else if (where == 'LAST') {
         var code = list + '.last';
-        return [code, Blockly.Dart.ORDER_UNARY_POSTFIX];
+        return [code, Blockly.Assembly.ORDER_UNARY_POSTFIX];
       } else if (where == 'FROM_START') {
         // Blockly uses one-based indicies.
                 if (Blockly.isNumber(at)) {
@@ -57,39 +57,39 @@ Blockly.Dart['lists_getIndex_nonMut'] = function(block) {
                       at += ' - 1';
                       }
           var code = list + '[' + at + ']';
-          return [code, Blockly.Dart.ORDER_UNARY_POSTFIX];
+          return [code, Blockly.Assembly.ORDER_UNARY_POSTFIX];
      } else if (where == 'FROM_END') {
-        var functionName = Blockly.Dart.provideFunction_(
+        var functionName = Blockly.Assembly.provideFunction_(
             'lists_get_from_end',
-            [ 'dynamic ' + Blockly.Dart.FUNCTION_NAME_PLACEHOLDER_ +
+            [ 'dynamic ' + Blockly.Assembly.FUNCTION_NAME_PLACEHOLDER_ +
                 '(List myList, num x) {',
               '  x = myList.length - x;',
               '  return myList.removeAt(x);',
               '}']);
         code = functionName + '(' + list + ', ' + at + ')';
-        return [code, Blockly.Dart.ORDER_UNARY_POSTFIX];
+        return [code, Blockly.Assembly.ORDER_UNARY_POSTFIX];
       } 
   throw 'Unhandled combination (lists_getIndex).';
 };
 
-Blockly.Dart['lists_setIndex_nonMut'] = function(block) {
+Blockly.Assembly['lists_setIndex_nonMut'] = function(block) {
   // Set element at index.
   // Note: Until February 2013 this block did not have MODE or WHERE inputs.
-  var list = Blockly.Dart.valueToCode(block, 'LIST',
-      Blockly.Dart.ORDER_UNARY_POSTFIX) || '[]';
+  var list = Blockly.Assembly.valueToCode(block, 'LIST',
+      Blockly.Assembly.ORDER_UNARY_POSTFIX) || '[]';
   var mode = 'SET';
   var where = block.getFieldValue('WHERE') || 'FROM_START';
-  var at = Blockly.Dart.valueToCode(block, 'AT',
-      Blockly.Dart.ORDER_ADDITIVE) || '1';
-  var value = Blockly.Dart.valueToCode(block, 'TO',
-      Blockly.Dart.ORDER_ASSIGNMENT) || 'null';
+  var at = Blockly.Assembly.valueToCode(block, 'AT',
+      Blockly.Assembly.ORDER_ADDITIVE) || '1';
+  var value = Blockly.Assembly.valueToCode(block, 'TO',
+      Blockly.Assembly.ORDER_ASSIGNMENT) || 'null';
   // Cache non-trivial values to variables to prevent repeated look-ups.
   // Closure, which accesses and modifies 'list'.
   function cacheList() {
     if (list.match(/^\w+$/)) {
       return '';
     }
-    var listVar = Blockly.Dart.variableDB_.getDistinctName(
+    var listVar = Blockly.Assembly.variableDB_.getDistinctName(
         'tmp_list', Blockly.Variables.NAME_TYPE);
     var code = 'List ' + listVar + ' = ' + list + ';\n';
     list = listVar;

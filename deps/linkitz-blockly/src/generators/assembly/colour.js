@@ -24,9 +24,9 @@
  */
 'use strict';
 
-goog.provide('Blockly.Dart.colour');
+goog.provide('Blockly.Assembly.colour');
 
-goog.require('Blockly.Dart');
+goog.require('Blockly.Assembly');
 
 // convert a hexidecimal color string to 0..255 R,G,B, remember that first char is #
 // example input: #ff00cc
@@ -62,9 +62,9 @@ function HSVtoRGB(h, s, v) {
     return [r,g,b];
 }
 
-Blockly.Dart.addReservedWords('Math');
+Blockly.Assembly.addReservedWords('Math');
 
-Blockly.Dart['colour_picker'] = function(block) {
+Blockly.Assembly['colour_picker'] = function(block) {
   // Colour picker.
   var value_color = block.getFieldValue('COLOUR'); // getFieldValue('COLOUR') returns the color as a hex string no quotes
   var colorRGB = hexToRGB (value_color);
@@ -73,16 +73,16 @@ Blockly.Dart['colour_picker'] = function(block) {
       'Set R1 ' + colorRGB[1] + '\nPush R1\n' +  //G
       'Set R1 ' + colorRGB[0] + '\nPush R1\n' + // R
       'Set R1 3' + '\nPush R1\n'; // add length of color list =3
-  return [code, Blockly.Dart.ORDER_ATOMIC];
+  return [code, Blockly.Assembly.ORDER_ATOMIC];
 };
 
-Blockly.Dart['colour_random'] = function(block) {
+Blockly.Assembly['colour_random'] = function(block) {
   // Generate a random colour.
-  Blockly.Dart.definitions_['import_dart_math'] =
+  Blockly.Assembly.definitions_['import_dart_math'] =
       'import \'dart:math\' as Math;';
-  var functionName = Blockly.Dart.provideFunction_(
+  var functionName = Blockly.Assembly.provideFunction_(
       'colour_random',
-      [ 'String ' + Blockly.Dart.FUNCTION_NAME_PLACEHOLDER_ + '() {',
+      [ 'String ' + Blockly.Assembly.FUNCTION_NAME_PLACEHOLDER_ + '() {',
         '  String hex = \'0123456789abcdef\';',
         '  var rnd = new Math.Random();',
         '  return \'#${hex[rnd.nextInt(16)]}${hex[rnd.nextInt(16)]}\'',
@@ -90,23 +90,23 @@ Blockly.Dart['colour_random'] = function(block) {
         '      \'${hex[rnd.nextInt(16)]}${hex[rnd.nextInt(16)]}\';',
         '}']);
   var code = functionName + '()';
-  return [code, Blockly.Dart.ORDER_UNARY_POSTFIX];
+  return [code, Blockly.Assembly.ORDER_UNARY_POSTFIX];
 };
 
-Blockly.Dart['colour_rgb'] = function(block) {
+Blockly.Assembly['colour_rgb'] = function(block) {
   // Compose a colour from RGB components expressed as percentages.
-  var red = Blockly.Dart.valueToCode(block, 'RED',
-      Blockly.Dart.ORDER_NONE) || 0;
-  var green = Blockly.Dart.valueToCode(block, 'GREEN',
-      Blockly.Dart.ORDER_NONE) || 0;
-  var blue = Blockly.Dart.valueToCode(block, 'BLUE',
-      Blockly.Dart.ORDER_NONE) || 0;
+  var red = Blockly.Assembly.valueToCode(block, 'RED',
+      Blockly.Assembly.ORDER_NONE) || 0;
+  var green = Blockly.Assembly.valueToCode(block, 'GREEN',
+      Blockly.Assembly.ORDER_NONE) || 0;
+  var blue = Blockly.Assembly.valueToCode(block, 'BLUE',
+      Blockly.Assembly.ORDER_NONE) || 0;
 
-  Blockly.Dart.definitions_['import_dart_math'] =
+  Blockly.Assembly.definitions_['import_dart_math'] =
       'import \'dart:math\' as Math;';
-  var functionName = Blockly.Dart.provideFunction_(
+  var functionName = Blockly.Assembly.provideFunction_(
       'colour_rgb',
-      [ 'String ' + Blockly.Dart.FUNCTION_NAME_PLACEHOLDER_ +
+      [ 'String ' + Blockly.Assembly.FUNCTION_NAME_PLACEHOLDER_ +
           '(num r, num g, num b) {',
         '  num rn = (Math.max(Math.min(r, 1), 0) * 255).round();',
         '  String rs = rn.toInt().toRadixString(16);',
@@ -123,23 +123,23 @@ Blockly.Dart['colour_rgb'] = function(block) {
         '  return \'#$rs$gs$bs\';',
         '}']);
   var code = functionName + '(' + red + ', ' + green + ', ' + blue + ')';
-  return [code, Blockly.Dart.ORDER_UNARY_POSTFIX];
+  return [code, Blockly.Assembly.ORDER_UNARY_POSTFIX];
 };
 
-Blockly.Dart['colour_blend'] = function(block) {
+Blockly.Assembly['colour_blend'] = function(block) {
   // Blend two colours together.
-  var c1 = Blockly.Dart.valueToCode(block, 'COLOUR1',
-      Blockly.Dart.ORDER_NONE) || '\'#000000\'';
-  var c2 = Blockly.Dart.valueToCode(block, 'COLOUR2',
-      Blockly.Dart.ORDER_NONE) || '\'#000000\'';
-  var ratio = Blockly.Dart.valueToCode(block, 'RATIO',
-      Blockly.Dart.ORDER_NONE) || 0.5;
+  var c1 = Blockly.Assembly.valueToCode(block, 'COLOUR1',
+      Blockly.Assembly.ORDER_NONE) || '\'#000000\'';
+  var c2 = Blockly.Assembly.valueToCode(block, 'COLOUR2',
+      Blockly.Assembly.ORDER_NONE) || '\'#000000\'';
+  var ratio = Blockly.Assembly.valueToCode(block, 'RATIO',
+      Blockly.Assembly.ORDER_NONE) || 0.5;
 
-  Blockly.Dart.definitions_['import_dart_math'] =
+  Blockly.Assembly.definitions_['import_dart_math'] =
       'import \'dart:math\' as Math;';
-  var functionName = Blockly.Dart.provideFunction_(
+  var functionName = Blockly.Assembly.provideFunction_(
       'colour_blend',
-      [ 'String ' + Blockly.Dart.FUNCTION_NAME_PLACEHOLDER_ +
+      [ 'String ' + Blockly.Assembly.FUNCTION_NAME_PLACEHOLDER_ +
           '(String c1, String c2, num ratio) {',
         '  ratio = Math.max(Math.min(ratio, 1), 0);',
         '  int r1 = int.parse(\'0x${c1.substring(1, 3)}\');',
@@ -163,5 +163,5 @@ Blockly.Dart['colour_blend'] = function(block) {
         '  return \'#$rs$gs$bs\';',
         '}']);
   var code = functionName + '(' + c1 + ', ' + c2 + ', ' + ratio + ')';
-  return [code, Blockly.Dart.ORDER_UNARY_POSTFIX];
+  return [code, Blockly.Assembly.ORDER_UNARY_POSTFIX];
 };
