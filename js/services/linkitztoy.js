@@ -221,6 +221,34 @@ linkitzApp.factory('LinkitzToy',
         return deferred.promise;
     }
 
+    function linkitzReadID() {
+        var deferred = $q.defer();
+
+        var address = 0x3ff8;
+        var bufferLength = 8;
+        var idBuffer = new Uint16Array(4);
+
+        linkitz.getData(address, bufferLength,
+            function successCallback(rxBuffer) {
+                idBuffer[0] = ((rxBuffer[0] & 0x3f) << 8) + rxBuffer[1];
+                idBuffer[1] = ((rxBuffer[2] & 0x3f) << 8) + rxBuffer[3];
+                idBuffer[2] = ((rxBuffer[4] & 0x3f) << 8) + rxBuffer[5];
+                idBuffer[3] = ((rxBuffer[6] & 0x3f) << 8) + rxBuffer[7];
+                $rootScope.$evalAsync(function () {
+                    deferred.resolve(idBuffer);
+                });
+            },
+            function timeoutCallback() {
+                deferred.reject("Timeout programming device.");
+            },
+            function errorCallback() {
+                deferred.reject("Error programming device.");
+            }
+        );
+
+        return deferred.promise;
+    }
+
     function linkitzProgramDevice(programHex) {
         var deferred = $q.defer();
 
@@ -308,7 +336,8 @@ linkitzApp.factory('LinkitzToy',
         'eraseDevice':      linkitzEraseDevice,
         'programDevice':    linkitzProgramDevice,
         'resetDevice':      linkitzResetDevice,
-        'signFlash':        linkitzSignFlash
+        'signFlash':        linkitzSignFlash,
+        'readID':           linkitzReadID
     };
 
 }]);

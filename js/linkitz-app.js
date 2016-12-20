@@ -31,18 +31,57 @@ linkitzApp.controller('LinkitzAppController', [
             $scope.platformInfo = info;
         });
 
-    $scope.hubs = {
-        'B1': {},
-        'B2': {}
-    };
+    $scope.isConnected = false;
 
-    $scope.lastHub = 'B1';
+    $scope.hubs = {};
+    $scope.lastHub = '00:00:00:00';
+
+    $scope.hubID = null;
     $scope.activeProgram = null;
 
     $scope.devMode = false;
     $scope.editor = {};
     $scope.editor.blocklyXML = emptyBlocklyXML;
     $scope.editor.dirty = false;
+
+    $scope.setHubID = function setHubID(connectedHubId) {
+        $scope.hubID = connectedHubId;
+        $scope.lastHub = connectedHubId[0].toString(16) + ':' +
+                         connectedHubId[1].toString(16) + ':' +
+                         connectedHubId[2].toString(16) + ':' +
+                         connectedHubId[3].toString(16);
+        if (!$scope.hubs[$scope.lastHub]) {
+            $scope.hubs[$scope.lastHub] = {};
+        }
+        return $scope.saveState();
+    }
+
+    $scope.setConnected = function setConnected(connected) {
+        $scope.isConnected = connected;
+    }
+
+    $scope.restoreState = function restoreState() {
+        return ChromeBrowser.loadLocalStorage("persistState")
+            .then(function (persistState) {
+                if (persistState) {
+                    $scope.lastHub = persistState.lastHub;
+                    angular.forEach(persistState.hubs, function(value, key) {
+                        $scope.hubs[key] = {};
+                    });
+                }
+            });
+    }
+
+    $scope.saveState = function saveState() {
+        var persistState = {
+            'hubs': {},
+            'lastHub': $scope.lastHub
+        };
+        angular.forEach($scope.hubs, function(value, key) {
+            persistState.hubs[key] = key;
+        });
+        return ChromeBrowser.saveLocalStorage("persistState", persistState);
+    }
 
     $scope.queryPrograms = function queryPrograms() {
         angular.forEach($scope.hubs, function(value, key) {
@@ -160,6 +199,7 @@ linkitzApp.controller('LinkitzAppController', [
         }
     };
 
-    $scope.queryPrograms();
+    $scope.restoreState()
+        .then($scope.queryPrograms);
 
 }]);
