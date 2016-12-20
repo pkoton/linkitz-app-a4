@@ -11,7 +11,6 @@ angular.module('linkitzApp').controller('ToolbarController', [
     'minimumFirmwareVersion',
     function($scope, $timeout, LogService, LinkitzToy, Messager, errorCatcher, ChromeBrowser, minimumFirmwareVersion) {
 
-	$scope.isConnected = false;
 	$scope.connectTransitioning = false;
 
 	$scope.toggleConnect = function toggleConnect()
@@ -24,7 +23,11 @@ angular.module('linkitzApp').controller('ToolbarController', [
                     return LinkitzToy.verifyDevice();
                 })
                 .then(function (querybytes) {
-                    $scope.isConnected = true;
+                    $scope.setConnected(true);
+                    return LinkitzToy.readID();
+                })
+                .then(function (connectedID) {
+                    $scope.setHubID(connectedID);
                 })
                 .catch(function (reason) {
                     $scope.connectTransitioning = false;
@@ -34,7 +37,7 @@ angular.module('linkitzApp').controller('ToolbarController', [
 		else {
 			LinkitzToy.disconnect()
 				.then(function () {
-					$scope.isConnected = false;
+                    $scope.setConnected(false);
 					$scope.connectTransitioning = false;
 				})
                 .catch(function (reason) {
