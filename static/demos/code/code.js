@@ -318,7 +318,7 @@ Code.renderContent = function() {
       content.innerHTML = code;
     }
   } else if (content.id == 'content_bytecode') {
-    var code = generate_hex(Blockly.Assembly.workspaceToCode(Code.workspace));
+    var code = linkitzApp_hexgen_generate_hex(Blockly.Assembly.workspaceToCode(Code.workspace));
     content.textContent = code;
     if (typeof prettyPrintOne == 'function') {
       code = content.innerHTML;
