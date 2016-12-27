@@ -51,22 +51,30 @@ function linkitzApp_hexgen_pad_words(byte){
     return linkitzApp_hexgen_byte_2_hex(byte)+"38";
 }
 
+function linkitzApp_hexgen_identify_Rreg(name){
+    //console.log("identifying src by name:"+name);
+    var isolateNumberRegex=/r(\d+)/i;
+    match = isolateNumberRegex.exec(name);
+    //console.log("found:"+match[1]);
+    if(match==null){
+        throw("could not find an Rreg in:"+name);
+    }
+    return linkitzApp_hexgen_pad_words(match[1]);
+}
+
 function linkitzApp_hexgen_generate_hex(assembly_code) {
     var hex_output="";
+    var unlinkedCodeLines = [];//this is the list of code segments that don't yet have addresses for the goto commands
+    var currentCodeBlock;
     var labels = {};
-    var variable_list = {};
-    variable_list["R0"]=[0,0];
-//constants
     var code_offset = 0x3000;
     var code_end = 0x3EFE;
-    var default_code_head = 0x3C00;
 
-    var stackptr=1;
     //labels["OnRegularEvent"]=code_offset+0;
     var address=code_offset;
 
     //we're prepared for parsing
-    var assembly_lines = assembly_code.split("\n");
+    var assembly_lines = assembly_code.toLowerCase().split("\n");
     var line_ptr;
     //first three lines store
         //list of list variables
@@ -82,98 +90,129 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
         //line is of the form "label:data"
         if(line.match(/.+:.*/)){
             var label_and_data=line.split(":");
-            labels[label_and_data] = address;
+            labels[label_and_data[0]] = address;
+            //console.log("setting labels["+label_and_data[0]+"]to:"+address);
             token_list = label_and_data[1].trim().split(/\s+/);
         } else {//line is of the form data
             token_list=line.trim().split(/\s+/);
         }
+
 /*
-//Following format is depricated for now
-        //line is of the form "var item"
-        if(token_list[0].match(/var/i)){
-            //FIXME I shouldn't be hardcoded at length 3
-            //variableList[token_list[1]]=[3,stackptr];
-            //FIXME I should write when declared instead of when instantiated
-            //throw("variable "+token_list[1]+" declared");
-            //stackptr+=3;
-        }
+    Instruction Space
+    05:Syscall
+        00: Syscall exit
+        01: Set_Reg_Event_Speed
+        02: FlashHue
+    06:ArglessSyscall (Syscall)
+        01: GetMotionData
+        02: FlashRGB 
+    08:Set
+    09:Goto
+    0A:Push
+    0B:Pop
+    0C:
+    BD:Reserved indicates error
+
 */
     var hex_line="";
-    throw("token_list is:"+token_list);
+    //console.log("token_list is:"+token_list);
         if(token_list.length==0||token_list[0]==""){
-        } else if(token_list[0].match(/syscall/i)){
-            hex_line+=linkitzApp_hexgen_pad_words("05");
+            //console.log("skipping empty line")
+        } else if(token_list[0].match(/band3/i)){
+            throw("code to handle band3 isn't yet written")
+        }else if(token_list[0].match(/syscall/i)){
+            //console.log("processing syscall")
+            //identify if it's a syscall with no arguments or with one
+            if(token_list[1].match(/exit/i)||
+                token_list[1].match(/flashHue/i)||
+                token_list[1].match(/set_reg_event_speed/i)){
 
-            //identify syscall type
-            if(token_list[1].match(/exit/i)){
-                hex_line+=linkitzApp_hexgen_pad_words("00");
-            } else if(token_list[1].match(/flashRGB/i)){
-            //flashRGB takes it's arguments from the top of the stack. 
-            //it implicitly pops a list off of the stack.
-                hex_line+=linkitzApp_hexgen_pad_words("01");
-            } else if(token_list[1].match(/flashHue/i)){
-            //flashHue 
-                hex_line+=linkitzApp_hexgen_pad_words("02");
-            }  else {
-                throw("could not match second token of syscall in line:"+line);
-            }
+                //console.log("syscall should have one argument")
+                hex_line+=linkitzApp_hexgen_pad_words("05");
 
-            //identify source
-            if(token_list[2].match(/r0/i)){
-                hex_line+=linkitzApp_hexgen_pad_words("00");
-            } else {
-                if(!(token_list[2] in variable_list)){
-                    throw("could not find source:"+token_list[2]);
+                //identify syscall type
+                if(token_list[1].match(/exit/i)){
+                    hex_line+=linkitzApp_hexgen_pad_words("00");
+                } else if(token_list[1].match(/set_reg_event_speed/i)){
+                    hex_line+=linkitzApp_hexgen_pad_words("01");
+                } else if(token_list[1].match(/flashHue/i)){
+                    hex_line+=linkitzApp_hexgen_pad_words("02");
+                } else {
+                    throw("could not match second token of syscall in line:"+line);
                 }
-                hex_line+=linkitzApp_hexgen_pad_words(variable_list[token_list[2]]);
-            }//FIXME see if I can match the token to the variableList
-            hex_output+=linkitzApp_hexgen_make_hex_line(address,hex_line);
-            address+=6;
 
+                //identify source
+                hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
+                unlinkedCodeLines.push([address,hex_line,token_list]);
+                address+=6;
+
+            } else if(token_list[1].match(/flashRGB/i)||
+                token_list[1].match(/get_motion_data/i)){
+            //flashRGB takes it's arguments from the top of the stack.
+            //get_motion_data places arguments onto the stack 
+            //it implicitly pops a list off of the stack.
+                //console.log("syscall has no arguments")
+                hex_line+=linkitzApp_hexgen_pad_words("06");
+                if(token_list[1].match(/flashRGB/i)){
+                    hex_line+=linkitzApp_hexgen_pad_words("01");
+                } else if(token_list[1].match(/get_motion_data/i)){
+                    hex_line+=linkitzApp_hexgen_pad_words("02");
+                } else {
+                    hex_line+=linkitzApp_hexgen_pad_words("BD");
+                }
+                unlinkedCodeLines.push([address,hex_line,token_list]);
+                address+=4;
+            } else {
+                console.log("ERROR: No rule to process syscall:"+token_list[1]);
+            }
         } else if(token_list[0].match(/set/i)){
             hex_line+=linkitzApp_hexgen_pad_words("08");
             //identify source
-            if(!token_list[1].match(/.+\+.+/)){
-                if(!(token_list[1] in variable_list))//can't find source but I can create it
-                {
-                    variable_list[token_list[1]]=stackptr;
-                    //throw("variable_list["+token_list[1]+"]="+variable_list[token_list[1]]);
-                    stackptr+=token_list[2];//FIXME should probably convert to int
-                }
-                hex_line+=linkitzApp_hexgen_pad_words(variable_list[token_list[1]])
-            } else {
-                var subtokens = token_list[1].split("+");
-                var baseVar = parseInt(variable_list[subtokens[0]],16);
-                var offsetVar = parseInt(subtokens[1],16);
-                var adjustedVar = baseVar + offsetVar;
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
 
-                //throw("write to "+variable_list[subtokens[0]]+"+"+subtokens[1]);
-                hex_line+=linkitzApp_hexgen_pad_words(adjustedVar);
-            }
 
             hex_line+=linkitzApp_hexgen_pad_words(token_list[2]);
-            hex_output+=linkitzApp_hexgen_make_hex_line(address,hex_line);
+            unlinkedCodeLines.push([address,hex_line,token_list]);
             address+=6;
         } else if(token_list[0].match(/goto/i)){
             hex_line+=linkitzApp_hexgen_pad_words("09");
+            hex_line+=linkitzApp_hexgen_pad_words("BD");
+            hex_line+=linkitzApp_hexgen_pad_words("BD");
+            unlinkedCodeLines.push([address,hex_line,token_list]);
+            address+=6;
         } else if(token_list[0].match(/push/i)){
             hex_line+=linkitzApp_hexgen_pad_words("0A");
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
+            unlinkedCodeLines.push([address,hex_line,token_list]);
+            address+=4;
         } else if(token_list[0].match(/pop/i)){
             hex_line+=linkitzApp_hexgen_pad_words("0B");
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
+            unlinkedCodeLines.push([address,hex_line,token_list]);
+            address+=4;
         } else {
             throw("Could not match token: \""+token_list[0]+"\" in: "+line);
         }
     }
-
-    //hex_output = "checksum for 01 is:"+linkitzApp_hexgen_append_checksum("01")+"\n";
-    //hex_output=     linkitzApp_hexgen_make_hex_line(0x3000,"08");//checksum should be C7
-    //hex_output=hex_output+linkitzApp_hexgen_make_hex_line(0x3001,"3801");
-    //hex_output=hex_output+linkitzApp_hexgen_make_hex_line(0x3003,"380338");
-    //hex_output=hex_output+linkitzApp_hexgen_make_hex_line(0x3006,"08380238AC38");
-    //hex_output=hex_output+linkitzApp_hexgen_make_hex_line(0x300C,"08380338ED38");
-    //hex_output=hex_output+linkitzApp_hexgen_make_hex_line(0x3012,"083804388038");
-    //hex_output=hex_output+linkitzApp_hexgen_make_hex_line(0x3018,"053801380138");
-    //hex_output=hex_output+linkitzApp_hexgen_make_hex_line(0x301E,"053800380038");
+    console.log("DONE ASSEMBLING CODE...LINKING...");
+    for(line_ptr=0;line_ptr<unlinkedCodeLines.length;line_ptr++){
+        var linkedaddr = unlinkedCodeLines[line_ptr][0];
+        var linkhex_line = unlinkedCodeLines[line_ptr][1];
+        var tokens = unlinkedCodeLines[line_ptr][2]
+        if(tokens[0].match(/goto/i)){
+            linkhex_line = linkitzApp_hexgen_pad_words("09");
+            //console.log("matching label:"+tokens[1]);
+            var targetAddr = labels[tokens[1]];
+            //console.log("targetAddr:"+targetAddr);
+            linkhex_line+=linkitzApp_hexgen_pad_words(linkitzApp_hexgen_byte_2_hex(Math.floor(targetAddr/256)));
+            linkhex_line+=linkitzApp_hexgen_pad_words(linkitzApp_hexgen_byte_2_hex((targetAddr)%256));
+            hex_output+=linkitzApp_hexgen_make_hex_line(linkedaddr,linkhex_line);
+        } else {
+            hex_output+=linkitzApp_hexgen_make_hex_line(linkedaddr,linkhex_line);
+        }
+        //console.log("token list:"+tokens+" Places hex:"+linkhex_line+" At addr:"+linkedaddr);
+        
+    }
     hex_output+=":00000001FF\n";
 
 //        var output = assembly_code+";Start HEX Record\n"+hex_output;
