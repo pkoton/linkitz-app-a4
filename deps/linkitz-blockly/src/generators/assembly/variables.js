@@ -109,7 +109,7 @@ goog.require('Blockly.Assembly');
       } // end if (blocks[i].type == 'procedures_defreturn')
              
       else if (current_block.type == 'variables_set') { //********** set to scalar or list?
-          var varName = Blockly.Dart.variableDB_.getName(current_block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+          var varName = Blockly.Assembly.variableDB_.getName(current_block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
           console.log("in loop1 trying to variables_set " + varName);
           if (global_scalar_variables.indexOf(varName) >=0) {
             console.log("in loop2 found scalar in GSV");
@@ -123,7 +123,7 @@ goog.require('Blockly.Assembly');
               console.log("in loop2 targetBlock " + targetBlock);
               if (targetBlock) {
               var inputType = targetBlock.type;
-              var assigned_value = Blockly.Dart.valueToCode(targetBlock, 'VALUE', Blockly.Dart.ORDER_ASSIGNMENT) || null;
+              var assigned_value = Blockly.Assembly.valueToCode(targetBlock, 'VALUE', Blockly.Assembly.ORDER_ASSIGNMENT) || null;
               console.log("in resolve_var_refs:\nTarget Block is " + targetBlock + "\nvarName is " + varName + " is being assigned input of type " + inputType);
               
                 switch (inputType) {
@@ -218,7 +218,7 @@ goog.require('Blockly.Assembly');
                   
                   case 'procedures_callreturn': // variable is assigned to the return val of a function
                     console.log("in case procedures_callreturn, current_block = " + current_block + " trying to find scalar/list of " + varName + " where targetBlock = " + targetBlock + " inputType = " + inputType);
-                    var funcName = Blockly.Dart.variableDB_.getName(targetBlock.getFieldValue('NAME'),Blockly.Procedures.NAME_TYPE);
+                    var funcName = Blockly.Assembly.variableDB_.getName(targetBlock.getFieldValue('NAME'),Blockly.Procedures.NAME_TYPE);
                     console.log("funcName = " + funcName);
                     if (funcName in proc_types) { // already found
                       console.log("found procedure " + funcName +  "in proc_types");
