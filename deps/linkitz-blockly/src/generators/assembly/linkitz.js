@@ -16,7 +16,7 @@
 // If no input, treats as Hue = 0 and calls flashHue
 
 Blockly.Assembly['flash_leds'] = function(block) {
-  var flash_arg = Blockly.Dart.valueToCode(block, 'COLOR', Blockly.Dart.ORDER_ATOMIC) ;
+  var flash_arg = Blockly.Assembly.valueToCode(block, 'COLOR', Blockly.Assembly.ORDER_ATOMIC) ;
   console.log("in flash_leds: input is *" + flash_arg +'*');
   if (flash_arg == 'None' || flash_arg =='') {
     // *****  input is blank or null
@@ -85,7 +85,7 @@ Blockly.Assembly['flash_leds'] = function(block) {
                 }
         break;
       case 'procedures_callreturn':
-        var procName = Blockly.Dart.variableDB_.getName(targetBlock.getFieldValue('NAME'),Blockly.Procedures.NAME_TYPE);
+        var procName = Blockly.Assembly.variableDB_.getName(targetBlock.getFieldValue('NAME'),Blockly.Procedures.NAME_TYPE);
         console.log("in flash_leds: procedures_callreturn  on " + procName);
         // look up if proc retuns scalar or list
         if (proc_types[procName][0] == 0) { //returns a scalar, value is in R1
@@ -144,7 +144,7 @@ Blockly.Assembly['on_motion_trigger'] = function(block) {
 
 Blockly.Assembly['getmotiondata'] = function(block) {
   var code = 'Syscall GETMOTIONDATA\n';// this puts motion data on the stack in order top{4,M,L,N,K,...} 4 is length of data
-  return [code, Blockly.Dart.ORDER_ATOMIC];
+  return [code, Blockly.Assembly.ORDER_ATOMIC];
 };
 
 
@@ -326,8 +326,8 @@ Blockly.Assembly['on_initialization'] = function(block) {
 };
 
 Blockly.Assembly['on_regular_event'] = function(block) {
-  var dothis = Blockly.Dart.statementToCode(block, 'NAME');
-  var code = 'on_regular_event:\n' + dothis + Blockly.Dart.INDENT + 'syscall exit R0\n';
+  var dothis = Blockly.Assembly.statementToCode(block, 'NAME');
+  var code = 'on_regular_event:\n' + dothis + Blockly.Assembly.INDENT + 'syscall exit R0\n';
   return code;
 };
 
@@ -358,7 +358,7 @@ Blockly.Assembly['getambientlight'] = function(block) {
 
 
 Blockly.Assembly['RegularEventSpeed'] = function(block) {
-  var argument0 = Blockly.Dart.valueToCode(block, 'PERIOD', Blockly.Dart.ORDER_ASSIGNMENT);
+  var argument0 = Blockly.Assembly.valueToCode(block, 'PERIOD', Blockly.Assembly.ORDER_ASSIGNMENT);
   if (!argument0) {
     var code = 'Syscall SET_REG_EVENT_SPEED R0\n';
     return code;
