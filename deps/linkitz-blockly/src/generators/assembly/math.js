@@ -75,8 +75,8 @@ Blockly.Assembly['math_arithmetic'] = function(block) {
 Blockly.Assembly['math_binary'] = function(block) {
   // Basic arithmetic operators, and power.
   var OPERATORS = {
-    'BITWISEAND': [' & ', Blockly.Assembly.ORDER_ADDITIVE],
-    'BITWISEOR': [' | ', Blockly.Assembly.ORDER_ADDITIVE]
+    'BITWISEAND': ['band3', Blockly.Assembly.ORDER_ADDITIVE],
+    'BITWISEOR': ['bor3', Blockly.Assembly.ORDER_ADDITIVE]
   };
   var tuple = OPERATORS[block.getFieldValue('OP')];
   var operator = tuple[0];
@@ -84,7 +84,7 @@ Blockly.Assembly['math_binary'] = function(block) {
   var argument0 = Blockly.Assembly.valueToCode(block, 'A', order) || '0';
   var argument1 = Blockly.Assembly.valueToCode(block, 'B', order) || '0';
   var code;
-  // Power in Dart requires a special case since it has no operator.
+  // Power in Assembly requires a special case since it has no operator.
   code = argument0 + 'push R1 \n' + argument1 + 'pop R2 \n' + operator + ' R2 R1 R1\n';
   return [code, order];
 };
