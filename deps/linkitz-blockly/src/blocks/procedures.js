@@ -52,15 +52,16 @@ Blockly.Blocks['procedures_defnoreturn'] = {
         .appendField(nameField, 'NAME')
         .appendField('', 'PARAMS');
     this.setMutator(new Blockly.Mutator(['procedures_mutatorarg']));
-    if (Blockly.Msg.PROCEDURES_DEFNORETURN_COMMENT) {
-      this.setCommentText(Blockly.Msg.PROCEDURES_DEFNORETURN_COMMENT);
-    }
+    //if (Blockly.Msg.PROCEDURES_DEFNORETURN_COMMENT) {
+    //  this.setCommentText(Blockly.Msg.PROCEDURES_DEFNORETURN_COMMENT);
+    //}
     this.setColour(Blockly.Blocks.procedures.HUE);
     this.setTooltip(Blockly.Msg.PROCEDURES_DEFNORETURN_TOOLTIP);
     this.setHelpUrl(Blockly.Msg.PROCEDURES_DEFNORETURN_HELPURL);
     this.arguments_ = [];
     this.setStatements_(true);
     this.statementConnection_ = null;
+    this.hasReturnValue_ = false;
   },
   /**
    * Initialization of the block has completed, clean up anything that may be
@@ -372,6 +373,7 @@ Blockly.Blocks['procedures_defreturn'] = {
     this.arguments_ = [];
     this.setStatements_(true);
     this.statementConnection_ = null;
+    this.hasReturnValue_ = true;
   },
   setStatements_: Blockly.Blocks['procedures_defnoreturn'].setStatements_,
   validate: Blockly.Blocks['procedures_defnoreturn'].validate,
