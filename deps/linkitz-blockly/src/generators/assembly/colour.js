@@ -28,6 +28,21 @@ goog.provide('Blockly.Assembly.colour');
 
 goog.require('Blockly.Assembly');
 
+// Rather than 0...255 Linkitz colors got from 0...127
+// 0 is off, 127 is 100%
+// this is handled in the functions that write a value into a register of stack
+// using helper function lkzify
+
+function lkzify(num) {
+    if (num <= 0) {
+        return 0;
+        }
+    else {
+        num = Math.floor(num/2);
+        return num;
+    }
+}
+
 // convert a hexidecimal color string to 0..255 R,G,B, remember that first char is #
 // example input: #ff00cc
 
@@ -69,13 +84,14 @@ Blockly.Assembly['colour_picker'] = function(block) {
   var value_color = block.getFieldValue('COLOUR'); // getFieldValue('COLOUR') returns the color as a hex string no quotes
   var colorRGB = hexToRGB (value_color);
     var code = // want to push so stack is in this order top{3,R,G,B,...}
-      'Set R1 ' + colorRGB[2] + '\nPush R1\n' +  // B
-      'Set R1 ' + colorRGB[1] + '\nPush R1\n' +  //G
-      'Set R1 ' + colorRGB[0] + '\nPush R1\n' + // R
+      'Set R1 ' + lkzify(colorRGB[2]) + '\nPush R1\n' +  // B
+      'Set R1 ' + lkzify(colorRGB[1]) + '\nPush R1\n' +  //G
+      'Set R1 ' + lkzify(colorRGB[0]) + '\nPush R1\n' + // R
       'Set R1 3' + '\nPush R1\n'; // add length of color list =3
-  return [code, Blockly.Assembly.ORDER_ATOMIC];
+  return [code, Blockly.Dart.ORDER_ATOMIC];
 };
 
+// all the following need to have the numbers lkzify'd before using
 Blockly.Assembly['colour_random'] = function(block) {
   // Generate a random colour.
   Blockly.Assembly.definitions_['import_dart_math'] =
