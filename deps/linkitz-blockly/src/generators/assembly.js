@@ -92,6 +92,9 @@ var debug = 0;
 // We maintain a dictionary of all global_list_variables, each element is a list of [head addr, list size]
 // global_list_variables builds DOWN from R127 to R0
 
+// Global list variables format (head_address,list_length,item_length)
+// e.g. (118,9,3) starts at R118 and has three items each of which takes us 3 registers
+
 var glv_next = 127; // glv_next points to the empty register at the bottom of list register space
 var global_list_variables = new Object();
 
@@ -116,8 +119,11 @@ global_scalar_variables[7] = 'ambientlight'; // R7
 var gsv_next = 8 // gsv_next points to the next empty register index
 var global_scalar_variables_pp =''; // string for pretty printing the GSV list
 
-var procs = new Object(); // holds name and return type (scalar or list) for each user-defined function
-
+// proc_types indexed by name of each user-defined function that returns a value
+// proc_types[procName][0] = 0 if proc returns scalar, = 1 if proc returns a list
+// proc_types[procName][1] = length of register space taken by list values (0 if proc returns a scalar)
+var proc_types = new Object(); 
+var pnext = 0;
 
 var mask = 14; // 00001110 corresponding to ports 1,2,3 for checking if a specific type link is attached
 
