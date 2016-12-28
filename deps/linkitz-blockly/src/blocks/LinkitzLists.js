@@ -226,7 +226,7 @@ Blockly.Blocks['lists_setIndex_nonMut'] = {
   }
 };
 
-
+// returns an empty list of length n
 
 Blockly.Blocks['lists_create_n'] = {
   init: function() {
