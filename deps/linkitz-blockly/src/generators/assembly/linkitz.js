@@ -106,7 +106,7 @@ Blockly.Assembly['flash_leds'] = function(block) {
 Blockly.Assembly['led_attached'] = function(block) {
   var found = global_scalar_variables.indexOf('led_attached');
   if (found >= 0) { // it better be!
-    var code = 'Push R' + found + '\nPop R1\nset R2 '+ mask + '\n& R1 R2 R1\n'; // only look at the lower bits
+    var code = 'Push R' + found + '\nPop R1\nset R2 '+ mask + '\nband3 R1 R2 R1\n'; // only look at the lower bits
     // the value in R1, if 0 then no led attached, else 2 4 8 tells you where
     } else {
       var code = 'Set R1 0\n'; // if you can't find led_attached in GSV, treat as no led attached
@@ -117,7 +117,7 @@ Blockly.Assembly['led_attached'] = function(block) {
 Blockly.Assembly['usb_attached'] = function(block) {
   var found = global_scalar_variables.indexOf('usb_attached');
   if (found >= 0) { // it better be!
-    var code = 'Push R' + found + '\nPop R1\nset R2 '+ mask + '\n& R1 R2 R1\n'; // only look at the lower bits
+    var code = 'Push R' + found + '\nPop R1\nset R2 '+ mask + '\nband3 R1 R2 R1\n'; // only look at the lower bits
     // the value in R1, if 0 then no usb attached, else 2 4 8 tells you where
     } else {
       var code = 'Set R1 0\n'; // if you can't find usb_attached in GSV, treat as no usb attached
@@ -151,7 +151,7 @@ Blockly.Assembly['getmotiondata'] = function(block) {
 Blockly.Assembly['motion_attached'] = function(block) {
   var found = global_scalar_variables.indexOf('motion_attached');
   if (found >= 0) { // it better be!
-    var code = 'Push R' + found + '\nPop R1\nset R2 '+ mask + '\n& R1 R2 R1\n'; // only look at the lower bits
+    var code = 'Push R' + found + '\nPop R1\nset R2 '+ mask + '\nband3 R1 R2 R1\n'; // only look at the lower bits
     // the value in R1, if 0 then no motion attached, else 2 4 8 tells you where
     } else {
       var code = 'Set R1 0\n'; // if you can't find motion_attached in GSV, treat as no motion attached
