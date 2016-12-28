@@ -116,7 +116,8 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
     13:SUB
     14:MUL
     15:DIV
-    
+    16:POW
+
 
 
     BD:Reserved indicates error
@@ -127,8 +128,48 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
         if(token_list.length==0||token_list[0]==""){
             //console.log("skipping empty line")
         } else if(token_list[0].match(/band3/i)){
-            throw("code to handle band3 isn't yet written")
-        }else if(token_list[0].match(/syscall/i)){
+            hex_line+=linkitzApp_hexgen_pad_words("10");
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
+            unlinkedCodeLines.push([address,hex_line,token_list]);
+            address+=6;
+        } else if(token_list[0].match(/bor3/i)){
+            hex_line+=linkitzApp_hexgen_pad_words("11");
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
+            unlinkedCodeLines.push([address,hex_line,token_list]);
+            address+=6;
+        } else if(token_list[0].match(/add/i)){
+            hex_line+=linkitzApp_hexgen_pad_words("12");
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
+            unlinkedCodeLines.push([address,hex_line,token_list]);
+            address+=6;
+        } else if(token_list[0].match(/sub/i)){
+            hex_line+=linkitzApp_hexgen_pad_words("13");
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
+            unlinkedCodeLines.push([address,hex_line,token_list]);
+            address+=6;
+        } else if(token_list[0].match(/mul/i)){
+            hex_line+=linkitzApp_hexgen_pad_words("14");
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
+            unlinkedCodeLines.push([address,hex_line,token_list]);
+            address+=6;
+        } else if(token_list[0].match(/div/i)){
+            hex_line+=linkitzApp_hexgen_pad_words("15");
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
+            unlinkedCodeLines.push([address,hex_line,token_list]);
+            address+=6;
+        } else if(token_list[0].match(/pow/i)){
+            hex_line+=linkitzApp_hexgen_pad_words("16");
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
+            unlinkedCodeLines.push([address,hex_line,token_list]);
+            address+=6;
+        } else if(token_list[0].match(/syscall/i)){
             //console.log("processing syscall")
             //identify if it's a syscall with no arguments or with one
             if( token_list[1].match(/exit/i)||
