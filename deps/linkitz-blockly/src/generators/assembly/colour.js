@@ -88,7 +88,7 @@ Blockly.Assembly['colour_picker'] = function(block) {
       'Set R1 ' + lkzify(colorRGB[1]) + '\nPush R1\n' +  //G
       'Set R1 ' + lkzify(colorRGB[0]) + '\nPush R1\n' + // R
       'Set R1 3' + '\nPush R1\n'; // add length of color list =3
-  return [code, Blockly.Dart.ORDER_ATOMIC];
+  return [code, Blockly.Assembly.ORDER_ATOMIC];
 };
 
 // all the following need to have the numbers lkzify'd before using
