@@ -78,17 +78,18 @@ Blockly.Generator.prototype.workspaceToCode = function(workspace) {
     console.warn('No workspace specified in workspaceToCode call.  Guessing.');
     workspace = Blockly.getMainWorkspace();
   }
-  if (debug){alert("starting")};
+  console.log("starting");
   var code = [];
   this.init(workspace);
   var blocks = workspace.getTopBlocks(true);
     // added linkitz function to prepare memory allocation for all variables
-    if (debug){alert("calling resolve var refs")};
-  if (resolve_var_refs(workspace, 0) == 0) {
+  console.log("calling resolve var refs");
+  if (resolve_var_refs(workspace,0) == 0) {
       alert("unresolved variables issue");
   }
   else {
-    if (debug){alert("out of resolve var refs")};
+    console.log("out of resolve var refs");
+  }
     // put in entrypoints
     for (var x = 0, block; block = blocks[x]; x++) {
       var blocktype = block.type;
@@ -103,7 +104,8 @@ Blockly.Generator.prototype.workspaceToCode = function(workspace) {
     for (var x = 0, block; block = blocks[x]; x++) {
       var blocktype = block.type;
       // alert('top block of type ' + blocktype);
-      if (blocktype == 'on_initialization' || blocktype == 'on_regular_event' || blocktype == 'on_motion_trigger' || blocktype == 'procedures_defreturn' || blocktype == 'procedures_defnoreturn') {
+      if (blocktype == 'on_initialization' || blocktype == 'on_regular_event' ||
+          blocktype == 'on_motion_trigger' || blocktype == 'procedures_defreturn' || blocktype == 'procedures_defnoreturn') {
         var line = this.blockToCode(block);
         if (goog.isArray(line)) {
          // Value blocks return tuples of code and operator order.
@@ -127,7 +129,6 @@ Blockly.Generator.prototype.workspaceToCode = function(workspace) {
   code = code.replace(/\n\s+$/, '\n');
   code = code.replace(/[ \t]+\n/g, '\n');
   return code;
-  }
 };
 
 // The following are some helpful functions which can be used by multiple
@@ -181,7 +182,7 @@ Blockly.Generator.prototype.blockToCode = function(block) {
   }
 
   var func = this[block.type];
-  if (debug) {alert("block type is " + block.type)};
+  console.log("in Dart.blockToCode, block type is " + block.type);
   goog.asserts.assertFunction(func,
       'Language "%s" does not know how to generate code for block type "%s".',
       this.name_, block.type);
