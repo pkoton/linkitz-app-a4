@@ -771,6 +771,23 @@ Blockly.Block.prototype.setOutput = function(newBoolean, opt_check) {
   }
 };
 
+/** NEW
+ * /
+ * /**
+ * Set whether this block returns a value.
+ * @return {Object.<string>|null} List of returned types.
+ *     Null if no type was specified for the output or the block does not
+ *     have an output.
+ */
+Blockly.Block.prototype.getOutput = function() {
+  var result = [];
+  if (this.outputConnection) {
+    result = this.outputConnection.check_;
+  }
+  return result;
+}
+
+
 /**
  * Set whether value inputs are arranged horizontally or vertically.
  * @param {boolean} newBoolean True if inputs are horizontal.
