@@ -49,10 +49,10 @@ Blockly.Assembly['math_number'] = function(block) {
 Blockly.Assembly['math_arithmetic'] = function(block) {
   // Basic arithmetic operators, and power.
   var OPERATORS = {
-    'ADD': [' + ', Blockly.Assembly.ORDER_ADDITIVE],
-    'MINUS': [' - ', Blockly.Assembly.ORDER_ADDITIVE],
-    'MULTIPLY': [' * ', Blockly.Assembly.ORDER_MULTIPLICATIVE],
-    'DIVIDE': [' / ', Blockly.Assembly.ORDER_MULTIPLICATIVE],
+    'ADD': ['ADD', Blockly.Assembly.ORDER_ADDITIVE],
+    'MINUS': ['SUB', Blockly.Assembly.ORDER_ADDITIVE],
+    'MULTIPLY': ['MUL', Blockly.Assembly.ORDER_MULTIPLICATIVE],
+    'DIVIDE': ['DIV', Blockly.Assembly.ORDER_MULTIPLICATIVE],
     'POWER': [null, Blockly.Assembly.ORDER_NONE]  // Handle power separately.
   };
   var tuple = OPERATORS[block.getFieldValue('OP')];
