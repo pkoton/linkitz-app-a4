@@ -28,8 +28,31 @@ goog.provide('Blockly.Assembly.procedures');
 
 goog.require('Blockly.Assembly');
 
+function this_proc_return_type(current_block) {
+  //console.log("in this_proc return type");
+  console.log("in this_proc_return_type of " + current_block);
+  var procName = current_block.getFieldValue('NAME');
+  console.log(procName);
+  var returnBlock = current_block.getInputTargetBlock('RETURN');
+  console.log('returnBlock is ' + returnBlock);
+  console.log('testing getOutput: ' + current_block.getOutput());
+        if (is_scalar(returnBlock)) {
+          proc_types[procName] = 0;
+          console.log("returns scalar");
+          return 0;
+          } else if (is_list(returnBlock)) {
+             proc_types[procName] = 1;
+             console.log("returns list");
+             return 1;
+            } else {
+              console.log("still working on this");
+              proc_types[procName] = null;
+              return null;
+              }
+}
+
 Blockly.Assembly['procedures_defreturn'] = function(block) {
-  if (debug) {alert('in procedures def [no] return')};
+  console.log('in procedures def [no] return');
   // Define a procedure with a return value.
   var funcName = Blockly.Assembly.variableDB_.getName(block.getFieldValue('NAME'),
       Blockly.Procedures.NAME_TYPE);
@@ -46,26 +69,30 @@ Blockly.Assembly['procedures_defreturn'] = function(block) {
   var returnValue = Blockly.Assembly.valueToCode(block, 'RETURN',
       Blockly.Assembly.ORDER_NONE) || '';
   if (returnValue) {
-    // add proc name and return type to procs[funcName]
-    //var type;
-    //var item = this.getInputTargetBlock('VALUE');
-    //  if (item) {
-    //    type = item.getOutput();
-    //    }
-    returnValue = Blockly.Assembly.INDENT +  returnValue + ';\nsyscall return R1\n'; // value in R1
+    //  get return value type
+    var returnType = block.getInputTargetBlock('RETURN').type;
+    console.log("Return block " + block.getInputTargetBlock('RETURN') + ", returnType = " + returnType);
+    if (is_scalar(block.getInputTargetBlock('RETURN')) || (returnType == 'Number') || (returnType == 'Boolean') || (returnType == 'String')) {
+      console.log("procedure return type should be AKO scalar, is " + returnType);
+      var returnCode = returnValue + 'syscall return R1\n'; // value in R1
+    } else if (is_list(block.getInputTargetBlock('RETURN')) || (returnType == 'Array') || (returnType == 'Colour')) {
+        console.log("procedure return type should be AKO list, is " + returnType);
+        var returnCode = returnValue + 'syscall Lreturn\n'; // value on stack
+      } 
+      // else if (returnType == 'variables_get') {]
+      else {
+        console.log("procedure return type failed");
+        returnValue = Blockly.Assembly.INDENT + 'syscall return R0\n';  // no returned value, just return R0
+      }
   }
-    else {
-    returnValue = Blockly.Assembly.INDENT + 'syscall return R0\n';  // no returned value, just return R0
-    }
   var returnType = returnValue ? 'dynamic' : 'void'; // we don't use this ATM
   var args = [];
   for (var x = 0; x < block.arguments_.length; x++) {
     args[x] = Blockly.Assembly.variableDB_.getName(block.arguments_[x],
         Blockly.Variables.NAME_TYPE);
   }
-  var code =  funcName + //'(' + args.join(', ') + ') {\n'
-   ':\n' + branch + returnValue ;
-if (debug) {alert('procedure code is ' + code)};
+  var code =  funcName + ':\n' + branch + returnCode ;
+  console.log('procedure code is ' + code);
   code = Blockly.Assembly.scrub_(block, code);
   Blockly.Assembly.definitions_[funcName] = code;
   return code;
@@ -82,9 +109,11 @@ Blockly.Assembly['procedures_callreturn'] = function(block) {
   var args = [];
   if (block.arguments_.length==0) {
     // called with no args
+    console.log(funcName + ' called with no args');
     var code = 'fcall ' + funcName + '\n';
   }
   else {
+  console.log(funcName + 'called with args');
   for (var x = 0; x < block.arguments_.length; x++) {
     args[x] = Blockly.Assembly.valueToCode(block, 'ARG' + x,
         Blockly.Assembly.ORDER_NONE) || 'null';
