@@ -53,7 +53,7 @@ Blockly.Assembly['math_arithmetic'] = function(block) {
     'MINUS': ['SUB', Blockly.Assembly.ORDER_ADDITIVE],
     'MULTIPLY': ['MUL', Blockly.Assembly.ORDER_MULTIPLICATIVE],
     'DIVIDE': ['DIV', Blockly.Assembly.ORDER_MULTIPLICATIVE],
-    'POWER': [null, Blockly.Assembly.ORDER_NONE]  // Handle power separately.
+    'POWER': ['POW', Blockly.Assembly.ORDER_EXPONENTIATION]  // Handle power separately.
   };
   var tuple = OPERATORS[block.getFieldValue('OP')];
   var operator = tuple[0];
@@ -61,13 +61,7 @@ Blockly.Assembly['math_arithmetic'] = function(block) {
   var argument0 = Blockly.Assembly.valueToCode(block, 'A', order) || '0';
   var argument1 = Blockly.Assembly.valueToCode(block, 'B', order) || '0';
   var code;
-  // Power in Dart requires a special case since it has no operator.
-  if (!operator) {
-    Blockly.Assembly.definitions_['import_dart_math'] =
-        'import \'dart:math\' as Math;';
-    code = 'Math.pow(' + argument0 + ', ' + argument1 + ')';
-    return [code, Blockly.Assembly.ORDER_UNARY_POSTFIX];
-  }
+ 
   code = argument0 + 'push R1 \n' + argument1 + 'pop R2 \n' + operator + ' R2 R1 R1\n';
   return [code, order];
 };

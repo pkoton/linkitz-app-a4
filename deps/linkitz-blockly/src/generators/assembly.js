@@ -65,19 +65,20 @@ Blockly.Assembly.addReservedWords(
 Blockly.Assembly.ORDER_ATOMIC = 0;         // 0 "" ...
 Blockly.Assembly.ORDER_UNARY_POSTFIX = 1;  // expr++ expr-- () [] .
 Blockly.Assembly.ORDER_UNARY_PREFIX = 2;   // -expr !expr ~expr ++expr --expr
-Blockly.Assembly.ORDER_MULTIPLICATIVE = 3; // * / % ~/
-Blockly.Assembly.ORDER_ADDITIVE = 4;       // + -
-Blockly.Assembly.ORDER_SHIFT = 5;          // << >>
-Blockly.Assembly.ORDER_BITWISE_AND = 6;    // &
-Blockly.Assembly.ORDER_BITWISE_XOR = 7;    // ^
-Blockly.Assembly.ORDER_BITWISE_OR = 8;     // |
-Blockly.Assembly.ORDER_RELATIONAL = 9;     // >= > <= < as is is!
-Blockly.Assembly.ORDER_EQUALITY = 10;      // == !=
-Blockly.Assembly.ORDER_LOGICAL_AND = 11;   // &&
-Blockly.Assembly.ORDER_LOGICAL_OR = 12;    // ||
-Blockly.Assembly.ORDER_CONDITIONAL = 13;   // expr ? expr : expr
-Blockly.Assembly.ORDER_CASCADE = 14;       // ..
-Blockly.Assembly.ORDER_ASSIGNMENT = 15;    // = *= /= ~/= %= += -= <<= >>= &= ^= |=
+Blockly.Assembly.ORDER_EXPONENTIATION = 3;
+Blockly.Assembly.ORDER_MULTIPLICATIVE = 4; // * / % ~/
+Blockly.Assembly.ORDER_ADDITIVE = 5;       // + -
+Blockly.Assembly.ORDER_SHIFT = 6;          // << >>
+Blockly.Assembly.ORDER_BITWISE_AND = 7;    // &
+Blockly.Assembly.ORDER_BITWISE_XOR = 8;    // ^
+Blockly.Assembly.ORDER_BITWISE_OR = 9;     // |
+Blockly.Assembly.ORDER_RELATIONAL = 10;     // >= > <= < as is is!
+Blockly.Assembly.ORDER_EQUALITY = 11;      // == !=
+Blockly.Assembly.ORDER_LOGICAL_AND = 12;   // &&
+Blockly.Assembly.ORDER_LOGICAL_OR = 13;    // ||
+Blockly.Assembly.ORDER_CONDITIONAL = 14;   // expr ? expr : expr
+Blockly.Assembly.ORDER_CASCADE = 15;       // ..
+Blockly.Assembly.ORDER_ASSIGNMENT = 16;    // = *= /= ~/= %= += -= <<= >>= &= ^= |=
 Blockly.Assembly.ORDER_NONE = 99;          // (...)
 
 Blockly.Assembly.INDENT = '   ';

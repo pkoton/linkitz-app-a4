@@ -110,7 +110,15 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
     09:Goto
     0A:Push
     0B:Pop
-    0C:
+    10:BAND3
+    11:BOR3
+    12:ADD
+    13:SUB
+    14:MUL
+    15:DIV
+    
+
+
     BD:Reserved indicates error
 
 */
@@ -123,7 +131,7 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
         }else if(token_list[0].match(/syscall/i)){
             //console.log("processing syscall")
             //identify if it's a syscall with no arguments or with one
-            if(token_list[1].match(/exit/i)||
+            if( token_list[1].match(/exit/i)||
                 token_list[1].match(/flashHue/i)||
                 token_list[1].match(/set_reg_event_speed/i)){
 
@@ -147,7 +155,7 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
                 address+=6;
 
             } else if(token_list[1].match(/flashRGB/i)||
-                token_list[1].match(/get_motion_data/i)){
+                token_list[1].match(/getmotiondata/i)){
             //flashRGB takes it's arguments from the top of the stack.
             //get_motion_data places arguments onto the stack 
             //it implicitly pops a list off of the stack.
@@ -155,7 +163,7 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
                 hex_line+=linkitzApp_hexgen_pad_words("06");
                 if(token_list[1].match(/flashRGB/i)){
                     hex_line+=linkitzApp_hexgen_pad_words("01");
-                } else if(token_list[1].match(/get_motion_data/i)){
+                } else if(token_list[1].match(/getmotiondata/i)){
                     hex_line+=linkitzApp_hexgen_pad_words("02");
                 } else {
                     hex_line+=linkitzApp_hexgen_pad_words("BD");
