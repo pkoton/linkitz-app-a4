@@ -16,15 +16,17 @@
 // If no input, treats as Hue = 0 and calls flashHue
 
 Blockly.Assembly['flash_leds'] = function(block) {
-  var flash_arg = Blockly.Assembly.valueToCode(block, 'COLOR', Blockly.Assembly.ORDER_ATOMIC) ;
-  if (debug) {alert("in flash_leds: input is *" + flash_arg +'*')};
-  if (flash_arg == 'None' || flash_arg =='') { // input is blank or null
+  var flash_arg = Blockly.Dart.valueToCode(block, 'COLOR', Blockly.Dart.ORDER_ATOMIC) ;
+  console.log("in flash_leds: input is *" + flash_arg +'*');
+  if (flash_arg == 'None' || flash_arg =='') {
+    // *****  input is blank or null
     //alert('input is null');
     var code = 'Push R0\nsyscall flashRGB\n'; 
   }
   else {
+    // ***** input returns a scalar
     var targetBlock = block.getInputTargetBlock('COLOR');
-     if (debug) {alert("in flash_leds: input is block type " + targetBlock.type)};
+     console.log("in flash_leds: input is block type " + targetBlock.type);
      switch (targetBlock.type) {
       case 'math_number': // these all return a scalar, leaving the value in R1
       case "math_arithmetic":
@@ -41,9 +43,10 @@ Blockly.Assembly['flash_leds'] = function(block) {
       case "lists_getIndex_nonMut": // Drew said just return a scalar and we can fix later - 11/27/2016
       case "getbatterylevel":
       case "getambientlight":
-        var code = flash_arg + 'syscall flashHue R1' +  '\n';
+        var code = flash_arg + '\nsyscall flashHue R1' +  '\n';
         break;
       
+      // ***** input returns a list
       // Flash(getmotiondata) length 4 on stack, uses XYZ discards M
       // Flash(len 3) (one color) flashes most recently used petal specified color
       // Flash(len 12) (four colors) flashes hub, petal 1, petal 2 and petal 3 the specified colors in that order
@@ -53,32 +56,46 @@ Blockly.Assembly['flash_leds'] = function(block) {
       case 'array':
       case 'lists_create_n':
       case 'lists_create_with':
-        var code = flash_arg + 'syscall flashRGB' +  '\n'; 
+        var code = flash_arg + '\nsyscall flashRGB' +  '\n'; 
         break;
+      
+      // ***** Input type could be either a scalar or a list
       case 'variables_get':
         var varName = targetBlock.getFieldValue('VAR');
-        if (debug) {alert("in flash_leds: variables_get varName is " +varName)};
+        console.log("in flash_leds: variables_get varName is " +varName);
         if (global_scalar_variables.indexOf(varName) >= 0) { // it's a scalar variable
-          var code = flash_arg + 'syscall flashHue R1' +  '\n'; // value is put in R1
+          var code = flash_arg + '\nsyscall flashHue R1' +  '\n'; // value is put in R1
           }
-          else if (varName in global_list_variables) { // it's a list, pointer is in R1
+          else if (varName in global_list_variables) { // it's a list
             // but we need the colors on the stack; push the colors onto stack
+            var code = '';
             var headaddr = global_list_variables[varName][0];
-            var list_len = global_list_variables[varName][1];
-            var pushes = '';
-            for (var i = 1; i < list_len; i++) { //*******make sure not backwards
-              pushes = pushes + 'Push R' + (headaddr + i) + '\n';
-              }
-            pushes = pushes + 'Set R1 ' + (list_len - 1) + '\nPush R1\n';
-            var code = pushes + 'syscall flashRGB' +  '\n';
+            var llen = global_list_variables[varName][1];
+            var topOfList = headaddr + llen - 1;
+            console.log("headaddr " + headaddr + " llen " + llen + " topOfList " + topOfList);
+            for (var i = 0; i < llen; i++) { //push values on stack
+              code += ' push R' +  (topOfList - i) + '\n';
+            }
+            // pushes = pushes + 'Set R1 ' + (list_len - 1) + '\nPush R1\n';
+            code += 'syscall flashRGB' +  '\n';
             }
               else {
-                if (debug) {alert('in flash_leds: variable not defined')};
+                console.log('in flash_leds: variable not defined');
                 var code = "FAIL1 at flash_leds\n";       
                 }
         break;
+      case 'procedures_callreturn':
+        var procName = Blockly.Dart.variableDB_.getName(targetBlock.getFieldValue('NAME'),Blockly.Procedures.NAME_TYPE);
+        console.log("in flash_leds: procedures_callreturn  on " + procName);
+        // look up if proc retuns scalar or list
+        if (proc_types[procName][0] == 0) { //returns a scalar, value is in R1
+          var code = flash_arg + '\nsyscall flashHue R1' +  '\n';
+        } else if (proc_types[procName][0] == 1) { // returns a list, value on stack
+          code = flash_arg + '\nsyscall flashRGB' +  '\n';
+        }
+        break;
       default: // we don't know what it is
-        if (debug) {alert('in flash_leds: input of unknown type')};
+        console.log('in flash_leds: input of unknown type');
         var code = "FAIL2 at flash_leds\n";
         break;
      }
@@ -126,9 +143,10 @@ Blockly.Assembly['on_motion_trigger'] = function(block) {
 // future work: if assigning to a scalar, return M
 
 Blockly.Assembly['getmotiondata'] = function(block) {
-  var code = 'GETMOTIONDATA\n';// this puts motion data on the stack in order top{4,M,L,N,K,...} 4 is length of data
-  return [code, Blockly.Assembly.ORDER_ATOMIC];
+  var code = 'Syscall GETMOTIONDATA\n';// this puts motion data on the stack in order top{4,M,L,N,K,...} 4 is length of data
+  return [code, Blockly.Dart.ORDER_ATOMIC];
 };
+
 
 Blockly.Assembly['motion_attached'] = function(block) {
   var found = global_scalar_variables.indexOf('motion_attached');
@@ -308,8 +326,8 @@ Blockly.Assembly['on_initialization'] = function(block) {
 };
 
 Blockly.Assembly['on_regular_event'] = function(block) {
-  var dothis = Blockly.Assembly.statementToCode(block, 'NAME');
-  var code = 'OnRegularEvent:\n' + dothis + Blockly.Assembly.INDENT + 'syscall exit R0\n';
+  var dothis = Blockly.Dart.statementToCode(block, 'NAME');
+  var code = 'on_regular_event:\n' + dothis + Blockly.Dart.INDENT + 'syscall exit R0\n';
   return code;
 };
 
@@ -340,16 +358,20 @@ Blockly.Assembly['getambientlight'] = function(block) {
 
 
 Blockly.Assembly['RegularEventSpeed'] = function(block) {
-  var argument0 = Blockly.Assembly.valueToCode(block, 'PERIOD', Blockly.Assembly.ORDER_ASSIGNMENT);
-  if (!argument0) {argument0 = 'Set R1 0\n';}
-  var splitArg = argument0.split(" ",3); // separate the result into 3 words
-  var argNum = parseInt(splitArg[2]); // check the number
-  if (argNum > 127) {argument0 = 'Set R1 127\n';} //pin between 127 max
-    else if (argNum < -127) {argument0 = 'Set R1 -127\n';} // and -127 min
-  var code = argument0 + 'Syscall SET_REG_EVENT_SPEED R1\n'; //finds it's argument in R1
-  return code;
+  var argument0 = Blockly.Dart.valueToCode(block, 'PERIOD', Blockly.Dart.ORDER_ASSIGNMENT);
+  if (!argument0) {
+    var code = 'Syscall SET_REG_EVENT_SPEED R0\n';
+    return code;
+    }
+    else {
+      var splitArg = argument0.split(" ",3); // separate the result into 3 words
+      var argNum = parseInt(splitArg[2]); // check the number
+      if (argNum > 127) {argument0 = 'Set R1 127\n';} //pin between 127 max
+        else if (argNum < -127) {argument0 = 'Set R1 -127\n';} // and -127 min
+      var code = argument0 + 'Syscall SET_REG_EVENT_SPEED R1\n'; //finds it's argument in R1
+      return code;
+    }
 };
-
 
 Blockly.Assembly['roster_event_two'] = function(block) {
   var dropdown_link3 = block.getFieldValue('Link3');
