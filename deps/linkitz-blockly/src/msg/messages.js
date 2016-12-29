@@ -1039,7 +1039,7 @@ Blockly.Msg.PROCEDURES_DEFNORETURN_DO = '';
 /// tooltip
 Blockly.Msg.PROCEDURES_DEFNORETURN_TOOLTIP = 'Creates a function with no output.';
 /// Placeholder text that the user is encouraged to replace with a description of what their function does.
-Blockly.Msg.PROCEDURES_DEFNORETURN_COMMENT = 'Describe this function...';
+Blockly.Msg.PROCEDURES_DEFNORETURN_COMMENT = '';
 /// url - Information about defining [https://en.wikipedia.org/wiki/Procedure_(computer_science) functions] that have return values.
 Blockly.Msg.PROCEDURES_DEFRETURN_HELPURL = 'https://en.wikipedia.org/wiki/Procedure_%28computer_science%29';
 Blockly.Msg.PROCEDURES_DEFRETURN_TITLE = Blockly.Msg.PROCEDURES_DEFNORETURN_TITLE;
