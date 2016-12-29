@@ -103,6 +103,7 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
         00: Syscall exit
         01: Set_Reg_Event_Speed
         02: FlashHue
+        03: Random
     06:ArglessSyscall (Syscall)
         01: GetMotionData
         02: FlashRGB 
@@ -110,6 +111,8 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
     09:Goto
     0A:Push
     0B:Pop
+    0C:ABS
+
     10:BAND3
     11:BOR3
     12:ADD
@@ -117,58 +120,133 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
     14:MUL
     15:DIV
     16:POW
+    17:LAND
+    18:LOR
+    
+    20:CMPEQ
+    21:CMPNEQ
+    22:CMPLT
+    23:CMPLE
+    24:CMPGT
+    25:CMPGE
+    
+
+
 
 
 
     BD:Reserved indicates error
 
 */
-    var hex_line="";
-    //console.log("token_list is:"+token_list);
+    	var hex_line="";
+    	//console.log("token_list is:"+token_list);
         if(token_list.length==0||token_list[0]==""){
             //console.log("skipping empty line")
+        } else if(token_list[0].match(/cmpeq/i)){
+            hex_line+=linkitzApp_hexgen_pad_words("20");
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[3]);
+            unlinkedCodeLines.push([address,hex_line,token_list]);
+            address+=8;
+        } else if(token_list[0].match(/cmpneq/i)){
+            hex_line+=linkitzApp_hexgen_pad_words("21");
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[3]);
+            unlinkedCodeLines.push([address,hex_line,token_list]);
+            address+=8;
+        } else if(token_list[0].match(/cmplt/i)){
+            hex_line+=linkitzApp_hexgen_pad_words("22");
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[3]);
+            unlinkedCodeLines.push([address,hex_line,token_list]);
+            address+=8;
+        } else if(token_list[0].match(/cmple/i)){
+            hex_line+=linkitzApp_hexgen_pad_words("23");
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[3]);
+            unlinkedCodeLines.push([address,hex_line,token_list]);
+            address+=8;
+        } else if(token_list[0].match(/cmpgt/i)){
+            hex_line+=linkitzApp_hexgen_pad_words("24");
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[3]);
+            unlinkedCodeLines.push([address,hex_line,token_list]);
+            address+=8;
+        } else if(token_list[0].match(/cmpge/i)){
+            hex_line+=linkitzApp_hexgen_pad_words("25");
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[3]);
+            unlinkedCodeLines.push([address,hex_line,token_list]);
+            address+=8;
         } else if(token_list[0].match(/band3/i)){
             hex_line+=linkitzApp_hexgen_pad_words("10");
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[3]);
             unlinkedCodeLines.push([address,hex_line,token_list]);
-            address+=6;
+            address+=8;
         } else if(token_list[0].match(/bor3/i)){
             hex_line+=linkitzApp_hexgen_pad_words("11");
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[3]);
             unlinkedCodeLines.push([address,hex_line,token_list]);
-            address+=6;
+            address+=8;
         } else if(token_list[0].match(/add/i)){
             hex_line+=linkitzApp_hexgen_pad_words("12");
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[3]);
             unlinkedCodeLines.push([address,hex_line,token_list]);
-            address+=6;
+            address+=8;
         } else if(token_list[0].match(/sub/i)){
             hex_line+=linkitzApp_hexgen_pad_words("13");
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[3]);
             unlinkedCodeLines.push([address,hex_line,token_list]);
-            address+=6;
+            address+=8;
         } else if(token_list[0].match(/mul/i)){
             hex_line+=linkitzApp_hexgen_pad_words("14");
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[3]);
             unlinkedCodeLines.push([address,hex_line,token_list]);
-            address+=6;
+            address+=8;
         } else if(token_list[0].match(/div/i)){
             hex_line+=linkitzApp_hexgen_pad_words("15");
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[3]);
             unlinkedCodeLines.push([address,hex_line,token_list]);
-            address+=6;
+            address+=8;
         } else if(token_list[0].match(/pow/i)){
             hex_line+=linkitzApp_hexgen_pad_words("16");
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[3]);
             unlinkedCodeLines.push([address,hex_line,token_list]);
-            address+=6;
+            address+=8;
+        } else if(token_list[0].match(/land/i)){
+            hex_line+=linkitzApp_hexgen_pad_words("17");
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[3]);
+            unlinkedCodeLines.push([address,hex_line,token_list]);
+            address+=8;
+        } else if(token_list[0].match(/lor/i)){
+            hex_line+=linkitzApp_hexgen_pad_words("18");
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[3]);
+            unlinkedCodeLines.push([address,hex_line,token_list]);
+            address+=8;
         } else if(token_list[0].match(/syscall/i)){
             //console.log("processing syscall")
             //identify if it's a syscall with no arguments or with one
@@ -187,7 +265,8 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
                 } else if(token_list[1].match(/flashHue/i)){
                     hex_line+=linkitzApp_hexgen_pad_words("02");
                 } else {
-                    throw("could not match second token of syscall in line:"+line);
+                    throw("Could not match token: \""+token_list[1]+"\" in: "+line);
+
                 }
 
                 //identify source
@@ -207,7 +286,7 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
                 } else if(token_list[1].match(/getmotiondata/i)){
                     hex_line+=linkitzApp_hexgen_pad_words("02");
                 } else {
-                    hex_line+=linkitzApp_hexgen_pad_words("BD");
+            		throw("Could not match token:"+token_list[1]+" in:"+line);
                 }
                 unlinkedCodeLines.push([address,hex_line,token_list]);
                 address+=4;
@@ -239,6 +318,12 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
             unlinkedCodeLines.push([address,hex_line,token_list]);
             address+=4;
+        } else if(token_list[0].match(/abs/i)){
+            hex_line+=linkitzApp_hexgen_pad_words("0C");
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
+            unlinkedCodeLines.push([address,hex_line,token_list]);
+            address+=6;
         } else {
             throw("Could not match token: \""+token_list[0]+"\" in: "+line);
         }

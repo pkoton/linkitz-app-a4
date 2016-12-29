@@ -164,9 +164,11 @@ Blockly.FieldVariable.dropdownChange = function(text) {
   function renameVariableCallback(newVar) {
     if (newVar) {
       newVar = newVar.replace(/[\s\xa0]+/g, ' ').replace(/^ | $/g, '');
-      if (newVar == Blockly.Msg.RENAME_VARIABLE ||
+      if (!newVar ||
+          newVar == Blockly.Msg.RENAME_VARIABLE ||
           newVar == Blockly.Msg.NEW_VARIABLE) {
         // Ok, not ALL names are legal...
+        newVar = null;
         return;
       }
       Blockly.Variables.renameVariable(oldVar, newVar, workspace);
@@ -176,9 +178,11 @@ Blockly.FieldVariable.dropdownChange = function(text) {
   function newVariableCallback(newVar) {
     if (newVar) {
       newVar = newVar.replace(/[\s\xa0]+/g, ' ').replace(/^ | $/g, '');
-      if (newVar == Blockly.Msg.RENAME_VARIABLE ||
+      if (!newVar ||
+          newVar == Blockly.Msg.RENAME_VARIABLE ||
           newVar == Blockly.Msg.NEW_VARIABLE) {
         // Ok, not ALL names are legal...
+        newVar = null;
         return;
       }
       Blockly.Variables.renameVariable(newVarName, newVar, workspace);
@@ -201,40 +205,44 @@ Blockly.FieldVariable.dropdownChange = function(text) {
 function promptDialog(title, message, originalText, closeCallback) {
   title = title || "Prompt...";
   var returnValue = "";
+//FIXME Drew's removing the weird threading stuff so this works everywhere
+  if(typeof Q !== 'undefined'){
+    var deferred = Q.defer();
+    $('<div title="' + title + '">' +
+                                      "<p>" + message + "</p>" +
+                                      "<input type=\"text\" name=\"__prompt\" value=" + originalText + ">" +
+                                      '</div>').dialog({
+      modal: true,
+      width: 400,
+      position: {
+        my: "center top",
+        at: "center top",
+        of: window
+      },
+      buttons: [{
+        text: "OK",
+        click: function () {
+          returnValue = $("input:text").val();
+          returnValue = returnValue && returnValue.replace(/[\s\xa0]+/g, ' ').replace(/^ | $/g, '');
+          $(this).dialog("close");
+        }
+      }, {
+        text: "Cancel",
+        click: function () {
+          $(this).dialog("close");
+        }
+      }],
+      close: function (event, ui) {
+        $(this).dialog("destroy").remove();
+        if (deferred.promise.isPending()) {
+          deferred.resolve(false);
+        }
+        closeCallback(returnValue);
+      }
+    });
 
-  var deferred = Q.defer();
-  $('<div title="' + title + '">' +
-                                    "<p>" + message + "</p>" +
-                                    "<input type=\"text\" name=\"__prompt\" value=" + originalText + ">" +
-                                    '</div>').dialog({
-    modal: true,
-    width: 400,
-    position: {
-      my: "center top",
-      at: "center top",
-      of: window
-    },
-    buttons: [{
-      text: "OK",
-      click: function () {
-        returnValue = $("input:text").val();
-        returnValue = returnValue && returnValue.replace(/[\s\xa0]+/g, ' ').replace(/^ | $/g, '');
-        $(this).dialog("close");
-      }
-    }, {
-      text: "Cancel",
-      click: function () {
-        $(this).dialog("close");
-      }
-    }],
-    close: function (event, ui) {
-      $(this).dialog("destroy").remove();
-      if (deferred.promise.isPending()) {
-        deferred.resolve(false);
-      }
-      closeCallback(returnValue);
-    }
-  });
-
-  return deferred.promise;
+    return deferred.promise;
+  } else {
+    //FIXME code to handle dropdown in webapp goes here...
+  }
 }

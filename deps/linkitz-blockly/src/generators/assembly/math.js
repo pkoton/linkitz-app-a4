@@ -96,7 +96,7 @@ Blockly.Assembly['math_single'] = function(block) {
       // --3 is not legal in assembly.
       arg = ' ' + arg;
     }
-    code = arg + 'Set R2 -1\n* R1 R2 R1\n';
+    code = arg + 'Set R2 -1\nMUL R1 R2 R1\n';
     return [code, Blockly.Assembly.ORDER_UNARY_PREFIX];
   }
   if (operator == 'ABS') {
