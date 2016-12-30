@@ -40,13 +40,23 @@ Blockly.Assembly['lists_create_empty'] = function(block) {
 
 Blockly.Assembly['lists_create_with'] = function(block) {
   // Create a list with any number of elements of any type.
-  var code = new Array(block.itemCount_);
-  for (var n = 0; n < block.itemCount_; n++) {
-    code[n] = Blockly.Assembly.valueToCode(block, 'ADD' + n,
-        Blockly.Assembly.ORDER_NONE) || 'null';
-  }
-  code = '[' + code.join(', ') + ']';
+  var itemNum1 = block.itemCount_;
+  var code = '';
+  var firstBlock = block.getInputTargetBlock('ADD' + 0);
+  console.log("in lists_create_with: first block is " + firstBlock);
+  if (is_scalar(firstBlock) || (!firstBlock)) {
+    console.log("firstBlock is scalar");
+    for (var n = 0; n < itemNum1; n++) {
+      var itemCode = Blockly.Assembly.valueToCode(block, 'ADD' + n, Blockly.Assembly.ORDER_NONE);
+      if (itemCode) {
+       code += itemCode +'Push R1\n';
+      } else {
+          code += 'Push R0\n';
+          }
+    }
+    code += "Push " + itemNum1 + '\n';
   return [code, Blockly.Assembly.ORDER_ATOMIC];
+  }
 };
 
 Blockly.Assembly['lists_repeat'] = function(block) {
