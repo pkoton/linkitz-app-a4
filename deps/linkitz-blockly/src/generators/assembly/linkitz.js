@@ -378,7 +378,7 @@ Blockly.Assembly['roster_event_two'] = function(block) {
   var dropdown_link2 = block.getFieldValue('Link2');
   var dropdown_link1 = block.getFieldValue('Link1');
   var statements_script = Blockly.Assembly.statementToCode(block, 'Script');
-  // TODO: Assemble Dart into code variable.
+  // TODO: Assemble  into code variable.
   var linkRoster =[]
   // TODO: append non 'None' values to this list
   var priority= 4-length(linkRoster)
@@ -451,9 +451,25 @@ Blockly.Assembly['check_type'] = function(block) {
 
 //******************* LIST GENERATORS
 
-Blockly.Assembly['lists_create_n'] = function(block) {
-  if (debug) {alert("in lists_create_n")};
-  var code = ';; lists_create_n space allocated\n';
+// this creates a list without setting any elements
+// stack space was allocated during resolve var refs
+// so just push n 0s onto the stack, plus the length
+
+Blockly.Assembly['lists_create_n'] = function(block) { 
+  console.log("in lists_create_n");
+  var numItems = parseInt(block.getFieldValue('NUM_ITEMS')); 
+  if (numItems == 0) {
+    numItems = 1; // can't have a list of length 0, in future should alert user
+  }
+    else if (numItems > 127) {
+      numItems = 127; // 127 max
+    }
+  console.log("numItems = " + numItems);
+  var code = '';
+  for (var i = 0; i < numItems; i++) {
+    code += 'Push R0\n';
+  }
+  code += 'Push ' + numItems + '\n';
   return [code, Blockly.Assembly.ORDER_ATOMIC];
 };
 
