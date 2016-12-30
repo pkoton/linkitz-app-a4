@@ -252,7 +252,8 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
             //identify if it's a syscall with no arguments or with one
             if( token_list[1].match(/exit/i)||
                 token_list[1].match(/flashHue/i)||
-                token_list[1].match(/set_reg_event_speed/i)){
+                token_list[1].match(/set_reg_event_speed/i)||
+                token_list[1].match(/random/i)){
 
                 //console.log("syscall should have one argument")
                 hex_line+=linkitzApp_hexgen_pad_words("05");
@@ -264,6 +265,8 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
                     hex_line+=linkitzApp_hexgen_pad_words("01");
                 } else if(token_list[1].match(/flashHue/i)){
                     hex_line+=linkitzApp_hexgen_pad_words("02");
+                } else if(token_list[1].match(/random/i)){
+                    hex_line+=linkitzApp_hexgen_pad_words("03");
                 } else {
                     throw("Could not match token: \""+token_list[1]+"\" in: "+line);
 
@@ -297,9 +300,16 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
             hex_line+=linkitzApp_hexgen_pad_words("08");
             //identify source
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
-
-
-            hex_line+=linkitzApp_hexgen_pad_words(token_list[2]);
+            
+            var value = parseInt(token_list[2])
+            if(value<-127){
+                value = -127;
+            } else if(value>127){
+                value = 127;
+            }
+            //console.log("token:"+token_list[2]+" results in value:"+value);
+            hex_line+=linkitzApp_hexgen_pad_words((0xFF+value+1).toString(16));
+            
             unlinkedCodeLines.push([address,hex_line,token_list]);
             address+=6;
         } else if(token_list[0].match(/goto/i)){
