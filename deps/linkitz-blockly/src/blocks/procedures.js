@@ -351,7 +351,7 @@ Blockly.Blocks['procedures_defreturn'] = {
    */
   init: function() {
     this.appendDummyInput()
-      .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_15_Functions.png",50,50,"*"));
+       .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_15_Functions.png",50,50,"*"));
     var nameField = new Blockly.FieldTextInput(
         Blockly.Msg.PROCEDURES_DEFRETURN_PROCEDURE,
         Blockly.Procedures.rename);
@@ -364,9 +364,9 @@ Blockly.Blocks['procedures_defreturn'] = {
         .setAlign(Blockly.ALIGN_RIGHT)
         .appendField(Blockly.Msg.PROCEDURES_DEFRETURN_RETURN);
     this.setMutator(new Blockly.Mutator(['procedures_mutatorarg']));
-    if (Blockly.Msg.PROCEDURES_DEFRETURN_COMMENT) {
-      this.setCommentText(Blockly.Msg.PROCEDURES_DEFRETURN_COMMENT);
-    }
+    // if (Blockly.Msg.PROCEDURES_DEFRETURN_COMMENT) {
+    //  this.setCommentText(Blockly.Msg.PROCEDURES_DEFRETURN_COMMENT);
+    // }
     this.setColour(Blockly.Blocks.procedures.HUE);
     this.setTooltip(Blockly.Msg.PROCEDURES_DEFRETURN_TOOLTIP);
     this.setHelpUrl(Blockly.Msg.PROCEDURES_DEFRETURN_HELPURL);
