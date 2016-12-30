@@ -65,7 +65,8 @@ Blockly.Blocks['variables_get'] = {
    * @this Blockly.Block
    */
   renameVar: function(oldName, newName) {
-    if (Blockly.Names.equals(oldName, this.getFieldValue('VAR'))) {
+    if (Blockly.Names.equals(oldName.toLowerCase(), this.getFieldValue('VAR').toLowerCase())||
+      Blockly.Names.equals(newName.toLowerCase(), this.getFieldValue('VAR').toLowerCase())) {//ADM: we also need to rename names that are equal to the newname (same thing but different case)
       this.setFieldValue(newName, 'VAR');
     }
   },
@@ -131,7 +132,8 @@ Blockly.Blocks['variables_set'] = {
    * @this Blockly.Block
    */
   renameVar: function(oldName, newName) {
-    if (Blockly.Names.equals(oldName, this.getFieldValue('VAR'))) {
+    if (Blockly.Names.equals(oldName.toLowerCase(), this.getFieldValue('VAR').toLowerCase())||
+      Blockly.Names.equals(newName.toLowerCase(), this.getFieldValue('VAR').toLowerCase())) {//ADM: we also need to rename names that are equal to the newname (same thing but different case)
       this.setFieldValue(newName, 'VAR');
     }
   },
