@@ -234,8 +234,8 @@ Blockly.Blocks['lists_create_n'] = {
       .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_12_Lists.png",50,50,"*"));
     this.appendDummyInput()
         .appendField("Create list of length");
-    this.appendValueInput("NUM_ITEMS", 1)
-        .setCheck("Number");
+    this.appendDummyInput()
+        .appendField(new Blockly.FieldTextInput('3', Blockly.FieldTextInput.nonnegativeIntegerValidator), 'NUM_ITEMS');
     this.setInputsInline(true);
     this.setColour('#33CC66');
     this.setOutput(true, 'Array');
