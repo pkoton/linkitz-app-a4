@@ -56,7 +56,7 @@ Blockly.Assembly['controls_if'] = function(block) {
   ifCount++; // ifCount is global for generating unique labels across multiple conditional statements
   var elseCount = block.elseCount_;
   var elseifcount = block.elseifCount_;
-  var argument = Blockly.Assembly.valueToCode(block, 'IF' + n, Blockly.Assembly.ORDER_NONE) || 'false';      //argument is in R1
+  var argument = Blockly.Assembly.valueToCode(block, 'IF' + n, Blockly.Assembly.ORDER_NONE) || 'Set R1 0\n';      //argument is in R1
   var code = argument;
   var branch = Blockly.Assembly.statementToCode(block, 'DO' + n); // branch = statements to be executed if argument is true/non-zero
       if ((elseCount == 0) && (elseifcount == 0)) { // this is simple if-then
@@ -71,7 +71,7 @@ Blockly.Assembly['controls_if'] = function(block) {
           code += branch + 'GOTO endif_label_' + ifCount + '\n';
      
           for (n = 1; n <= elseifcount; n++) {
-            argument = Blockly.Assembly.valueToCode(block, 'IF' + n, Blockly.Assembly.ORDER_NONE) || 'false';
+            argument = Blockly.Assembly.valueToCode(block, 'IF' + n, Blockly.Assembly.ORDER_NONE) || 'Set R1 0\n';
             branch = Blockly.Assembly.statementToCode(block, 'DO' + n);
             code += 'elseif_label_' + ifCount + '_' + n + ':\n' + argument +  'BTR1SNZ \n';
             var z = n + 1;
