@@ -752,7 +752,7 @@ Blockly.Msg.LISTS_CREATE_EMPTY_TOOLTIP = 'Returns a list, of length 0, containin
 /// url - Information on building lists.
 Blockly.Msg.LISTS_CREATE_WITH_HELPURL = 'https://github.com/google/blockly/wiki/Lists#create-list-with';
 /// tooltip - See [https://github.com/google/blockly/wiki/Lists#create-list-with https://github.com/google/blockly/wiki/Lists#create-list-with].
-Blockly.Msg.LISTS_CREATE_WITH_TOOLTIP = 'Create a list with any number of items.';
+Blockly.Msg.LISTS_CREATE_WITH_TOOLTIP = 'Create a list with any number of items. Type of all items must be the same. Type is defined by the first item in the list. If first item is blank, type is scalar.';
 /// block text - See [https://github.com/google/blockly/wiki/Lists#create-list-with https://github.com/google/blockly/wiki/Lists#create-list-with].
 Blockly.Msg.LISTS_CREATE_WITH_INPUT_WITH = 'create list with';
 /// block text - This appears in a sub-block when [https://github.com/google/blockly/wiki/Lists#changing-number-of-inputs changing the number of inputs in a ''''create list with'''' block].\n{{Identical|List}}
@@ -1039,7 +1039,7 @@ Blockly.Msg.PROCEDURES_DEFNORETURN_DO = '';
 /// tooltip
 Blockly.Msg.PROCEDURES_DEFNORETURN_TOOLTIP = 'Creates a function with no output.';
 /// Placeholder text that the user is encouraged to replace with a description of what their function does.
-Blockly.Msg.PROCEDURES_DEFNORETURN_COMMENT = '';
+Blockly.Msg.PROCEDURES_DEFNORETURN_COMMENT = 'User-defined procedure';
 /// url - Information about defining [https://en.wikipedia.org/wiki/Procedure_(computer_science) functions] that have return values.
 Blockly.Msg.PROCEDURES_DEFRETURN_HELPURL = 'https://en.wikipedia.org/wiki/Procedure_%28computer_science%29';
 Blockly.Msg.PROCEDURES_DEFRETURN_TITLE = Blockly.Msg.PROCEDURES_DEFNORETURN_TITLE;
