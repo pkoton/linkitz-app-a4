@@ -93,11 +93,10 @@ var debug = 0;
 
 // Linkitz SPECIAL REGISTERS R0 - R127 ARE SET HERE
 
-// We maintain a dictionary of all global_list_variables, each element is a list of [head addr, list size]
+// We maintain a dictionary of all global_list_variables
+// each element is a list of [head_address,list_length,item_length]
 // global_list_variables builds DOWN from R127 to R0
-
-// Global list variables format (head_address,list_length,item_length)
-// e.g. (118,9,3) starts at R118 and has three items each of which takes us 3 registers
+// e.g. (118,10,3) starts at R118 and has three items each of which takes up 3 registers, plus the first element that stores the length
 
 var glv_next = 127; // glv_next points to the empty register at the bottom of list register space
 var global_list_variables = new Object();
