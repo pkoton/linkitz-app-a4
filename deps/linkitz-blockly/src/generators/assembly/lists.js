@@ -38,25 +38,39 @@ Blockly.Assembly['lists_create_empty'] = function(block) {
   return ['[]', Blockly.Assembly.ORDER_ATOMIC];
 };
 
-Blockly.Assembly['lists_create_with'] = function(block) {
+Blockly.Assembly['lists_create_with'] = function(block) { 
   // Create a list with any number of elements of any type.
   var itemNum1 = block.itemCount_;
+  var list_info = lists_create_with_lengthOf(block);
+  var total_length = list_info[1];
+  var item_length = list_info[2];
   var code = '';
-  var firstBlock = block.getInputTargetBlock('ADD' + 0);
-  console.log("in lists_create_with: first block is " + firstBlock);
-  if (is_scalar(firstBlock) || (!firstBlock)) {
-    console.log("firstBlock is scalar");
-    for (var n = 0; n < itemNum1; n++) {
-      var itemCode = Blockly.Assembly.valueToCode(block, 'ADD' + n, Blockly.Assembly.ORDER_NONE);
+  console.log("in lists_create_with: total_length = " + total_length + ", item_length = " + item_length);
+  if (item_length == 1) { // create the assembly code for scalar or list of (lists of length 1)
+  console.log("lists_create_with: list of scalars");
+  for (var m = (itemNum1 - 1); m >= 0; m--) { // for each scalar item
+    console.log("on list element #" + m);
+    var itemCode = Blockly.Assembly.valueToCode(block, 'ADD' + m, Blockly.Assembly.ORDER_NONE);
+    if (itemCode) {
+     code += itemCode +'Push R1\n';
+    } else {
+        code += 'Push R0\n';
+        }
+    }
+  code += "Push " + itemNum1 + '\n';
+  } else { // create the assembly code for scalar or list of lists 
+    console.log("lists_create_with: list of lists");
+    for (var m = (itemNum1 - 1); m >= 0; m--) { // for each list-of-lists item
+      var itemCode = Blockly.Assembly.valueToCode(block, 'ADD' + m, Blockly.Assembly.ORDER_NONE);
       if (itemCode) {
-       code += itemCode +'Push R1\n';
+       code += itemCode +'Pop R0\n';
       } else {
           code += 'Push R0\n';
           }
     }
-    code += "Push " + itemNum1 + '\n';
-  return [code, Blockly.Assembly.ORDER_ATOMIC];
+  code += "Push " + total_length + '\n';
   }
+  return [code, Blockly.Assembly.ORDER_ATOMIC];
 };
 
 Blockly.Assembly['lists_repeat'] = function(block) {
