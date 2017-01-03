@@ -42,8 +42,8 @@ Blockly.Assembly['lists_create_with'] = function(block) {
   // Create a list with any number of elements of any type.
   var itemNum1 = block.itemCount_;
   var list_info = lists_create_with_lengthOf(block);
-  var total_length = list_info[1];
-  var item_length = list_info[2];
+  var total_length = list_info[2];
+  var item_length = list_info[1];
   var code = '';
   console.log("in lists_create_with: total_length = " + total_length + ", item_length = " + item_length);
   if (item_length == 1) { // create the assembly code for scalar or list of (lists of length 1)

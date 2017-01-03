@@ -54,6 +54,7 @@ goog.require('Blockly.Assembly');
         var procName = current_block.getFieldValue('NAME');
         var returnBlock = current_block.getInputTargetBlock('RETURN');
         if (returnBlock) {
+          var ldata; // placeholder for list data if it is a list
           var returnBlockType = current_block.getInputTargetBlock('RETURN').type;
           console.log("in loop1 getting proc_return_type of " + procName);
           console.log('returnBlock is ' + returnBlock + ", returnBlockType is " + returnBlockType);
@@ -72,13 +73,12 @@ goog.require('Blockly.Assembly');
                             undef_vars.splice(i2, 1);
                             }
                           undef_vars_next--;
-              } else if (is_list(returnBlock)) {
-                console.log('in loop1 returnBlock is a list');
-                var ldata = (is_list(returnBlock));
+              } else if (ldata = is_list(returnBlock)) {
+                console.log('in loop1 returnBlock is a list, ldata is ' + ldata);
                 var llength = ldata[0];
                 var lskip = ldata[1];
-                // console.log("is_list returns " + ll);
-                if (llength > 1) {
+                console.log("in loop1 is_list returns llength = " + llength + " lskip = " + lskip);
+                if (llength >= 1) {
                   console.log('returnBlock is list');
                   proc_types[procName] = [llength,lskip];
                   console.log(procName + " returns a list of length " + (llength * lskip));
@@ -93,20 +93,20 @@ goog.require('Blockly.Assembly');
                             undef_vars.splice(i2, 1);
                             }
                           undef_vars_next--;
-                } else if (llength == 1) {
-                  console.log('returnBlock is list');
-                  proc_types[procName] = [1,9]; // **** dummy value, work on finding list length later
-                  console.log(procName + " returns a list of unknown length");
-                  // Find and remove procName from undef_vars list
-                          i2 = undef_vars.indexOf("procName");
-                          if (i2 != -1) {
-                            undef_vars.splice(i2, 1);
-                            }
-                          undef_vars_next--;
-                } else {
-                  console.log("still working on " + procName);
-                  }
-              }
+                } /*else if (llength == 1) {
+                    console.log('returnBlock is list');
+                    proc_types[procName] = [1,9]; // **** dummy value, work on finding list length later
+                    console.log(procName + " returns a list of unknown length");
+                    // Find and remove procName from undef_vars list
+                            i2 = undef_vars.indexOf("procName");
+                            if (i2 != -1) {
+                              undef_vars.splice(i2, 1);
+                              }
+                            undef_vars_next--;
+                  }*/ else {
+                    console.log("still working on " + procName);
+                    }
+                }
                  else {
                   console.log("in loop1 unknown if returnBlock is scalar or list");
                   // add procName to undef_vars list
@@ -184,8 +184,8 @@ goog.require('Blockly.Assembly');
                   case 'lists_create_with':
                     console.log("in loop2 found list by case lists_create_with");
                     var temp = lists_create_with_lengthOf(targetBlock);
-                    console.log("in resolve_var_refs, case lists_create_with " + targetBlock + " total items = " + temp[1] + " item length = " + temp[2]);
-                    addNewListVar(varName, temp[0], temp[2]); 
+                    console.log("in resolve_var_refs, case lists_create_with " + targetBlock + " total items = " + temp[2] + " item length = " + temp[2]);
+                    addNewListVar(varName, temp[0], temp[1]); 
                     break;
                                 
                 // ********* OTHER *********
@@ -507,8 +507,9 @@ Blockly.Assembly['variables_set'] = function(block) {
         break;
       case 'lists_create_with':
         var temp = lists_create_with_lengthOf(block);
-        console.log("in is_list, length is "+ temp[0]);
-        res = [temp[0], temp[2]];
+        console.log("in is_list, number of items = " + temp[0] + ", item_length = " + temp[1] + " total_length = "+ temp[2]);
+        res = [temp[0], temp[1]];
+        break;
       case 'array': // general array treated as a list of list of length 1 scalar
         res = [block.itemCount_, 1];
         break;
@@ -522,7 +523,7 @@ Blockly.Assembly['variables_set'] = function(block) {
 function lists_create_with_lengthOf (block) {
   // find the length of a list created with the block lists_create_with
   // lists can't mix types (scalar/list) and lists-of-lists must all be same length
-  // returns [number of items, total_length, item_length]
+  // returns [number of items, item_length, total_length]
   var itemNum1 = block.itemCount_;
   console.log("in lists_create_with_lengthOf, itemNum1 is " + itemNum1);
   var item_length = -1;
@@ -575,6 +576,6 @@ function lists_create_with_lengthOf (block) {
       }
     item_length = Math.abs(item_length); // scalar and lists of (lists of length 1)
     total_length = itemNum1 * item_length;
-    console.log("itemNum1 = " + itemNum1 + ", item_length =" + item_length + ", total_length = " + total_length);
-    return [itemNum1, total_length, item_length];
+    console.log("in lists_create_with_lengthOf, itemNum1 = " + itemNum1 + ", item_length =" + item_length + ", total_length = " + total_length);
+    return [itemNum1, item_length, total_length];
 }
