@@ -59,8 +59,13 @@ goog.require('Blockly.Assembly');
           console.log('returnBlock is ' + returnBlock + ", returnBlockType is " + returnBlockType);
             if (is_scalar(returnBlock)) {
               console.log('in loop1 returnBlock is scalar');
-              proc_types[procName] = [0,0];
+              proc_types[procName] = [0,9];
               console.log(procName +" returns a scalar");
+              if (procName in proc_types) {
+              console.log("added " + procName);
+              } else {
+              console.log ("didn't add " + procName);
+            }
               // Find and remove procName from undef_vars list
                           i2 = undef_vars.indexOf("procName");
                           if (i2 != -1) {
@@ -69,19 +74,26 @@ goog.require('Blockly.Assembly');
                           undef_vars_next--;
               } else if (is_list(returnBlock)) {
                 console.log('in loop1 returnBlock is a list');
-                var ll = (is_list(returnBlock));
-                console.log("is_list returns " + ll);
-                if (ll > 1) {
+                var ldata = (is_list(returnBlock));
+                var llength = ldata[0];
+                var lskip = ldata[1];
+                // console.log("is_list returns " + ll);
+                if (llength > 1) {
                   console.log('returnBlock is list');
-                  proc_types[procName] = [1,ll];
-                  console.log(procName + " returns a list of length " + ll);
+                  proc_types[procName] = [llength,lskip];
+                  console.log(procName + " returns a list of length " + (llength * lskip));
+                  if (procName in proc_types) {
+                    console.log("added " + procName);
+                      } else {
+                        console.log ("didn't add " + procName);
+                        }
                   // Find and remove procName from undef_vars list
                           i2 = undef_vars.indexOf("procName");
                           if (i2 != -1) {
                             undef_vars.splice(i2, 1);
                             }
                           undef_vars_next--;
-                } else if (ll == 1) {
+                } else if (llength == 1) {
                   console.log('returnBlock is list');
                   proc_types[procName] = [1,9]; // **** dummy value, work on finding list length later
                   console.log(procName + " returns a list of unknown length");
@@ -160,25 +172,20 @@ goog.require('Blockly.Assembly');
                     break;
                   case 'lists_create_n': // a list of n scalars
                     console.log("in loop2 found list by case lists_create_n");
-                    var numItems = targetBlock.getInputTargetBlock("NUM_ITEMS");
-                    var numItems_num = parseInt(numItems.getFieldValue("NUM"));
-                    console.log("in lists_create_n " + targetBlock + " NUM_ITEMS is " + numItems_num);
-                    addNewListVar(varName, numItems_num, 1); 
+                    var numItems = parseInt(targetBlock.getFieldValue('NUM_ITEMS')); 
+                    //if (numItems == 0) {
+                    //  numItems = 1; // can't have a list of length 0, in future should alert user
+                    //}
+                    //else if (numItems > 127) {
+                    //    numItems = 127; // 127 max
+                    //}
+                    addNewListVar(varName, numItems, 1); 
                     break;
-                  case 'lists_create_with': // this one is tricky because user could attach a color or motiondata
+                  case 'lists_create_with':
                     console.log("in loop2 found list by case lists_create_with");
-                    /// **** need helper function to determine list length 
-                    var eltCountOrig = parseInt(targetBlock.itemCount_);
-                    var eltCountFixed = eltCountOrig;
-                    for (var n = 0; n < eltCountOrig; n++) {
-                      var elt_n = targetBlock.getInputTargetBlock('ADD' + n);
-                      var inputType = elt_n.type;
-                      if (inputType == 'colour_picker') {
-                        eltCountFixed = eltCountFixed + 2; // we only allocated one space but a color takes 3 spaces
-                      }
-                    }
-                    console.log("in lists_create_with " + targetBlock + " itemCount_ is " + eltCountFixed);
-                    addNewListVar(varName, eltCountFixed, 1); //***1 is dummy placeholder for skip
+                    var temp = lists_create_with_lengthOf(targetBlock);
+                    console.log("in resolve_var_refs, case lists_create_with " + targetBlock + " total items = " + temp[1] + " item length = " + temp[2]);
+                    addNewListVar(varName, temp[0], temp[2]); 
                     break;
                                 
                 // ********* OTHER *********
@@ -221,14 +228,14 @@ goog.require('Blockly.Assembly');
                     var funcName = Blockly.Assembly.variableDB_.getName(targetBlock.getFieldValue('NAME'),Blockly.Procedures.NAME_TYPE);
                     console.log("funcName = " + funcName);
                     if (funcName in proc_types) { // already found
-                      console.log("found procedure " + funcName +  "in proc_types");
+                      console.log("found procedure " + funcName +  " in proc_types");
                         if (proc_types[funcName][0] == 0) {
                           addNewScalarVar(varName);
                           break;
                           }
-                          else if (proc_types[funcName][0] == 1) {
+                          else if (proc_types[funcName][0] >= 1) { // maybe put num_items in 1st spot, item length in 2nd spot
                             console.log("procedure returns a list in resolve_variable_refs");
-                            addNewListVar(varName, proc_types[funcName][1]); //*******dummy input, figure out list length later
+                            addNewListVar(varName, proc_types[funcName][0], proc_types[funcName][1]); //varName,num_items,skip
                           break;
                           }
                           else { // says it found it but it has not entry
@@ -272,20 +279,23 @@ goog.require('Blockly.Assembly');
       }
  }
  
- // length is length of list, skip is how many registers needed to store one list item
+ // num_items is number of items in a list, skip is how many registers needed to store one list item
  // e.g. A scalar uses one register, a color uses 3 registers because it has 3 scalars. 
- // # of regiters used to store list is ((len * skip) + 1) need extra 1 becuase we store the length in headaddr
- function addNewListVar(varName,len,skip) {
-    var bottom = (glv_next - (len * skip)); //point to where we want to insert
-    console.log("len = "+len+", skip = " +skip+", bottom = "+bottom);
-    if (bottom < gsv_next) {
-     alert("Error: Out of variable space in addNewListVar");
-     return0;
+ // # of registers used to store list is ((len * skip) + 1) need extra 1 because we store the length in headaddr
+ // returns a list [head_addr, register_used, skip]
+ 
+ function addNewListVar(varName,num_items,skip) {
+    var head = (glv_next - (num_items * skip)); //point to where we want to insert
+    var Rused = ((num_items * skip) + 1);
+    console.log("num_items = "+num_items+", skip = " +skip+", Rused = " +Rused+ ", head = "+head);
+    if (head < gsv_next) {
+     console.log("Error: Out of variable space in addNewListVar");
+     return 0;
     }
-    global_list_variables[varName]=[bottom,(len + 1),skip];
-    glv_next = bottom - 1; // move pointer to next space down
-    console.log("bottom = "+bottom+ " glv_next = "+glv_next);
-    console.log(varName + " added to GLV with length " + (len + 1));
+    global_list_variables[varName]=[head,Rused,skip];
+    glv_next = head - 1; // move pointer to next empty space down
+    console.log("head = "+head+ " glv_next = "+glv_next);
+    console.log(varName + " added to GLV with length " + Rused);
     // Find and remove varName from undef_vars list
     var i = undef_vars.indexOf("varName");
     if (i != -1) {
@@ -297,7 +307,7 @@ goog.require('Blockly.Assembly');
 function addNewScalarVar(varName) {
   if (gsv_next > glv_next) {
     alert("Error: Out of variable space in addNewScalarVar");
-   return0;
+   return R0;
   }
   global_scalar_variables[gsv_next] = varName;
   console.log("in resolve_var_refs: GSV pointer now is " + gsv_next);
@@ -353,7 +363,7 @@ Blockly.Assembly['variables_set'] = function(block) {
       var inputType = targetBlock.type;
       var varName = Blockly.Assembly.variableDB_.getName(block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
       console.log("in variables_set: input is of type " + inputType + ", varName is " + varName + ", value is " + argument0);
-      console.log("in variables_set: GLV is " + JSON.stringify(global_list_variables));
+      // console.log("in variables_set: GLV is " + JSON.stringify(global_list_variables));
       var found = global_scalar_variables.indexOf(varName);
       if (found >= 0) { // setting a scalar, value is in R1
         console.log("in variables_set, scalar variable " + varName + " defined at R" + found);
@@ -429,7 +439,7 @@ Blockly.Assembly['variables_set'] = function(block) {
  
  function is_scalar (block) {
   var blocktype = block.type;
-    console.log("in function is_scalar blocktype = " + blocktype);
+    console.log("in function is_scalar: block is " + block + ", blocktype = " + blocktype);
     var res = 0;
     switch (blocktype) {
       case "math_number": // falls through to next
@@ -450,10 +460,11 @@ Blockly.Assembly['variables_set'] = function(block) {
         res = 1;
         break;
       case "variables_get":
-        var varName = Blockly.Dart.variableDB_.getName(block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+        var varName = Blockly.Assembly.variableDB_.getName(block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE) || '';
         console.log("checking for " + varName + " in GSV");
-        var in_GSV = global_scalar_variables.indexOf(varName); // is it in global_scalar_variables
-        if (in_GSV >= 0) {res = 1;}
+          var in_GSV = global_scalar_variables.indexOf(varName); // is it in global_scalar_variables
+          console.log("index of " + varName + " is " + in_GSV);
+          if (in_GSV >= 0) {res = 1;}
         break;
       default:
         res = 0;
@@ -462,36 +473,108 @@ Blockly.Assembly['variables_set'] = function(block) {
     return(res);
  }
 
- function is_list (block) {
+ function is_list (block) { // returns [number of items, item_length]
   var blocktype = block.type;
     console.log("in function is_list blocktype = " + blocktype);
     var res = 0;
     switch (blocktype) {
       case "colour_picker":
-        res = 3;
+        res = [3,1];
         break;
       case 'getmotiondata':
-        res = 4;
+        res = [4,1];
         break;
-        case "variables_get":
-        var varName = Blockly.Dart.variableDB_.getName(block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+      case "variables_get":
+        var varName = Blockly.Assembly.variableDB_.getName(block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
         console.log("checking for " + varName + " in GLV");
-        if (varName in global_list_variables) { // is it in global_list_variables
-          res = global_list_variables[varName][1] - 1; // length of the list
-        }
+        //if (varName in global_list_variables) { // is it in global_list_variables
+        //  res = [(global_list_variables[varName][1] - 1),global_list_variables[varName][2]); // length of the list
+        //}
         break; 
       case 'lists_create_n':
-        var item_count = block.getFieldValue('NUM_ITEMS');
-        if (item_count) {res = item_count;}
+        var numItems = parseInt(block.getFieldValue('NUM_ITEMS'));
+        if (numItems) {
+          if (numItems == 0) {
+            numItems = 1; // can't have a list of length 0, in future should alert user
+          }
+          else if (numItems > 127) {
+            numItems = 127;
+            } // 127 max
+          res = [numItems,1];
+          } else {
+            console.log("error in is_list:lists_create_n");
+          }
         break;
       case 'lists_create_with':
-      case 'array': // general array treated as a list of length 1 scalar
-        res = 1;
+        var temp = lists_create_with_lengthOf(block);
+        console.log("in is_list, length is "+ temp[0]);
+        res = [temp[0], temp[2]];
+      case 'array': // general array treated as a list of list of length 1 scalar
+        res = [block.itemCount_, 1];
         break;
       default:
-        res = 0;
+        res = [0,0];
         break;
     }
     return(res);
  }
  
+function lists_create_with_lengthOf (block) {
+  // find the length of a list created with the block lists_create_with
+  // lists can't mix types (scalar/list) and lists-of-lists must all be same length
+  // returns [number of items, total_length, item_length]
+  var itemNum1 = block.itemCount_;
+  console.log("in lists_create_with_lengthOf, itemNum1 is " + itemNum1);
+  var item_length = -1;
+  var total_length = 0;
+  var list_of_scalars = 0; // set to 1 if items are scalar
+  var list_of_lists = 0; // set to 1 if item are lists
+  var nth_item;
+  for (var n = 0; n < itemNum1; n++) { // make sure all items are the same type and if lists that they are same length
+      nth_item = block.getInputTargetBlock('ADD' + n);
+      console.log("in lists_create_with_lengthOf: " + n + "th item is " + nth_item);
+      if (!nth_item) {
+        console.log(n + "th item is blank");
+        continue;
+      }
+      else if (is_scalar(nth_item)) {
+        if (list_of_lists ==1) {
+          console.log = "ERROR: Can't mix types in list\n";
+          return [total_length, item_length];
+        }
+        else {
+        console.log(n + "th item is scalar");
+        list_of_scalars = 1;
+        }
+      }
+      else if (is_list(nth_item)) {
+        if (list_of_scalars ==1) {
+          console.log = "ERROR: Can't mix types in list\n";
+          return [total_length, item_length];
+        }
+        else {
+          if (item_length == -1) {
+            var sublist_length = (is_list(nth_item))[0]; // first time, calcuate item_length
+            var sublist_item_length = (is_list(nth_item))[1];
+            item_length = sublist_length * sublist_item_length;
+            console.log("in lists_create_with_lengthOf, " + n + "th item is list, item length is " + item_length);
+          } else { // subsequent items, make sure items are same length
+              var this_length = (is_list(nth_item))[0];
+              var this_item_length = (is_list(nth_item))[1];
+              if ((this_length * this_item_length) != item_length) {
+                console.log = "ERROR: Can't mix lists of different lengths\n";
+                return [total_length, item_length];
+              }
+            }  
+            list_of_lists = 1;
+        }
+      } else { // not list or scalar???
+        console.log("Can't tell length of lists_create_with in lists_create_with_lengthOf");
+        return [total_length, item_length];
+        }
+      }
+    item_length = Math.abs(item_length); // scalar and lists of (lists of length 1)
+    total_length = itemNum1 * item_length;
+    console.log("itemNum1 = " + itemNum1 + ", item_length =" + item_length + ", total_length = " + total_length);
+    return [itemNum1, total_length, item_length];
+}
