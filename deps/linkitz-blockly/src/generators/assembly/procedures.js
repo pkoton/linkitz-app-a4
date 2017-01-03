@@ -28,30 +28,30 @@ goog.provide('Blockly.Assembly.procedures');
 
 goog.require('Blockly.Assembly');
 
-function this_proc_return_type(current_block) {
-  //console.log("in this_proc return type");
-  console.log("in this_proc_return_type of " + current_block);
-  var procName = current_block.getFieldValue('NAME');
-  console.log(procName);
-  var returnBlock = current_block.getInputTargetBlock('RETURN');
-  console.log('returnBlock is ' + returnBlock);
-  console.log('testing getOutput: ' + current_block.getOutput());
-        if (is_scalar(returnBlock)) {
-          proc_types[procName] = 0;
-          console.log("returns scalar");
-          return 0;
-          } else if (is_list(returnBlock)) {
-             proc_types[procName] = 1;
-             console.log("returns list");
-             return 1;
-            } else {
-              console.log("still working on this");
-              proc_types[procName] = null;
-              return null;
-              }
-}
+//function this_proc_return_type(current_block) {
+//  //console.log("in this_proc return type");
+//  console.log("in this_proc_return_type of " + current_block);
+//  var procName = current_block.getFieldValue('NAME');
+//  console.log(procName);
+//  var returnBlock = current_block.getInputTargetBlock('RETURN');
+//  console.log('returnBlock is ' + returnBlock);
+//  console.log('testing getOutput: ' + current_block.getOutput());
+//        if (is_scalar(returnBlock)) {
+//          proc_types[procName] = 0;
+//          console.log("returns scalar");
+//          return 0;
+//          } else if (is_list(returnBlock)) {
+//             proc_types[procName] = 1;
+//             console.log("returns list");
+//             return 1;
+//            } else {
+//              console.log("still working on this");
+//              proc_types[procName] = null;
+//              return null;
+//              }
+//}
 
-Blockly.Assembly['procedures_defreturn'] = function(block) {
+Blockly.Assembly['procedures_defreturn'] = function(block) { 
   console.log('in procedures def [no] return');
   // Define a procedure with a return value.
   var funcName = Blockly.Assembly.variableDB_.getName(block.getFieldValue('NAME'),
@@ -84,6 +84,8 @@ Blockly.Assembly['procedures_defreturn'] = function(block) {
         console.log("procedure return type failed");
         returnValue = Blockly.Assembly.INDENT + 'syscall return R0\n';  // no returned value, just return R0
       }
+  } else {
+    var returnCode = 'syscall return R0\n'; // code iis blank or has no retun value, return R0
   }
   var returnType = returnValue ? 'dynamic' : 'void'; // we don't use this ATM
   var args = [];
