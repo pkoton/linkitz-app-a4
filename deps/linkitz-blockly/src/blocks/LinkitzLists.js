@@ -145,8 +145,9 @@ Blockly.Blocks['lists_setIndex_nonMut'] = {
       .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_12_Lists.png",50,50,"*"));
     this.appendDummyInput()
         .appendField("set");
-    this.appendValueInput('LIST')
-        .setCheck('Array');
+    this.appendValueInput('VALUE')
+        .setCheck('Array')
+        .appendField(Blockly.Msg.LISTS_GET_INDEX_INPUT_IN_LIST);
     this.appendDummyInput('AT');
     this.appendValueInput('TO')
         .appendField(Blockly.Msg.LISTS_SET_INDEX_INPUT_TO);

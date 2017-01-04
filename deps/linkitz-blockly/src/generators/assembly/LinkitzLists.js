@@ -35,40 +35,84 @@ Blockly.Assembly.addReservedWords('Math');
 Blockly.Assembly['lists_getIndex_nonMut'] = function(block) {
   // Get element at index.
   // Note: Until January 2013 this block did not have MODE or WHERE inputs.
+  console.log("in lists_getIndex_nonMut");
   var mode = 'GET';
   var where = block.getFieldValue('WHERE') || 'FROM_START';
-  var at = Blockly.Assembly.valueToCode(block, 'AT', Blockly.Assembly.ORDER_UNARY_PREFIX) || '1';
-  var list_name = Blockly.Assembly.variableDB_.getName(block.getFieldValue('VALUE'), Blockly.Variables.NAME_TYPE);
-  console.log("got list name " + list_name);
+  var at1 = block.getInputTargetBlock('AT') || '1';
+  var at = at1.toString();
+  console.log("AT is "+ at);
+  var list_name1 = block.getInputTargetBlock('VALUE');
+  var list_name2 = list_name1.toString();
+  var list_name = Blockly.Assembly.variableDB_.getName(list_name2,Blockly.Variables.NAME_TYPE);
   var list_first_elt_addr = global_list_variables[list_name][0] + 1;
   var list_len = global_list_variables[list_name][1] - 1;
+  var list_elt_size = global_list_variables[list_name][2];
+  console.log("in lists_getIndex_nonMut, list_first_elt_addr = " +list_first_elt_addr+ ", list_len = " + list_len+ ", list_elt_size = " + list_elt_size);
   var list_elt_addr;
-  if (Blockly.isNumber(at) && (at > list_len)) {
-    console.log('in lists_getIndex_nonMut: index is out of range'); // set it to 1
-    at = 1;
+  var code = '';
+  if (Blockly.isNumber(at) && (at > (list_len/list_elt_size))) {
+    console.log('in lists_getIndex_nonMut: index is out of range'); // set it to last element
+    at = parseInt(list_len/list_elt_size).toString();
   }
-  
+  //if (Blockly.isNumber(at)) {
+  //    // If the index is a naked number, decrement it right now.
+  //    at = parseInt(at, 10) - 1;
+  //  } else {
+  //    // If the index is dynamic, decrement it in code.
+  //    at += ' - 1';
+  //  }
     if (where == 'FIRST') {
-        var code = 'Push R' + list_first_elt_addr + '\nPopR1\n';
+      if (list_elt_size ==1) {
+        code += 'Push R' + list_first_elt_addr + '\nPop R1\n';
+      } else {
+        for (var i = list_elt_size - 1; i >= 0; i--) {
+        list_elt_addr = list_first_elt_addr + i;
+        code += 'Push R' + list_elt_addr + '\n';
+        }
+        code += 'Push ' + list_elt_size + '\n';
+      }
+        return [code, Blockly.Assembly.ORDER_NONE];     
+    } // end FIRST
+    else if (where == 'LAST') {
+        var list_last_elt_addr = list_first_elt_addr + list_len - 1;
+        if (list_elt_size ==1) {
+        code += 'Push R' + list_last_elt_addr + '\nPop R1\n';
+      } else {
+        for (var i = 0; i < list_elt_size; i++) {
+        var list_elt_addr = list_last_elt_addr - i;
+        code += 'Push R' + list_elt_addr + '\n';
+        }
+        code += 'Push ' + list_elt_size + '\n';
+      }
+        return [code, Blockly.Assembly.ORDER_NONE];     
+    } //end LAST
+    else if (where == 'FROM_START') { // Blockly uses one-based indicies.
+      console.log("here");
+      if (Blockly.isNumber(at)) { // otherwise it might be a var or statement?
+        at = parseInt(at, 10);
+        list_elt_addr = list_first_elt_addr + ((at -1) * list_elt_size);
+        console.log("in lists_getIndex_nonMut, list_elt_addr = " + list_elt_addr);
+        if (list_elt_size ==1) {
+          code += 'Push R' + list_elt_addr + '\nPop R1\n';
+        } else {
+          for (var i = list_elt_size - 1; i >= 0; i--) {
+          var list_elt_addr_next = list_elt_addr + i;
+          code += 'Push R' + list_elt_addr_next + '\n';
+          }
+        code += 'Push ' + list_elt_size + '\n';
+      }
         return [code, Blockly.Assembly.ORDER_NONE];
-    } else if (where == 'LAST') {
-        list_elt_addr = list_first_elt_addr + list_len;
-        var code = 'Push R' + list_elt_addr + '\nPopR1\n';
-        return [code, Blockly.Assembly.ORDER_NONE];
-      } else if (where == 'FROM_START') {
-        // Blockly uses one-based indicies.
-                if (Blockly.isNumber(at)) { // otherwise it might be a var or statement?
-                at = parseInt(at, 10);
-                }
-        list_elt_addr = list_first_elt_addr + at;     
-        var code = 'Push R' + list_elt_addr + '\nPopR1\n';
-        return [code, Blockly.Assembly.ORDER_NONE];
-     } else if (where == 'FROM_END') {
+      }
+      else if (test) 
+      {// "at is a statement, we have a bunch of info on stack
+        }
+    } // end FROM_START
+     else if (where == 'FROM_END') {
         var list_last_elt_addr = list_first_elt_addr + list_len;
         list_elt_addr = list_last_elt_addr - at;
-        var code = 'Push R' + list_elt_addr + '\nPopR1\n';
+        code += 'Push R' + list_elt_addr + '\nPopR1\n';
         return [code, Blockly.Assembly.ORDER_NONE];
-      } 
+    } 
   throw 'Unhandled combination (lists_getIndex).';
 };
 

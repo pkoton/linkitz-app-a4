@@ -48,7 +48,7 @@ goog.require('Blockly.Assembly');
     for (var i = 0; i < blocks.length; i++) {
       console.log("for loop i = " + i);
       var current_block = blocks[i];
-      console.log("in loop, current_block is (" + i + ") " + current_block);
+      console.log("in loop1, current_block is (" + i + ") " + current_block);
       // looking for procedure definitions
       if (current_block.type == 'procedures_defreturn') { //********** returns scalar or list?
         var procName = current_block.getFieldValue('NAME');
@@ -122,7 +122,7 @@ goog.require('Blockly.Assembly');
              
       else if (current_block.type == 'variables_set') { //********** set to scalar or list?
           var varName = Blockly.Assembly.variableDB_.getName(current_block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
-          console.log("in loop1 trying to variables_set " + varName);
+          console.log("in loop2 trying to variables_set " + varName);
           if (global_scalar_variables.indexOf(varName) >=0) {
             console.log("in loop2 found scalar in GSV");
             continue;
@@ -135,8 +135,7 @@ goog.require('Blockly.Assembly');
               console.log("in loop2 targetBlock " + targetBlock);
               if (targetBlock) {
               var inputType = targetBlock.type;
-              var assigned_value = Blockly.Assembly.valueToCode(targetBlock, 'VALUE', Blockly.Assembly.ORDER_ASSIGNMENT) || null;
-              console.log("in resolve_var_refs:\nTarget Block is " + targetBlock + "\nvarName is " + varName + " is being assigned input of type " + inputType);
+              console.log("in resolve_var_refs:\nTarget Block is " + targetBlock + "\nvarName is " + varName + ", which is being assigned input of type " + inputType);
               
                 switch (inputType) {
           
@@ -153,7 +152,6 @@ goog.require('Blockly.Assembly');
                   case "logic_operation":
                   case "lists_length":
                   case "math_on_list":
-                  case "lists_getIndex_nonMut": // Drew said just return a scalar and we can fix later - 11/27/2016
                   case "getbatterylevel":
                   case "getambientlight":
                     console.log("in loop2 found scalar by case");
@@ -183,15 +181,16 @@ goog.require('Blockly.Assembly');
                     break;
                   case 'lists_create_with':
                     console.log("in loop2 found list by case lists_create_with");
-                    var temp = lists_create_with_lengthOf(targetBlock);
-                    console.log("in resolve_var_refs, case lists_create_with " + targetBlock + " total items = " + temp[2] + " item length = " + temp[2]);
+                    var temp = lists_create_with_lengthOf(targetBlock); // returns [number of items, item_length, total_length]
+                    console.log("in resolve_var_refs, case lists_create_with " + targetBlock + " total items = " + temp[2] + " item length = " + temp[1]);
                     addNewListVar(varName, temp[0], temp[1]); 
                     break;
                                 
                 // ********* OTHER *********
                 
                   case 'variables_get': // variable is assigned to another variable
-                      console.log(varName + " is assigned to a variable");
+                    console.log("in loop2, case is variables_get");
+                    console.log(varName + " is assigned to a variable");
                       // get RHS variable name
                       // check if RHS is already defined -- if so, we know the type of varName
                       var RHSvar = targetBlock.getFieldValue('VAR');
@@ -223,6 +222,26 @@ goog.require('Blockly.Assembly');
                         }
                     break;
                   
+                  case "lists_getIndex_nonMut": // variable is assigned to a list item, could be scalar or list
+                    // we have the var_name, need the list name
+                    console.log("in lists_getIndex_nonMut, targetBlock is " + targetBlock);
+                    var list_name1 = targetBlock.getInputTargetBlock('VALUE');
+                    var list_name = list_name1.toString();
+                    //console.log("list_name = " + list_name);
+                    var list_name2 = Blockly.Assembly.variableDB_.getName(list_name,Blockly.Variables.NAME_TYPE);
+                    //console.log("list_name2 = " + list_name2);
+                    if (list_name2 in global_list_variables) { //RHSvar is defined as a list
+                        //console.log("found it"); 
+                    }
+                    var list_elt_size = global_list_variables[list_name2][2];
+                    if (list_elt_size > 1) {
+                      addNewListVar(varName, list_elt_size, 1); // we only have lists of (lists of scalars) so skip here is 1
+                    } 
+                    else {
+                      addNewScalarVar(varName);
+                    }
+                  break;
+                
                   case 'procedures_callreturn': // variable is assigned to the return val of a function
                     console.log("in case procedures_callreturn, current_block = " + current_block + " trying to find scalar/list of " + varName + " where targetBlock = " + targetBlock + " inputType = " + inputType);
                     var funcName = Blockly.Assembly.variableDB_.getName(targetBlock.getFieldValue('NAME'),Blockly.Procedures.NAME_TYPE);
@@ -233,7 +252,7 @@ goog.require('Blockly.Assembly');
                           addNewScalarVar(varName);
                           break;
                           }
-                          else if (proc_types[funcName][0] >= 1) { // maybe put num_items in 1st spot, item length in 2nd spot
+                          else if (proc_types[funcName][0] >= 1) { 
                             console.log("procedure returns a list in resolve_variable_refs");
                             addNewListVar(varName, proc_types[funcName][0], proc_types[funcName][1]); //varName,num_items,skip
                           break;
@@ -329,15 +348,20 @@ function addNewScalarVar(varName) {
   if (in_GSV >= 0) {
     varName_undef = 0;
     var code = 'push R' + in_GSV + '\npop R1\n';  
-  } else if (varName in global_list_variables) { // is it in global_list_variables
+  } else if (varName in global_list_variables) { // is it in global_list_variables [head,Rused,skip]
       varName_undef = 0;
       var code = '';
       var headaddr = global_list_variables[varName][0];
       var llen = global_list_variables[varName][1];
-      var topOfList = headaddr + llen - 1;
-      console.log("headaddr " + headaddr + " llen " + llen + " topOfList " + topOfList);
-      for (var i = 0; i < llen; i++) { //push values on stack
-        code += ' push R' +  (topOfList - i) + '\n';
+      if (global_list_variables[varName][2] > 1) {
+        return(lists_getIndex_nonMut(block));
+      }
+      else {
+        var topOfList = headaddr + llen - 1;
+        console.log("headaddr " + headaddr + " llen " + llen + " topOfList " + topOfList);
+        for (var i = 0; i < llen; i++) { //push values on stack
+          code += ' push R' +  (topOfList - i) + '\n';
+        }
       }
     }
   if (varName_undef) {                                                // variable value has not been set yet
@@ -350,7 +374,7 @@ function addNewScalarVar(varName) {
 
 Blockly.Assembly['variables_set'] = function(block) {
   // Variable setter
-  var argument0 = Blockly.Assembly.valueToCode(block, 'VALUE', Blockly.Assembly.ORDER_ASSIGNMENT);
+  var argument0 = Blockly.Assembly.valueToCode(block, 'VALUE', Blockly.Assembly.ORDER_NONE); // used to be ORDER_ASSIGNMENT
   if (!argument0) {
     // *****  input is null
     console.log('input is empty, skipping');

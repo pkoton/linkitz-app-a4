@@ -217,30 +217,46 @@ Blockly.Assembly['math_on_list'] = function(block) {
   var code;
   switch (func) {
     case 'SUM':
-      var functionName = Blockly.Assembly.provideFunction_(
-          'math_sum',
-          [ 'num ' + Blockly.Assembly.FUNCTION_NAME_PLACEHOLDER_ +
-              '(List myList) {',
-            '  num sumVal = 0;',
-            '  myList.forEach((num entry) {sumVal += entry;});',
-            '  return sumVal;',
-            '}']);
-      code = functionName + '(' + list + ')';
+      var varName = Blockly.Assembly.variableDB_.getName(block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+        console.log("math_on_list: checking for " + varName + " in GLV");
+        if (varName in global_list_variables) { // is it in global_list_variables
+          firstElt = global_list_variables[varName][0] + 1;
+          llen = global_list_variables[varName][1] - 1; // length of the list
+          listEnd = firstElt + llen;
+          code = "Push R" + firstElt + '\nPop R1\n';
+          for (i = (firstElt + 1); i < listEnd; i++) {
+            code += "Push R" + i + '\nPop R2\nSUM R1 R2 R1';
+          }
+        } else
+        {code = "ERROR in math_on_list SUM\n";}
       break;
-    case 'MIN':
-      Blockly.Assembly.definitions_['import_dart_math'] =
-          'import \'dart:math\' as Math;';
-      var functionName = Blockly.Assembly.provideFunction_(
-          'math_min',
-          [ 'num ' + Blockly.Assembly.FUNCTION_NAME_PLACEHOLDER_ +
-              '(List myList) {',
-            '  if (myList.isEmpty) return null;',
-            '  num minVal = myList[0];',
-            '  myList.forEach((num entry) ' +
-              '{minVal = Math.min(minVal, entry);});',
-            '  return minVal;',
-            '}']);
-      code = functionName + '(' + list + ')';
+    case 'MIN': // get min element, leave in R1
+      var varName = Blockly.Assembly.variableDB_.getName(block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+        console.log("math_on_list: checking for " + varName + " in GLV");
+        if (varName in global_list_variables) { // is it in global_list_variables
+          firstElt = global_list_variables[varName][0] + 1;
+          llen = global_list_variables[varName][1] - 1; // length of the list
+          code = "Push R" + firstElt + '\nPop R2\n';
+          for (j = (firstElt + 1); j < listEnd; j++) {
+            code += "Push R" + j + '\nPop R1\ncmplt R2 R1 R1\n'; // test R2 < R1? if T R1=1, if F R1=0
+            code += 'BTR1SNZ\nPush R' + j + '\nPop R2\n'; // *** this is 2 instructions!!! if R1 was less, put that value in R2
+          }
+          code += "Push R2\nPopR1\n"; // min was in R2, put it in R1
+        } else
+        {code = "ERROR in math_on_list MIN\n";}
+      // Blockly.Assembly.definitions_['import_dart_math'] =
+      //    'import \'dart:math\' as Math;';
+      //var functionName = Blockly.Assembly.provideFunction_(
+      //    'math_min',
+      //    [ 'num ' + Blockly.Assembly.FUNCTION_NAME_PLACEHOLDER_ +
+      //        '(List myList) {',
+      //      '  if (myList.isEmpty) return null;',
+      //      '  num minVal = myList[0];',
+      //      '  myList.forEach((num entry) ' +
+      //        '{minVal = Math.min(minVal, entry);});',
+      //      '  return minVal;',
+      //      '}']);
+      //code = functionName + '(' + list + ')';
       break;
     case 'MAX':
       Blockly.Assembly.definitions_['import_dart_math'] =
