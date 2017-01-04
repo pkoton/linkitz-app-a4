@@ -287,7 +287,7 @@
 	"VARIABLES_SET_CREATE_GET": "Create 'get %1'",
 	"PROCEDURES_DEFNORETURN_HELPURL": "http://en.wikipedia.org/wiki/Procedure_%28computer_science%29",
 	"PROCEDURES_DEFNORETURN_TITLE": "to",
-	"PROCEDURES_DEFNORETURN_PROCEDURE": "do something",
+	"PROCEDURES_DEFNORETURN_PROCEDURE": "dosomething",
 	"PROCEDURES_BEFORE_PARAMS": "with:",
 	"PROCEDURES_CALL_BEFORE_PARAMS": "with:",
 	"PROCEDURES_DEFNORETURN_TOOLTIP": "Creates a function with no output.",
