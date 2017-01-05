@@ -99,6 +99,7 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
 
 /*
     Instruction Space
+    00:NOP
     05:Syscall
         00: Syscall exit
         01: Set_Reg_Event_Speed
@@ -149,6 +150,10 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[3]);
             unlinkedCodeLines.push([address,hex_line,token_list]);
             address+=8;
+        }else if(token_list[0].match(/nop/i)){
+            hex_line+=linkitzApp_hexgen_pad_words("00");
+            unlinkedCodeLines.push([address,hex_line,token_list]);
+            address+=2;
         } else if(token_list[0].match(/cmpneq/i)){
             hex_line+=linkitzApp_hexgen_pad_words("21");
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
