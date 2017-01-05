@@ -38,9 +38,6 @@ Blockly.Assembly['lists_getIndex_nonMut'] = function(block) {
   console.log("in lists_getIndex_nonMut");
   var mode = 'GET';
   var where = block.getFieldValue('WHERE') || 'FROM_START';
-  //var at1 = block.getInputTargetBlock('AT') || '1';
-  //var at = at1.toString();
-  //console.log("AT is "+ at);
   var list_name1 = block.getInputTargetBlock('VALUE');
   var list_name2 = list_name1.toString();
   var list_name = Blockly.Assembly.variableDB_.getName(list_name2,Blockly.Variables.NAME_TYPE);
@@ -53,10 +50,7 @@ Blockly.Assembly['lists_getIndex_nonMut'] = function(block) {
   console.log("in lists_getIndex_nonMut, list_len = " + list_len+ ", list_elt_size = " + list_elt_size);
   var list_elt_addr;
   var code = '';
-  //if (Blockly.isNumber(at) && (at > (list_len/list_elt_size))) { // If the index is a naked number, make sure it is in range
-  //  console.log('in lists_getIndex_nonMut: index is out of range'); // otherwise set it to last element
-  //  at = parseInt(list_len/list_elt_size).toString();
-  //}
+  
     if (where == 'FIRST') {
       if (list_elt_size ==1) {
         code += 'Push R' + list_first_elt_addr + '\nPop R1\n';
@@ -108,7 +102,7 @@ Blockly.Assembly['lists_getIndex_nonMut'] = function(block) {
           code += 'Push R'+ gsv_next + '\n';
           code += 'Add R1 R2 R1\n'; // calculate next offset
           }
-          code += 'Push ' + list_elt_size + '\n';
+          code += 'set R1 ' + list_elt_size +"\npush R1\n";
         }
       return [code, Blockly.Assembly.ORDER_ATOMIC];
     } // end FROM_START
@@ -127,12 +121,12 @@ Blockly.Assembly['lists_getIndex_nonMut'] = function(block) {
         code += "MUL R2 R1 R1\n"; //((list_num_items - (at2 - 1)) * list_elt_size) in R1
         // R1 now holds the starting offset ( the last element of the requested item)
         if (list_elt_size ==1) {
-          code += 'GETO ' + list_head_addr + ' R1 R1\n';
+          code += 'GETO R' + list_head_addr + ' R1 R1\n';
           }
         else {
          code += "set R2 -1\n";
          for (var i = 0; i < list_elt_size; i++) {
-          code += 'GETO ' + list_head_addr + ' R1 R' + gsv_next + '\n';
+          code += 'GETO R' + list_head_addr + ' R1 R' + gsv_next + '\n';
           code += 'Push R'+ gsv_next + '\n';
           code += 'Add R1 R2 R1\n'; // calculate next offset
           }
@@ -147,18 +141,32 @@ Blockly.Assembly['lists_setIndex_nonMut'] = function(block) {
   // Set element at index.
   // Note: Until February 2013 this block did not have MODE or WHERE inputs.
   var mode = 'SET';
+  console.log("in lists_setIndex_nonMut");
+  var at = Blockly.Assembly.valueToCode(block, 'AT',Blockly.Assembly.ORDER_ATOMIC) || '1';
+  console.log("AT is "+ at);
   var where = block.getFieldValue('WHERE') || 'FROM_START';
-  var at = Blockly.Assembly.valueToCode(block, 'AT', Blockly.Assembly.ORDER_ADDITIVE) || '1';
+  console.log("WHERE = " + where);
   var value = Blockly.Assembly.valueToCode(block, 'TO', Blockly.Assembly.ORDER_ASSIGNMENT) || 'null';
-  var list_name = Blockly.Assembly.variableDB_.getName(current_block.getFieldValue('VALUE'), Blockly.Variables.NAME_TYPE);
-  console.log("got list name " + list_name);
+  console.log("value = " + value);
+  //var list = Blockly.Assembly.valueToCode(block, 'LIST', Blockly.Assembly.ORDER_UNARY_POSTFIX) || '[]';
+  var list_name1 = block.getInputTargetBlock('VALUE');
+  console.log("list_name1 " + list_name1);
+  var list_name2 = list_name1.toString();
+  var list_name = Blockly.Assembly.variableDB_.getName(list_name2,Blockly.Variables.NAME_TYPE);
+  console.log("list name is " + list_name);
+  var list_head_addr = global_list_variables[list_name][0];
   var list_first_elt_addr = global_list_variables[list_name][0] + 1;
   var list_len = global_list_variables[list_name][1] - 1;
+  var list_elt_size = global_list_variables[list_name][2];
+  var list_num_items = list_len/list_elt_size;
+  console.log("in lists_getIndex_nonMut, list_first_elt_addr = " +list_first_elt_addr+ "\n");
+  console.log("in lists_getIndex_nonMut, list_len = " + list_len+ ", list_elt_size = " + list_elt_size);
   var list_elt_addr;
-  if (Blockly.isNumber(at) && (at > list_len)) {
-    console.log('in lists_getIndex_nonMut: index is out of range'); // set it to 1
-    at = 1;
-  }
+  var code = '';
+  console.log("here");
+  
+  
+  
   if (where == 'FIRST') {
       return list + '[0] = ' + value + ';\n';
   } else if (where == 'LAST') {
