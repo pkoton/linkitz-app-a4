@@ -52,6 +52,9 @@ goog.require('Blockly.Assembly');
       // looking for procedure definitions
       if (current_block.type == 'procedures_defreturn') { //********** returns scalar or list?
         var procName = current_block.getFieldValue('NAME');
+        //var procName2 = Blockly.Assembly.variableDB_.getName(current_block.getFieldValue('NAME'), Blockly.Variables.NAME_TYPE);
+        //console.log("procName: " + procName + ", after getName: " + procName2);
+        console.log("procName: " + procName);
         var returnBlock = current_block.getInputTargetBlock('RETURN');
         if (returnBlock) {
           var ldata; // placeholder for list data if it is a list
@@ -73,7 +76,7 @@ goog.require('Blockly.Assembly');
                             undef_vars.splice(i2, 1);
                             }
                           undef_vars_next--;
-              } else if (ldata = is_list(returnBlock)) {
+              } else if (ldata = is_list(returnBlock)) { // ldata is being assigned the value of is_list; not a typo!
                 console.log('in loop1 returnBlock is a list, ldata is ' + ldata);
                 var llength = ldata[0];
                 var lskip = ldata[1];
@@ -227,12 +230,9 @@ goog.require('Blockly.Assembly');
                     console.log("in lists_getIndex_nonMut, targetBlock is " + targetBlock);
                     var list_name1 = targetBlock.getInputTargetBlock('VALUE');
                     var list_name = list_name1.toString();
-                    //console.log("list_name = " + list_name);
+                    console.log("list_name = " + list_name);
                     var list_name2 = Blockly.Assembly.variableDB_.getName(list_name,Blockly.Variables.NAME_TYPE);
-                    //console.log("list_name2 = " + list_name2);
-                    if (list_name2 in global_list_variables) { //RHSvar is defined as a list
-                        //console.log("found it"); 
-                    }
+                    console.log("list_name2 = " + list_name2);
                     var list_elt_size = global_list_variables[list_name2][2];
                     if (list_elt_size > 1) {
                       addNewListVar(varName, list_elt_size, 1); // we only have lists of (lists of scalars) so skip here is 1
@@ -244,8 +244,10 @@ goog.require('Blockly.Assembly');
                 
                   case 'procedures_callreturn': // variable is assigned to the return val of a function
                     console.log("in case procedures_callreturn, current_block = " + current_block + " trying to find scalar/list of " + varName + " where targetBlock = " + targetBlock + " inputType = " + inputType);
+                    // var funcName0 = targetBlock.getFieldValue('NAME');
                     var funcName = Blockly.Assembly.variableDB_.getName(targetBlock.getFieldValue('NAME'),Blockly.Procedures.NAME_TYPE);
-                    console.log("funcName = " + funcName);
+                    // console.log("funcName: " + funcName + ", before getName called, was: "+ funcName0);
+                    console.log("funcName: " + funcName);
                     if (funcName in proc_types) { // already found
                       console.log("found procedure " + funcName +  " in proc_types");
                         if (proc_types[funcName][0] == 0) {
