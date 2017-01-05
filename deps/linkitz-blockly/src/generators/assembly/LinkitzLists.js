@@ -100,7 +100,7 @@ Blockly.Assembly['lists_getIndex_nonMut'] = function(block) {
         var at1 = block.getInputTargetBlock('AT') || '1';
         var at = at1.toString();
         console.log("AT is "+ at);
-        var at2 = Blockly.Assembly.valueToCode(block, 'AT',Blockly.Assembly.ORDER_UNARY_PREFIX) || '1';
+        var at2 = Blockly.Assembly.valueToCode(block, 'AT',Blockly.Assembly.ORDER_ATOMIC) || '1';
         console.log("AT2 is "+ at2);
         code += at2;
          // calculate this: (at2 * list_elt_size)
@@ -110,7 +110,7 @@ Blockly.Assembly['lists_getIndex_nonMut'] = function(block) {
           code += 'GETO ' + list_head_addr + ' R1 R1\n';
           }
         else {
-         code += "set R2 -1";
+         code += "set R2 -1\n";
          for (var i = 0; i < list_elt_size; i++) {
           code += 'GETO ' + list_head_addr + ' R1 R' + gsv_next + '\n';
           code += 'Push R'+ gsv_next + '\n';
@@ -119,13 +119,13 @@ Blockly.Assembly['lists_getIndex_nonMut'] = function(block) {
           code += 'Push ' + list_elt_size + '\n';
         }
       //}
-      return [code, Blockly.Assembly.ORDER_NONE];
+      return [code, Blockly.Assembly.ORDER_ATOMIC];
     } // end FROM_START
      else if (where == 'FROM_END') {
         var list_last_elt_addr = list_first_elt_addr + list_len;
         list_elt_addr = list_last_elt_addr - at;
         code += 'Push R' + list_elt_addr + '\nPopR1\n';
-        return [code, Blockly.Assembly.ORDER_NONE];
+        return [code, Blockly.Assembly.ORDER_ATOMIC];
     } 
   throw 'Unhandled combination (lists_getIndex).';
 };
