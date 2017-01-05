@@ -112,7 +112,7 @@ Blockly.Assembly['procedures_callreturn'] = function(block) {
   if (block.arguments_.length==0) {
     // called with no args
     console.log(funcName + ' called with no args');
-    var code = 'fcall ' + funcName + '\n';
+    var code = 'syscall fcall ' + funcName + '\n';
   }
   else {
   console.log(funcName + 'called with args');
@@ -123,7 +123,7 @@ Blockly.Assembly['procedures_callreturn'] = function(block) {
   // if there are args they have to be pushed on the stack - to be written!
   var code = funcName + '(' + args.join(', ') + ')';
   }
-  return [code, Blockly.Assembly.ORDER_UNARY_POSTFIX];
+  return [code, Blockly.Assembly.ORDER_ATOMIC];
 };
 
 Blockly.Assembly['procedures_callnoreturn'] = function(block) {
@@ -140,7 +140,7 @@ Blockly.Assembly['procedures_callnoreturn'] = function(block) {
     args[x] = Blockly.Assembly.valueToCode(block, 'ARG' + x,
         Blockly.Assembly.ORDER_NONE) || 'null';
     }
-  // if there are args they have to be pushed on the stack - to be written!
+  // if there are args they have to be pushed on the stack ********* to be written!
     var code = 'syscall fcall ' + funcName + '(' + args.join(', ') + ');\n';
   }
   return code;
