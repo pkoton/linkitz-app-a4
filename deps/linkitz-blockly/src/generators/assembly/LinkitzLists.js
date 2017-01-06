@@ -38,9 +38,7 @@ Blockly.Assembly['lists_getIndex_nonMut'] = function(block) {
   console.log("in lists_getIndex_nonMut");
   var mode = 'GET';
   var where = block.getFieldValue('WHERE') || 'FROM_START';
-  var list_name1 = block.getInputTargetBlock('VALUE');
-  var list_name2 = list_name1.toString();
-  var list_name = Blockly.Assembly.variableDB_.getName(list_name2,Blockly.Variables.NAME_TYPE);
+  var list_name = Blockly.Assembly.variableDB_.getName(block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
   var list_head_addr = global_list_variables[list_name][0];
   var list_first_elt_addr = global_list_variables[list_name][0] + 1;
   var list_len = global_list_variables[list_name][1] - 1;
@@ -140,10 +138,7 @@ Blockly.Assembly['lists_setIndex_nonMut'] = function(block) {
   console.log("in lists_setIndex_nonMut");
   var where = block.getFieldValue('WHERE') || 'FROM_START';
   console.log("WHERE = " + where);
-  var list_name1 = block.getInputTargetBlock('VALUE');
-  console.log("list_name1 " + list_name1);
-  var list_name2 = list_name1.toString();
-  var list_name = Blockly.Assembly.variableDB_.getName(list_name2,Blockly.Variables.NAME_TYPE);
+  var list_name = Blockly.Assembly.variableDB_.getName(block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
   console.log("list name is " + list_name);
   var list_head_addr = global_list_variables[list_name][0];
   var list_first_elt_addr = global_list_variables[list_name][0] + 1;
