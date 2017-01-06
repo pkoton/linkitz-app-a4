@@ -228,10 +228,7 @@ goog.require('Blockly.Assembly');
                   case "lists_getIndex_nonMut": // variable is assigned to a list item, could be scalar or list
                     // we have the var_name, need the list name
                     console.log("in lists_getIndex_nonMut, targetBlock is " + targetBlock);
-                    var list_name1 = targetBlock.getInputTargetBlock('VALUE');
-                    var list_name = list_name1.toString();
-                    console.log("list_name = " + list_name);
-                    var list_name2 = Blockly.Assembly.variableDB_.getName(list_name,Blockly.Variables.NAME_TYPE);
+                    var list_name2 = Blockly.Assembly.variableDB_.getName(block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
                     console.log("list_name2 = " + list_name2);
                     var list_elt_size = global_list_variables[list_name2][2];
                     if (list_elt_size > 1) {
