@@ -21,10 +21,12 @@ Blockly.Blocks['lists_getIndex_nonMut'] = {
       .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_12_Lists.png",50,50,"*"));
     this.setColour('#33CC66');
     this.appendDummyInput()
-        .appendField("get");    
+        .appendField("in list ");    
     this.appendDummyInput()
         .appendField(new Blockly.FieldVariable(
         Blockly.Msg.VARIABLES_DEFAULT_NAME), 'VAR');
+    this.appendDummyInput()
+        .appendField(" get"); 
     this.appendDummyInput('AT');
     if (Blockly.Msg.LISTS_GET_INDEX_TAIL) {
       this.appendDummyInput('TAIL')
