@@ -36,9 +36,14 @@ Blockly.Assembly['lists_getIndex_nonMut'] = function(block) {
   // Get element at index.
   // Note: Until January 2013 this block did not have MODE or WHERE inputs.
   console.log("in lists_getIndex_nonMut");
+  var code = '';
   var mode = 'GET';
   var where = block.getFieldValue('WHERE') || 'FROM_START';
   var list_name = Blockly.Assembly.variableDB_.getName(block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+  if (global_scalar_variables.indexOf(list_name) >=0) {
+      console.log("selected variable is a scalar!");
+      return [code, Blockly.Assembly.ORDER_NONE];
+      }
   var list_head_addr = global_list_variables[list_name][0];
   var list_first_elt_addr = global_list_variables[list_name][0] + 1;
   var list_len = global_list_variables[list_name][1] - 1;
@@ -47,7 +52,7 @@ Blockly.Assembly['lists_getIndex_nonMut'] = function(block) {
   console.log("in lists_getIndex_nonMut, list_first_elt_addr = " +list_first_elt_addr+ "\n");
   console.log("in lists_getIndex_nonMut, list_len = " + list_len+ ", list_elt_size = " + list_elt_size);
   var list_elt_addr;
-  var code = '';
+  
   
     if (where == 'FIRST') {
       if (list_elt_size ==1) {
@@ -134,12 +139,17 @@ Blockly.Assembly['lists_getIndex_nonMut'] = function(block) {
 Blockly.Assembly['lists_setIndex_nonMut'] = function(block) {
   // Set element at index.
   // Note: Until February 2013 this block did not have MODE or WHERE inputs.
+  var code = '';
   var mode = 'SET';
   console.log("in lists_setIndex_nonMut");
   var where = block.getFieldValue('WHERE') || 'FROM_START';
   console.log("WHERE = " + where);
   var list_name = Blockly.Assembly.variableDB_.getName(block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
   console.log("list name is " + list_name);
+  if (global_scalar_variables.indexOf(list_name) >=0) {
+      console.log("selected variable is a scalar!");
+      return [code, Blockly.Assembly.ORDER_NONE];
+      }
   var list_head_addr = global_list_variables[list_name][0];
   var list_first_elt_addr = global_list_variables[list_name][0] + 1;
   var list_len = global_list_variables[list_name][1] - 1;
@@ -148,7 +158,6 @@ Blockly.Assembly['lists_setIndex_nonMut'] = function(block) {
   console.log("in lists_getIndex_nonMut, list_first_elt_addr = " +list_first_elt_addr+ "\n");
   console.log("in lists_getIndex_nonMut, list_len = " + list_len+ ", list_elt_size = " + list_elt_size);
   var list_elt_addr;
-  var code = '';
   console.log("here");
   
   if (where == 'FIRST') {
