@@ -100,6 +100,7 @@ var debug = 0;
 
 var glv_next = 127; // glv_next points to the empty register at the bottom of list register space
 var global_list_variables = new Object();
+//console.log("new glv");
 
 // We maintain an array of all global_scalar_variables.
 // The variable_name's index in the array indicates the register number which holds the value
@@ -110,6 +111,7 @@ var global_list_variables = new Object();
 // global_scalar_variables builds UP from R0 to R127
 
 var global_scalar_variables = [];
+//console.log("new gsv");
 global_scalar_variables[0] = 'zero'; // R0
 global_scalar_variables[1] = 'scratch1'; // R1
 global_scalar_variables[2] = 'scratch2'; // R2
