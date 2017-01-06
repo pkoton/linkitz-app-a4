@@ -903,7 +903,7 @@ Blockly.Msg.LISTS_SET_INDEX_SET = 'set';
 Blockly.Msg.LISTS_SET_INDEX_INSERT = 'insert at';
 /// block text - The word(s) after the position in the list and before the item to be set/inserted.
 /// [[File:Blockly-in-list-set-insert.png]]
-Blockly.Msg.LISTS_SET_INDEX_INPUT_TO = 'as';
+Blockly.Msg.LISTS_SET_INDEX_INPUT_TO = 'to';
 /// tooltip - See [https://github.com/google/blockly/wiki/Lists#getting-a-single-item} (even though the page describes the "get" block, the idea is the same for the "set" block).
 Blockly.Msg.LISTS_SET_INDEX_TOOLTIP_SET_FROM_START = 'Sets the item at the specified position in a list. #1 is the first item.';
 /// tooltip - See [https://github.com/google/blockly/wiki/Lists#getting-a-single-item} (even though the page describes the "get" block, the idea is the same for the "set" block).
