@@ -230,10 +230,10 @@ linkitzApp.factory('LinkitzToy',
 
         linkitz.getData(address, bufferLength,
             function successCallback(rxBuffer) {
-                idBuffer[0] = ((rxBuffer[0] & 0x3f) << 8) + rxBuffer[1];
-                idBuffer[1] = ((rxBuffer[2] & 0x3f) << 8) + rxBuffer[3];
-                idBuffer[2] = ((rxBuffer[4] & 0x3f) << 8) + rxBuffer[5];
-                idBuffer[3] = ((rxBuffer[6] & 0x3f) << 8) + rxBuffer[7];
+                idBuffer[0] = (rxBuffer[0] << 8) + (rxBuffer[1] & 0x3f);
+                idBuffer[1] = (rxBuffer[2] << 8) + (rxBuffer[3] & 0x3f);
+                idBuffer[2] = (rxBuffer[4] << 8) + (rxBuffer[5] & 0x3f);
+                idBuffer[3] = (rxBuffer[6] << 8) + (rxBuffer[7] & 0x3f);
                 $rootScope.$evalAsync(function () {
                     deferred.resolve(idBuffer);
                 });
