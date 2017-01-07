@@ -21,9 +21,12 @@ Blockly.Blocks['lists_getIndex_nonMut'] = {
       .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_12_Lists.png",50,50,"*"));
     this.setColour('#33CC66');
     this.appendDummyInput()
-        .appendField("get");    
-    this.appendValueInput('VALUE') // check to make sure input is a list
-        .setCheck('Array');
+        .appendField("in list ");    
+    this.appendDummyInput()
+        .appendField(new Blockly.FieldVariable(
+        Blockly.Msg.VARIABLES_DEFAULT_NAME), 'VAR');
+    this.appendDummyInput()
+        .appendField(" get"); 
     this.appendDummyInput('AT');
     if (Blockly.Msg.LISTS_GET_INDEX_TAIL) {
       this.appendDummyInput('TAIL')
@@ -134,6 +137,7 @@ Blockly.Blocks['lists_setIndex_nonMut'] = {
    * @this Blockly.Block
    */
   init: function() {
+  
     this.WHERE_OPTIONS =
         [[Blockly.Msg.LISTS_GET_INDEX_FROM_START, 'FROM_START'],
          [Blockly.Msg.LISTS_GET_INDEX_FROM_END, 'FROM_END'],
@@ -144,10 +148,12 @@ Blockly.Blocks['lists_setIndex_nonMut'] = {
     this.appendDummyInput()
       .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_12_Lists.png",50,50,"*"));
     this.appendDummyInput()
-        .appendField("set");
-    this.appendValueInput('VALUE')
-        .setCheck('Array')
-        .appendField(Blockly.Msg.LISTS_GET_INDEX_INPUT_IN_LIST);
+        .appendField("in list ");
+    this.appendDummyInput()
+        .appendField(new Blockly.FieldVariable(
+        Blockly.Msg.VARIABLES_DEFAULT_NAME), 'VAR');
+    this.appendDummyInput()
+        .appendField(" set");
     this.appendDummyInput('AT');
     this.appendValueInput('TO')
         .appendField(Blockly.Msg.LISTS_SET_INDEX_INPUT_TO);
@@ -175,6 +181,8 @@ Blockly.Blocks['lists_setIndex_nonMut'] = {
     container.setAttribute('at', isAt);
     return container;
   },
+  
+  
   /**
    * Parse XML to restore the 'AT' input.
    * @param {!Element} xmlElement XML storage element.
@@ -242,3 +250,4 @@ Blockly.Blocks['lists_create_n'] = {
     this.setOutput(true, 'Array');
   }
 }
+

@@ -96,17 +96,7 @@ goog.require('Blockly.Assembly');
                             undef_vars.splice(i2, 1);
                             }
                           undef_vars_next--;
-                } /*else if (llength == 1) {
-                    console.log('returnBlock is list');
-                    proc_types[procName] = [1,9]; // **** dummy value, work on finding list length later
-                    console.log(procName + " returns a list of unknown length");
-                    // Find and remove procName from undef_vars list
-                            i2 = undef_vars.indexOf("procName");
-                            if (i2 != -1) {
-                              undef_vars.splice(i2, 1);
-                              }
-                            undef_vars_next--;
-                  }*/ else {
+                } else {
                     console.log("still working on " + procName);
                     }
                 }
@@ -228,17 +218,20 @@ goog.require('Blockly.Assembly');
                   case "lists_getIndex_nonMut": // variable is assigned to a list item, could be scalar or list
                     // we have the var_name, need the list name
                     console.log("in lists_getIndex_nonMut, targetBlock is " + targetBlock);
-                    var list_name1 = targetBlock.getInputTargetBlock('VALUE');
-                    var list_name = list_name1.toString();
-                    console.log("list_name = " + list_name);
-                    var list_name2 = Blockly.Assembly.variableDB_.getName(list_name,Blockly.Variables.NAME_TYPE);
+                    var list_name2 = Blockly.Assembly.variableDB_.getName(targetBlock.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
                     console.log("list_name2 = " + list_name2);
-                    var list_elt_size = global_list_variables[list_name2][2];
-                    if (list_elt_size > 1) {
-                      addNewListVar(varName, list_elt_size, 1); // we only have lists of (lists of scalars) so skip here is 1
-                    } 
-                    else {
-                      addNewScalarVar(varName);
+                    if (global_scalar_variables.indexOf(list_name2) >=0) {
+                      console.log("trying to select index of a scalar!");
+                      console.log("error2 in resolve var refs");
+                      return 0;
+                    } else {
+                        var list_elt_size = global_list_variables[list_name2][2];
+                        if (list_elt_size > 1) {
+                          addNewListVar(varName, list_elt_size, 1); // we only have lists of (lists of scalars) so skip here is 1
+                        } 
+                        else {
+                          addNewScalarVar(varName);
+                        }
                     }
                   break;
                 
@@ -513,9 +506,9 @@ Blockly.Assembly['variables_set'] = function(block) {
       case "variables_get":
         var varName = Blockly.Assembly.variableDB_.getName(block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
         console.log("checking for " + varName + " in GLV");
-        //if (varName in global_list_variables) { // is it in global_list_variables
-        //  res = [(global_list_variables[varName][1] - 1),global_list_variables[varName][2]); // length of the list
-        //}
+        if (varName in global_list_variables) { // is it in global_list_variables
+          res = [(global_list_variables[varName][1] - 1),global_list_variables[varName][2]]; // length of the list, item length
+        }
         break; 
       case 'lists_create_n':
         var numItems = parseInt(block.getFieldValue('NUM_ITEMS'));
