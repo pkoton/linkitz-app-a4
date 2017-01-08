@@ -57,8 +57,8 @@ Blockly.Assembly['lists_create_with'] = function(block) {
         code += 'Push R0\n';
         }
     }
-  code += "Push " + itemNum1 + '\n';
-  } else { // create the assembly code for scalar or list of lists 
+  code += "Set R1 " + itemNum1 + '\nPush R1\n';
+  } else { // create the assembly code for list of lists 
     console.log("lists_create_with: list of lists");
     for (var m = (itemNum1 - 1); m >= 0; m--) { // for each list-of-lists item
       var itemCode = Blockly.Assembly.valueToCode(block, 'ADD' + m, Blockly.Assembly.ORDER_NONE);
@@ -68,7 +68,7 @@ Blockly.Assembly['lists_create_with'] = function(block) {
           code += 'Push R0\n';
           }
     }
-  code += "Push " + total_length + '\n';
+  code += "Set R1 " + total_length + '\nPush R1\n';
   }
   return [code, Blockly.Assembly.ORDER_ATOMIC];
 };
