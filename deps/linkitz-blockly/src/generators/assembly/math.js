@@ -212,183 +212,115 @@ Blockly.Assembly['math_trig'] = Blockly.Assembly['math_single'];
 Blockly.Assembly['math_on_list'] = function(block) {
   // Math functions for lists.
   var func = block.getFieldValue('OP');
-  var list = Blockly.Assembly.valueToCode(block, 'LIST',
-      Blockly.Assembly.ORDER_NONE) || '[]';
-  var code;
-  switch (func) {
-    case 'SUM':
-      var varName = Blockly.Assembly.variableDB_.getName(block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
-        console.log("math_on_list: checking for " + varName + " in GLV");
-        if (varName in global_list_variables) { // is it in global_list_variables
-          firstElt = global_list_variables[varName][0] + 1;
-          llen = global_list_variables[varName][1] - 1; // length of the list
-          listEnd = firstElt + llen;
-          code = "Push R" + firstElt + '\nPop R1\n';
-          for (i = (firstElt + 1); i < listEnd; i++) {
-            code += "Push R" + i + '\nPop R2\nSUM R1 R2 R1';
-          }
-        } else
-        {code = "ERROR in math_on_list SUM\n";}
+  var targetBlock = block.getInputTargetBlock('LIST');
+  var inputType = targetBlock.type;
+  console.log("in math_on_list: targetBlock.type " + inputType);
+  var code = '';
+  ifCount++;
+  // some error checking: make sure input is a list, if it's a variable, it could be a scalar
+  // in which case, just return R0
+  if (is_scalar(inputType)){ 
+    code += "set R1 0\npush R1\npset R1 1\nush R1\n"; // pretend its a list of length 1 
+  }
+  else {
+    var next_stack_item = gsv_next + 1 ; //*** ******check to make sure this is not hitting glv_next
+    if (next_stack_item > glv_next) {
+    throw 'out of register space in math_on_list';
+    }
+    var list = Blockly.Assembly.valueToCode(block, 'LIST', Blockly.Assembly.ORDER_NONE) || '[]'; 
+    console.log("in math_on_list: valueToCode LIST is " + list); // input list is on stack, length is TOS
+    switch (func) {
+      case 'SUM':
+        console.log("in math_on_list: SUM");
+        code += list + "pop R1\n"; // length is in R1
+        code += "set R2 0\n"; // R2 will accumulate sum
+        code += "set R" + gsv_next + " -1\n";
+        code += "SUM_label_" + ifCount + ": ADD R1 R" + gsv_next + " R1\n"; //decrement R1
+        code += "BTR1SNZ \n GOTO endSUM_label_" + ifCount + "\n";
+        code += "pop R" + next_stack_item + "\n";
+        code += "ADD R2 R" + next_stack_item + " R2\n";
+        code += "GOTO SUM_label_" + ifCount + "\n";
+        code += "endSUM_label_: push R2 \npop R1\n"; //result of sum is now in R1
       break;
     case 'MIN': // get min element, leave in R1
-      var varName = Blockly.Assembly.variableDB_.getName(block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
-        console.log("math_on_list: checking for " + varName + " in GLV");
-        if (varName in global_list_variables) { // is it in global_list_variables
-          firstElt = global_list_variables[varName][0] + 1;
-          llen = global_list_variables[varName][1] - 1; // length of the list
-          code = "Push R" + firstElt + '\nPop R2\n';
-          for (j = (firstElt + 1); j < listEnd; j++) {
-            code += "Push R" + j + '\nPop R1\ncmplt R2 R1 R1\n'; // test R2 < R1? if T R1=1, if F R1=0
-            code += 'BTR1SNZ\nPush R' + j + '\nPop R2\n'; // *** this is 2 instructions!!! if R1 was less, put that value in R2
-          }
-          code += "Push R2\nPopR1\n"; // min was in R2, put it in R1
-        } else
-        {code = "ERROR in math_on_list MIN\n";}
-      // Blockly.Assembly.definitions_['import_dart_math'] =
-      //    'import \'dart:math\' as Math;';
-      //var functionName = Blockly.Assembly.provideFunction_(
-      //    'math_min',
-      //    [ 'num ' + Blockly.Assembly.FUNCTION_NAME_PLACEHOLDER_ +
-      //        '(List myList) {',
-      //      '  if (myList.isEmpty) return null;',
-      //      '  num minVal = myList[0];',
-      //      '  myList.forEach((num entry) ' +
-      //        '{minVal = Math.min(minVal, entry);});',
-      //      '  return minVal;',
-      //      '}']);
-      //code = functionName + '(' + list + ')';
+      // because R1 is a "special register" due to BTR1SNZ, it has to be used for double duty
+      // 1. to hold result of compare; 2. to hold interation counter
+      console.log("in math_on_list: MIN");
+      var min = next_stack_item; //*** ******check to make sure this is not hitting glv_next
+      var save = min + 1;
+      console.log("min = " + min + ", save = " +save);
+      if (min > glv_next) {
+        throw 'out of register space in math_on_list';
+      }
+      code += list + "pop R1\n"; // length is in R1
+      code += "set R" + gsv_next + " -1\n";
+      code += "pop R" + min + "\n";
+      code += "min_label_" + ifCount + ": ADD R1 R" + gsv_next + " R1\n"; //decrement R1 
+      code += "BTR1SNZ \n GOTO endMin_label_" + ifCount + "\n"; // if no more elements, go to end
+      code += "push R1 R" + save + "\n"; // save counter
+      code += "pop R2\n"; //get next item from stack
+      code += "cmplt R2 R" + min + " R1 \n"; // R1 = 1 if Rmin must be replaced by value in R2
+      code += "BTR1SNZ\n GOTO skip_label_" + ifCount + "\n"; // if Rmin must be replaced skip goto
+      code += "push R2\npop R" + min + "\n"; // R2 is new Rmin
+      code += "skip_label_"  + ifCount + ": push R" + save + "\npop R1\n"; // restore counter
+      code += "GOTO min_label_" + ifCount + "\n";
+      code += "endMin_label_: push R"+ min + "\npop R1\n"; // result of MIN is now in R1
       break;
-    case 'MAX':
-      Blockly.Assembly.definitions_['import_dart_math'] =
-          'import \'dart:math\' as Math;';
-      var functionName = Blockly.Assembly.provideFunction_(
-          'math_max',
-          [ 'num ' + Blockly.Assembly.FUNCTION_NAME_PLACEHOLDER_ +
-              '(List myList) {',
-            '  if (myList.isEmpty) return null;',
-            '  num maxVal = myList[0];',
-            '  myList.forEach((num entry) ' +
-                  '{maxVal = Math.max(maxVal, entry);});',
-            '  return maxVal;',
-            '}']);
-      code = functionName + '(' + list + ')';
+    case 'MAX': // get max element, leave in R1
+      // because R1 is a "special register" due to BTR1SNZ, it has to be used for double duty
+      // 1. to hold result of compare; 2. to hold interation counter
+      console.log("in math_on_list: MAX");
+      var max = next_stack_item; //*** ******check to make sure this is not hitting glv_next
+      var save = max + 1;
+      console.log("max = " + max + ", save = " +save);
+      if (max > glv_next) {
+        throw 'out of register space in math_on_list';
+      }
+      code += list + "pop R1\n"; // length is in R1
+      code += "set R" + gsv_next + " -1\n";
+      code += "pop R" + max + "\n";
+      code += "max_label_" + ifCount + ": ADD R1 R" + gsv_next + " R1\n"; //decrement R1 
+      code += "BTR1SNZ \n GOTO endmax_label_" + ifCount + "\n"; // if no more elements, go to end
+      code += "push R1 R" + save + "\n"; // save counter
+      code += "pop R2\n"; //get next item from stack
+      code += "cmplt R2 R" + max + " R1 \n"; // R1 = 1 if Rmax must be replaced by value in R2
+      code += "BTR1SNZ\n GOTO skip_label_" + ifCount + "\n"; // if Rmax must be replaced skip goto
+      code += "push R2\npop R" + max + "\n"; // R2 is new Rmax
+      code += "skip_label_"  + ifCount + ": push R" + save + "\npop R1\n"; // restore counter
+      code += "GOTO max_label_" + ifCount + "\n";
+      code += "endmax_label_: push R"+ max + "\npop R1\n"; // result of max is now in R1
+    break;
+      case 'AVERAGE': // calculate AVERAGE, leave in R1
+        console.log("in math_on_list: AVERAGE");
+        code += list + "pop R1\n"; // length is in R1
+        code += "set R2 0\n"; // R2 will accumulate sum
+        code += "set R" + gsv_next + " -1\n";
+        code += "SUM_label_" + ifCount + ": ADD R1 R" + gsv_next + " R1\n"; //decrement R1
+        code += "BTR1SNZ \n GOTO endSUM_label_" + ifCount + "\n";
+        code += "pop R" + next_stack_item + "\n";
+        code += "ADD R2 R" + next_stack_item + " R2\n";
+        code += "GOTO SUM_label_" + ifCount + "\n";
+        code += "endSUM_label_: DIV R2 R1 R1\n";
       break;
-    case 'AVERAGE':
-      // This operation exclude null and values that are not int or float:
-      //   math_mean([null,null,"aString",1,9]) == 5.0.
-      var functionName = Blockly.Assembly.provideFunction_(
-          'math_average',
-          [ 'num ' + Blockly.Assembly.FUNCTION_NAME_PLACEHOLDER_ +
-              '(List myList) {',
-            '  // First filter list for numbers only.',
-            '  List localList = new List.from(myList);',
-            '  localList.removeMatching((a) => a is! num);',
-            '  if (localList.isEmpty) return null;',
-            '  num sumVal = 0;',
-            '  localList.forEach((num entry) {sumVal += entry;});',
-            '  return sumVal / localList.length;',
-            '}']);
-      code = functionName + '(' + list + ')';
-      break;
-    case 'MEDIAN':
-      var functionName = Blockly.Assembly.provideFunction_(
-          'math_median',
-          [ 'num ' + Blockly.Assembly.FUNCTION_NAME_PLACEHOLDER_ +
-              '(List myList) {',
-            '  // First filter list for numbers only, then sort, ' +
-              'then return middle value',
-            '  // or the average of two middle values if list has an ' +
-              'even number of elements.',
-            '  List localList = new List.from(myList);',
-            '  localList.removeMatching((a) => a is! num);',
-            '  if (localList.isEmpty) return null;',
-            '  localList.sort((a, b) => (a - b));',
-            '  int index = localList.length ~/ 2;',
-            '  if (localList.length % 2 == 1) {',
-            '    return localList[index];',
-            '  } else {',
-            '    return (localList[index - 1] + localList[index]) / 2;',
-            '  }',
-            '}']);
-      code = functionName + '(' + list + ')';
-      break;
-    case 'MODE':
-      Blockly.Assembly.definitions_['import_dart_math'] =
-          'import \'dart:math\' as Math;';
-      // As a list of numbers can contain more than one mode,
-      // the returned result is provided as an array.
-      // Mode of [3, 'x', 'x', 1, 1, 2, '3'] -> ['x', 1].
-      var functionName = Blockly.Assembly.provideFunction_(
-          'math_modes',
-          [ 'List ' + Blockly.Assembly.FUNCTION_NAME_PLACEHOLDER_ +
-              '(List values) {',
-            '  List modes = [];',
-            '  List counts = [];',
-            '  int maxCount = 0;',
-            '  for (int i = 0; i < values.length; i++) {',
-            '    var value = values[i];',
-            '    bool found = false;',
-            '    int thisCount;',
-            '    for (int j = 0; j < counts.length; j++) {',
-            '      if (counts[j][0] == value) {',
-            '        thisCount = ++counts[j][1];',
-            '        found = true;',
-            '        break;',
-            '      }',
-            '    }',
-            '    if (!found) {',
-            '      counts.add([value, 1]);',
-            '      thisCount = 1;',
-            '    }',
-            '    maxCount = Math.max(thisCount, maxCount);',
-            '  }',
-            '  for (int j = 0; j < counts.length; j++) {',
-            '    if (counts[j][1] == maxCount) {',
-            '        modes.add(counts[j][0]);',
-            '    }',
-            '  }',
-            '  return modes;',
-            '}']);
-      code = functionName + '(' + list + ')';
-      break;
-    case 'STD_DEV':
-      Blockly.Assembly.definitions_['import_dart_math'] =
-          'import \'dart:math\' as Math;';
-      var functionName = Blockly.Assembly.provideFunction_(
-          'math_standard_deviation',
-          [ 'num ' + Blockly.Assembly.FUNCTION_NAME_PLACEHOLDER_ +
-              '(List myList) {',
-            '  // First filter list for numbers only.',
-            '  List numbers = new List.from(myList);',
-            '  numbers.removeMatching((a) => a is! num);',
-            '  if (numbers.isEmpty) return null;',
-            '  num n = numbers.length;',
-            '  num sum = 0;',
-            '  numbers.forEach((x) => sum += x);',
-            '  num mean = sum / n;',
-            '  num sumSquare = 0;',
-            '  numbers.forEach((x) => sumSquare += ' +
-                  'Math.pow(x - mean, 2));',
-            '  return Math.sqrt(sumSquare / n);',
-            '}']);
-      code = functionName + '(' + list + ')';
-      break;
-    case 'RANDOM':
-      Blockly.Assembly.definitions_['import_dart_math'] =
-          'import \'dart:math\' as Math;';
-      var functionName = Blockly.Assembly.provideFunction_(
-          'math_random_item',
-          [ 'dynamic ' + Blockly.Assembly.FUNCTION_NAME_PLACEHOLDER_ +
-              '(List myList) {',
-            '  int x = new Math.Random().nextInt(myList.length);',
-            '  return myList[x];',
-            '}']);
-      code = functionName + '(' + list + ')';
-      break;
+    //   // RANDOM could return a scalar or a list, we can't tell a compile time, so not implemented at this time.
+    //   // you can get the same functionality by using random number + list_getIndex
+    ////case 'RANDOM':
+    ////  Blockly.Assembly.definitions_['import_dart_math'] =
+    ////      'import \'dart:math\' as Math;';
+    ////  var functionName = Blockly.Assembly.provideFunction_(
+    ////      'math_random_item',
+    ////      [ 'dynamic ' + Blockly.Assembly.FUNCTION_NAME_PLACEHOLDER_ +
+    ////          '(List myList) {',
+    ////        '  int x = new Math.Random().nextInt(myList.length);',
+    ////        '  return myList[x];',
+    ////        '}']);
+    ////  code = functionName + '(' + list + ')';
+    break;
     default:
       throw 'Unknown operator: ' + func;
+    }
   }
-  return [code, Blockly.Assembly.ORDER_UNARY_POSTFIX];
+  return [code, Blockly.Assembly.ORDER_ATOMIC];
 };
 
 Blockly.Assembly['math_modulo'] = function(block) {
