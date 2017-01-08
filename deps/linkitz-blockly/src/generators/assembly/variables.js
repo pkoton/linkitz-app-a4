@@ -227,7 +227,7 @@ goog.require('Blockly.Assembly');
                     } else {
                         var list_elt_size = global_list_variables[list_name2][2];
                         if (list_elt_size > 1) {
-                          addNewListVar(varName, list_elt_size, 1); // we only have lists of (lists of scalars) so skip here is 1
+                          addNewListVar(varName, list_elt_size, 1); // we only have lists of (lists of scalars) so skip = 1
                         } 
                         else {
                           addNewScalarVar(varName);
@@ -303,8 +303,7 @@ goog.require('Blockly.Assembly');
     var Rused = ((num_items * skip) + 1);
     console.log("num_items = "+num_items+", skip = " +skip+", Rused = " +Rused+ ", head = "+head);
     if (head < gsv_next) {
-     console.log("Error: Out of variable space in addNewListVar");
-     return 0;
+     throw 'out of register space in addNewListVar';
     }
     global_list_variables[varName]=[head,Rused,skip];
     glv_next = head - 1; // move pointer to next empty space down
@@ -320,8 +319,7 @@ goog.require('Blockly.Assembly');
 
 function addNewScalarVar(varName) {
   if (gsv_next > glv_next) {
-    alert("Error: Out of variable space in addNewScalarVar");
-   return R0;
+    throw 'out of register space in addNewScalarVar';
   }
   global_scalar_variables[gsv_next] = varName;
   console.log("in resolve_var_refs: GSV pointer now is " + gsv_next);
@@ -473,7 +471,7 @@ Blockly.Assembly['variables_set'] = function(block) {
       case "logic_operation":
       case "lists_length":
       case "math_on_list":
-      case "lists_getIndex_nonMut": // Drew said just return a scalar and we can fix later - 11/27/2016
+      case "lists_getIndex_nonMut":
       case "getbatterylevel":
       case "getambientlight":
         res = 1;
