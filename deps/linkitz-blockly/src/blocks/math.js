@@ -372,10 +372,10 @@ Blockly.Blocks['math_on_list'] = {
         'MIN': Blockly.Msg.MATH_ONLIST_TOOLTIP_MIN,
         'MAX': Blockly.Msg.MATH_ONLIST_TOOLTIP_MAX,
         'AVERAGE': Blockly.Msg.MATH_ONLIST_TOOLTIP_AVERAGE,
-        'MEDIAN': Blockly.Msg.MATH_ONLIST_TOOLTIP_MEDIAN,
-        'MODE': Blockly.Msg.MATH_ONLIST_TOOLTIP_MODE,
-        'STD_DEV': Blockly.Msg.MATH_ONLIST_TOOLTIP_STD_DEV,
-        'RANDOM': Blockly.Msg.MATH_ONLIST_TOOLTIP_RANDOM
+        //'MEDIAN': Blockly.Msg.MATH_ONLIST_TOOLTIP_MEDIAN,
+        //'MODE': Blockly.Msg.MATH_ONLIST_TOOLTIP_MODE,
+        //'STD_DEV': Blockly.Msg.MATH_ONLIST_TOOLTIP_STD_DEV,
+        //'RANDOM': Blockly.Msg.MATH_ONLIST_TOOLTIP_RANDOM
       };
       return TOOLTIPS[mode];
     });
