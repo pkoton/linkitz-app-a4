@@ -295,12 +295,12 @@ Blockly.Assembly['math_on_list'] = function(block) {
         code += list + "pop R1\n"; // length is in R1
         code += "set R2 0\n"; // R2 will accumulate sum
         code += "set R" + gsv_next + " -1\n";
-        code += "SUM_label_" + ifCount + ": ADD R1 R" + gsv_next + " R1\n"; //decrement R1
-        code += "BTR1SNZ \n GOTO endSUM_label_" + ifCount + "\n";
+        code += "AVG_label_" + ifCount + ": ADD R1 R" + gsv_next + " R1\n"; //decrement R1
+        code += "BTR1SNZ \n GOTO endAVG_label_" + ifCount + "\n";
         code += "pop R" + next_stack_item + "\n";
         code += "ADD R2 R" + next_stack_item + " R2\n";
-        code += "GOTO SUM_label_" + ifCount + "\n";
-        code += "endSUM_label_: DIV R2 R1 R1\n";
+        code += "GOTO AVG_label_" + ifCount + "\n";
+        code += "endAVG_label_: DIV R2 R1 R1\n";
       break;
     //   // RANDOM could return a scalar or a list, we can't tell a compile time, so not implemented at this time.
     //   // you can get the same functionality by using random number + list_getIndex

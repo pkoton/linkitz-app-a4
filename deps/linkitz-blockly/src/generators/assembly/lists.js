@@ -104,7 +104,7 @@ Blockly.Assembly['lists_length'] = function(block) {
         code += "BTR1SNZ \n GOTO endLEN_label_" + ifCount + "\n";
         code += "pop R0\n";
         code += "GOTO LEN_label_" + ifCount + "\n";
-        code += "endLEN_label_: NOP\n"; //result of lists_length is in R1
+        code += "endLEN_label_" + ifCount +": NOP\n"; //result of lists_length is in R1
   }
   return [code, Blockly.Assembly.ORDER_NONE];
 };

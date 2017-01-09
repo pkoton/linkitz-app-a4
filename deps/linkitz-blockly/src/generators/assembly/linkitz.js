@@ -455,13 +455,13 @@ Blockly.Assembly['check_type'] = function(block) {
 
 Blockly.Assembly['controls_while'] = function(block) {
   // Do while loop.
-  ifCount++;
+  var this_count = ifCount++;
   var argument0 = Blockly.Assembly.valueToCode(block, 'TEST', Blockly.Assembly.ORDER_NONE) || 'False';
-  var code = 'while_label_' + ifCount + ':\n' + argument0;
-  code += 'BTR1SNZ \n GOTO end_label_' + ifCount + '\n';
+  var code = 'WHILE_label_' + this_count + ': ' + argument0;
+  code += 'BTR1SNZ \n GOTO endWHILE_label_' + this_count + '\n';
   var branch = Blockly.Assembly.statementToCode(block, 'DO');
   branch = Blockly.Assembly.addLoopTrap(branch, block.id) ||
       Blockly.Assembly.PASS;
-  code += branch + 'GOTO ' + 'while_label_' + ifCount + '\n end_label_' + ifCount + ':\n';
+  code += branch + 'GOTO ' + 'WHILE_label_' + this_count + '\n endWHILE_label_' + this_count + ':\n';
   return code;
 };
