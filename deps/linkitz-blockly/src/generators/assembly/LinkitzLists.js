@@ -32,6 +32,32 @@ Blockly.Assembly.addReservedWords('Math');
 
 // list info stored in GLV[var_name] = [head_addr, register_used, skip]
 
+Blockly.Assembly['lists_length'] = function(block) {
+  // array length.
+  var code='';
+  console.log("in lists_length");
+  var targetBlock = block.getInputTargetBlock('VALUE');
+  var inputType = targetBlock.type;
+  console.log("in lists_length, inputType is " + inputType);
+  // some error checking: make sure input is a list, if it's a variable, it could be a scalar
+  // in which case, just return R0
+  if (is_scalar(targetBlock)){
+    code += "set R1 1\npush R1\npset R1 1\nush R1\n"; // pretend its a list of length 1 
+  }
+  else {
+    var list = Blockly.Assembly.valueToCode(block, 'VALUE', Blockly.Assembly.ORDER_NONE) || '[]'; 
+    console.log("in lists_length: valueToCode for list is " + list); // input list is on stack, length is TOS
+    code += list + "pop R1\n"; // length is in R1
+        code += "set R2 -1\n\n"; // clean up the stack by popping the values off into R0
+        code += "LEN_label_" + ifCount + ": ADD R1 R2 R1\n"; //decrement R1
+        code += "BTR1SNZ \n GOTO endLEN_label_" + ifCount + "\n";
+        code += "pop R0\n";
+        code += "GOTO LEN_label_" + ifCount + "\n";
+        code += "endLEN_label_: NOP\n"; //result of lists_length is in R1
+  }
+  return [code, Blockly.Assembly.ORDER_NONE];
+};
+
 Blockly.Assembly['lists_getIndex_nonMut'] = function(block) {
   // Get element at index.
   // Note: Until January 2013 this block did not have MODE or WHERE inputs.
