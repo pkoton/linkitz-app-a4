@@ -28,60 +28,39 @@ goog.provide('Blockly.Assembly.logic');
 
 goog.require('Blockly.Assembly');
 
-/*
 Blockly.Assembly['controls_if'] = function(block) {
   // If/elseif/else condition.
   var n = 0;
-  var argument = Blockly.Assembly.valueToCode(block, 'IF' + n,
-      Blockly.Assembly.ORDER_NONE) || 'false';
-  var branch = Blockly.Assembly.statementToCode(block, 'DO' + n);
-  var code = 'if (' + argument + ') {\n' + branch + '}';
-  for (n = 1; n <= block.elseifCount_; n++) {
-    argument = Blockly.Assembly.valueToCode(block, 'IF' + n,
-      Blockly.Assembly.ORDER_NONE) || 'false';
-    branch = Blockly.Assembly.statementToCode(block, 'DO' + n);
-    code += ' else if (' + argument + ') {\n' + branch + '}';
-  }
-  if (block.elseCount_) {
-    branch = Blockly.Assembly.statementToCode(block, 'ELSE');
-    code += ' else {\n' + branch + '}';
-  }
-  return code + '\n';
-};
-*/
-
-Blockly.Assembly['controls_if'] = function(block) {
-  // If/elseif/else condition.
-  var n = 0;
-  ifCount++; // ifCount is global for generating unique labels across multiple conditional statements
+  var this_if = ifCount++; // ifCount is global for generating unique labels across multiple conditional statements
   var elseCount = block.elseCount_;
   var elseifcount = block.elseifCount_;
+  console.log("in controls_if n="+n+", this_if="+this_if+", elseCount="+elseCount+", elseifcount="+elseifcount);
   var argument = Blockly.Assembly.valueToCode(block, 'IF' + n, Blockly.Assembly.ORDER_NONE) || 'Set R1 0\n';      //argument is in R1
   var code = argument;
   var branch = Blockly.Assembly.statementToCode(block, 'DO' + n); // branch = statements to be executed if argument is true/non-zero
       if ((elseCount == 0) && (elseifcount == 0)) { // this is simple if-then
-        code += 'BTR1SNZ \n GOTO endif_label_' + ifCount + '\n'; // test value in R1, skip the instuction 'GOTO else_label' if non-zero
-        code += branch + 'GOTO endif_label_' + ifCount + '\n';   // do the then clause and go to end
+        code += 'BTR1SNZ \n GOTO endif_label_' + this_if + '\n'; // test value in R1, skip the instuction 'GOTO else_label' if non-zero
+        code += branch + 'GOTO endif_label_' + this_if + '\n';   // do the then clause and go to end
       }
       else if ((elseCount > 0 ) && (elseifcount == 0)) { // this is a simple if-then-else
-        code += 'BTR1SNZ \n GOTO else_label_' + ifCount + '\n'; // test value in R1, skip the instuction 'GOTO else_label' if non-zero
-        code += branch + 'GOTO endif_label_' + ifCount + '\n';
+        code += 'BTR1SNZ \n GOTO else_label_' + this_if + '\n'; // test value in R1, skip the instuction 'GOTO else_label' if non-zero
+        code += branch + 'GOTO endif_label_' + this_if + '\n';
       } else {                                           // there are nested if statements with out without an else
-          code += 'BTR1SNZ \n GOTO elseif_label_' + ifCount + '_1\n'; // test value in R1, skip the instuction 'GOTO else_label' if non-zero
-          code += branch + 'GOTO endif_label_' + ifCount + '\n';
+          code += 'BTR1SNZ \n GOTO elseif_label_' + this_if + '_1\n'; // test value in R1, skip the instuction 'GOTO else_label' if non-zero
+          code += branch + 'GOTO endif_label_' + this_if + '\n';
      
           for (n = 1; n <= elseifcount; n++) {
             argument = Blockly.Assembly.valueToCode(block, 'IF' + n, Blockly.Assembly.ORDER_NONE) || 'Set R1 0\n';
             branch = Blockly.Assembly.statementToCode(block, 'DO' + n);
-            code += 'elseif_label_' + ifCount + '_' + n + ':\n' + argument +  'BTR1SNZ \n';
+            code += 'elseif_label_' + this_if + '_' + n + ':\n' + argument +  'BTR1SNZ \n';
             var z = n + 1;
             if (z  > elseifcount) { 
-              if (elseCount > 0) {code += 'GOTO else_label_' + ifCount + '\n' + branch + 'GOTO endif_label_' + ifCount + '\n'; }
+              if (elseCount > 0) {code += 'GOTO else_label_' + this_if + '\n' + branch + 'GOTO endif_label_' + this_if + '\n'; }
                 else {
-                  code += 'GOTO endif_label_' + ifCount + '\n' + branch + 'GOTO endif_label_' + ifCount + '\n';
+                  code += 'GOTO endif_label_' + this_if + '\n' + branch + 'GOTO endif_label_' + this_if + '\n';
                   }
               } else {
-                 code += 'GOTO elseif_label_' + ifCount + '_' + z +'\n' + branch+ 'GOTO endif_label_' + ifCount + '\n';
+                 code += 'GOTO elseif_label_' + this_if + '_' + z +'\n' + branch+ 'GOTO endif_label_' + this_if + '\n';
             }
           }
       }
