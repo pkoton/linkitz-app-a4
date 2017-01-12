@@ -116,11 +116,24 @@ goog.require('Blockly.Assembly');
       else if (current_block.type == 'variables_set') { //********** set to scalar or list?
           var varName = Blockly.Assembly.variableDB_.getName(current_block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
           console.log("in loop2 trying to variables_set " + varName);
-          if (global_scalar_variables.indexOf(varName) >=0) {
+          var targetBlock = current_block.getInputTargetBlock('VALUE');
+          if (targetBlock) {
+            var inputType = targetBlock.type;
+            console.log("in resolve_var_refs:\nTarget Block is " + targetBlock  + ", which is being assigned input of type " + inputType);
+          }
+          if (global_scalar_variables.indexOf(varName) >=0) { // have to make sure it is being set to a scalar again
             console.log("in loop2 found scalar in GSV");
+            if (is_list(current_block.getInputTargetBlock('VALUE'))) {
+                console.log("in loop2 variables_set, scalar var being reassigned to list");
+                throw 'scalar var reassigned to list';
+              }
             continue;
-            } else if (varName in global_list_variables) {
+            } else if (varName in global_list_variables) { 
               console.log("in loop2 found list in GLV");
+              if (is_scalar(current_block.getInputTargetBlock('VALUE'))) {
+                console.log("in loop2 variables_set, list var being reassigned to scalar");
+                throw 'list var reassigned to scalar';
+              }
               continue;
             } else { // NEW VARIABLE, add it to the correct variables list
               console.log("in loop2 new var " + varName);
@@ -367,6 +380,9 @@ function addNewScalarVar(varName) {
 
 Blockly.Assembly['variables_set'] = function(block) {
   // Variable setter
+  
+  // *** need to add code to ensure we are not trying to set a scalar to a list and V.V.
+
   var argument0 = Blockly.Assembly.valueToCode(block, 'VALUE', Blockly.Assembly.ORDER_NONE); // used to be ORDER_ASSIGNMENT
   if (!argument0) {
     // *****  input is null
@@ -471,7 +487,6 @@ Blockly.Assembly['variables_set'] = function(block) {
       case "logic_operation":
       case "lists_length":
       case "math_on_list":
-      case "lists_getIndex_nonMut":
       case "getbatterylevel":
       case "getambientlight":
         res = 1;
