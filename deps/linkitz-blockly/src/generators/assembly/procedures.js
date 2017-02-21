@@ -28,29 +28,6 @@ goog.provide('Blockly.Assembly.procedures');
 
 goog.require('Blockly.Assembly');
 
-//function this_proc_return_type(current_block) {
-//  //console.log("in this_proc return type");
-//  console.log("in this_proc_return_type of " + current_block);
-//  var procName = current_block.getFieldValue('NAME');
-//  console.log(procName);
-//  var returnBlock = current_block.getInputTargetBlock('RETURN');
-//  console.log('returnBlock is ' + returnBlock);
-//  console.log('testing getOutput: ' + current_block.getOutput());
-//        if (is_scalar(returnBlock)) {
-//          proc_types[procName] = 0;
-//          console.log("returns scalar");
-//          return 0;
-//          } else if (is_list(returnBlock)) {
-//             proc_types[procName] = 1;
-//             console.log("returns list");
-//             return 1;
-//            } else {
-//              console.log("still working on this");
-//              proc_types[procName] = null;
-//              return null;
-//              }
-//}
-
 Blockly.Assembly['procedures_defreturn'] = function(block) { 
   console.log('in procedures def [no] return');
   // Define a procedure with a return value.
@@ -70,12 +47,13 @@ Blockly.Assembly['procedures_defreturn'] = function(block) {
       Blockly.Assembly.ORDER_NONE) || '';
   if (returnValue) {
     //  get return value type
-    var returnType = block.getInputTargetBlock('RETURN').type;
-    console.log("Return block " + block.getInputTargetBlock('RETURN') + ", returnType = " + returnType);
-    if (is_scalar(block.getInputTargetBlock('RETURN')) || (returnType == 'Number') || (returnType == 'Boolean') || (returnType == 'String')) {
+    var returnBlock = block.getInputTargetBlock('RETURN');
+    var returnType = returnBlock.type;
+    console.log("Return block " + returnBlock + ", returnType = " + returnType);
+    if (is_scalar(returnBlock) || (returnType == 'Number') || (returnType == 'Boolean') || (returnType == 'String')) {
       console.log("procedure return type should be AKO scalar, is " + returnType);
       var returnCode = returnValue + 'syscall return R1\n'; // value in R1
-    } else if (is_list(block.getInputTargetBlock('RETURN')) || (returnType == 'Array') || (returnType == 'Colour')) {
+    } else if ((get_list_desc(returnBlock, [])[0] == 1) || (returnType == 'Array') || (returnType == 'Colour')) {
         console.log("procedure return type should be AKO list, is " + returnType);
         var returnCode = returnValue + 'syscall Lreturn\n'; // value on stack
       } 
@@ -114,15 +92,15 @@ Blockly.Assembly['procedures_callreturn'] = function(block) {
     console.log(funcName + ' called with no args');
     var code = 'syscall fcall ' + funcName + '\n';
   }
-  else {
-  console.log(funcName + 'called with args');
-  for (var x = 0; x < block.arguments_.length; x++) {
-    args[x] = Blockly.Assembly.valueToCode(block, 'ARG' + x,
-        Blockly.Assembly.ORDER_NONE) || 'null';
-  }
-  // if there are args they have to be pushed on the stack - to be written!
-  var code = funcName + '(' + args.join(', ') + ')';
-  }
+  //else {
+  //console.log(funcName + 'called with args');
+  //for (var x = 0; x < block.arguments_.length; x++) {
+  //  args[x] = Blockly.Assembly.valueToCode(block, 'ARG' + x,
+  //      Blockly.Assembly.ORDER_NONE) || 'null';
+  //}
+  //// if there are args they have to be pushed on the stack - to be written!
+  //var code = funcName + '(' + args.join(', ') + ')';
+  //}
   return [code, Blockly.Assembly.ORDER_ATOMIC];
 };
 
