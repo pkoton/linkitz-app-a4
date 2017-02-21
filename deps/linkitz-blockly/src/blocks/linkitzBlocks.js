@@ -163,11 +163,12 @@ Blockly.Blocks['ledoutput'] = {
 Blockly.Blocks['on_motion_trigger'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField("When");
+		.appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_1_Motion.png", 50, 50, "On Motion Trigger"));
     this.appendDummyInput()
-		.appendField(new Blockly.FieldImage("../../images/LZ_Icons_07012015_1_Motion.png", 50, 50, "On Motion Trigger"));
+        .appendField("On Motion");
     this.appendStatementInput("NAME")
         .setCheck(null);
+    this.setInputsInline(true);
     this.setColour('#0083CC');
     this.setTooltip('Use this to define response to motion input');
     this.setHelpUrl('http://www.example.com/');
@@ -548,6 +549,7 @@ Blockly.Blocks['RegularEventSpeed'] = {
         .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
     this.appendDummyInput()
         .appendField("Set Regular Event Speed");
+    this.setInputsInline(true);
    this.appendValueInput("PERIOD")
         .setCheck("Number");
     this.setPreviousStatement(true);
@@ -566,6 +568,7 @@ Blockly.Blocks['on_regular_event'] = {
         .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
     this.appendDummyInput()
         .appendField("On Regular Event");
+    this.setInputsInline(true);
     this.appendStatementInput("NAME");
     this.setColour('#FFCE00');
     this.setTooltip('');
@@ -593,6 +596,7 @@ Blockly.Blocks['on_initialization'] = {
         .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
     this.appendDummyInput()
         .appendField("On Initialization");
+    this.setInputsInline(true);
     this.appendStatementInput("NAME");
     this.setColour('#FFCE00');
     this.setTooltip('');
