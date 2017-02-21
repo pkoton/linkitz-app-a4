@@ -39,7 +39,7 @@ Blockly.Assembly['controls_if'] = function(block) {
   var code = argument;
   var branch = Blockly.Assembly.statementToCode(block, 'DO' + n); // branch = statements to be executed if argument is true/non-zero
       if ((elseCount == 0) && (elseifcount == 0)) { // this is simple if-then
-        code += 'BTR1SNZ \n GOTO endif_label_' + this_if + '\n'; // test value in R1, skip the instuction 'GOTO else_label' if non-zero
+        code += 'BTR1SNZ \nGOTO endif_label_' + this_if + '\n'; // test value in R1, skip the instuction 'GOTO else_label' if non-zero
         code += branch + 'GOTO endif_label_' + this_if + '\n';   // do the then clause and go to end
       }
       else if ((elseCount > 0 ) && (elseifcount == 0)) { // this is a simple if-then-else
@@ -72,7 +72,7 @@ Blockly.Assembly['controls_if'] = function(block) {
 };
 
 Blockly.Assembly['logic_compare'] = function(block) {
-  // Comparison operator.HAVE TO PUT IN ASSEMBY EQUIVALENTS
+  // Comparison operators
   var OPERATORS = {
     'EQ': 'cmpeq',
     'NEQ': 'cmpneq',
@@ -82,52 +82,64 @@ Blockly.Assembly['logic_compare'] = function(block) {
     'GTE': 'cmpge'
   };
   var operator = OPERATORS[block.getFieldValue('OP')];
-  var order = (operator == '==' || operator == '!=') ?
-      Blockly.Assembly.ORDER_EQUALITY : Blockly.Assembly.ORDER_RELATIONAL;
-  var argument0 = Blockly.Assembly.valueToCode(block, 'A', order);
+  var order = Blockly.Assembly.ORDER_ATOMIC;
+  var arg0 = block.getInputTargetBlock('A');
+  var arg1 = block.getInputTargetBlock('B');
+  if (!arg0 || !arg1) { // return false if missing either or both arguments - args are NOT ON STACK OR IN R1 YET
+    var code = "set R1 R0\n";
+    return [code, order];
+  }
+  if (is_scalar(arg0) || (get_list_desc (arg0, [])[1].length == 0)) {
+    var argument0 = Blockly.Assembly.valueToCode(block, 'A', order);  
+  } else
+  {
+    throw 'input1 to logic_compare block can\'t be a list';
+  }
+  if (is_scalar(arg1) || (get_list_desc (arg1, [])[1].length == 0)) {
   var argument1 = Blockly.Assembly.valueToCode(block, 'B', order);
-  if (!argument0) {
-    if (!argument1) {
-      var code = operator + ' R0 R0\n';
-    }
-    else {
-    var code = argument1 + '\n' + operator + ' R0 R1 R1\n';
-    }
+  } else
+  {
+    throw 'input2 to logic_compare block can\'t be a list';
   }
-  else if (!argument1) {
-    var code = argument0 + '\n' + operator + ' R1 R0 R1\n';
-  }
-  else {
   var code = argument0 + '\npush R1 \n' + argument1 + '\npop R2 \n' + operator + ' R2 R1 R1\n';
-  }
   return [code, order];
 };
 
 Blockly.Assembly['logic_operation'] = function(block) {
-  // Operations 'and', 'or'.
-  var operator = (block.getFieldValue('OP') == 'AND') ? 'land' : 'lor';
-  var order = (operator == 'land') ? Blockly.Assembly.ORDER_LOGICAL_AND :
-      Blockly.Assembly.ORDER_LOGICAL_OR;
-  var argument0 = Blockly.Assembly.valueToCode(block, 'A', order);
-  var argument1 = Blockly.Assembly.valueToCode(block, 'B', order);
-  if (!argument0 && !argument1) {
-    // If there are no arguments, then the return value is false.
-    argument0 = 'R0';
-    argument1 = 'R0';
-  } else {
-    // Single missing arguments have no effect on the return value.
-    var defaultArgument = (operator == 'land') ? 'true' : 'R0';
+    // Operations 'and', 'or'.
+    var operator = (block.getFieldValue('OP') == 'AND') ? 'land' : 'lor';
+    var order = Blockly.Assembly.ORDER_NONE;
+    var arg0 = block.getInputTargetBlock('A');
+    var arg1 = block.getInputTargetBlock('B');
+    console.log("in logic_operation");
+    if (!arg0 || !arg1) { // return false if missing either or both arguments - args are NOT ON STACK OR IN R1 YET
+    var code = "set R1 R0\n";
+      return [code, order];
+    }
+    if (is_scalar(arg0) || (get_list_desc (arg0, [])[1].length == 0)) {
+      var argument0 = Blockly.Assembly.valueToCode(block, 'A', order);  
+    } else
+    {
+      throw 'input1 to logic_operation block can\'t be a list';
+    }
+    if (is_scalar(arg1) || (get_list_desc (arg1, [])[1].length == 0)) {
+    var argument1 = Blockly.Assembly.valueToCode(block, 'B', order);
+    } else
+    {
+      throw 'input2 to logic_operation block can\'t be a list';
+    }
+      // Single missing arguments have no effect on the return value.
+    var defaultArgument = (operator == 'land') ? '1' : 'R0';
     if (!argument0) {
-      argument0 = defaultArgument;
+      argument0 = 'set R1 ' + defaultArgument;
     }
     if (!argument1) {
-      argument1 = defaultArgument;
+      argument1 = 'set R1 ' + defaultArgument;
     }
-  }
-  var code = argument0 + '\npush R1 \n' + argument1 + '\npop R2 \n' + operator + ' R2 R1 R1\n';
-  return [code, order];
-};
-
+    var code = argument0 + '\npush R1 \n' + argument1 + '\npop R2 \n' + operator + ' R2 R1 R1\n';
+    return [code, order];
+  };
+  
 Blockly.Assembly['logic_negate'] = function(block) {
   // Negation.
   var order = Blockly.Assembly.ORDER_UNARY_PREFIX;
@@ -147,14 +159,3 @@ Blockly.Assembly['logic_null'] = function(block) {
   return ['null', Blockly.Assembly.ORDER_ATOMIC];
 };
 
-Blockly.Assembly['logic_ternary'] = function(block) {
-  // Ternary operator.
-  var value_if = Blockly.Assembly.valueToCode(block, 'IF',
-      Blockly.Assembly.ORDER_CONDITIONAL) || 'false';
-  var value_then = Blockly.Assembly.valueToCode(block, 'THEN',
-      Blockly.Assembly.ORDER_CONDITIONAL) || 'null';
-  var value_else = Blockly.Assembly.valueToCode(block, 'ELSE',
-      Blockly.Assembly.ORDER_CONDITIONAL) || 'null';
-  var code = value_if + ' ? ' + value_then + ' : ' + value_else;
-  return [code, Blockly.Assembly.ORDER_CONDITIONAL];
-};
