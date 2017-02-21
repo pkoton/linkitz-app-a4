@@ -80,15 +80,20 @@ Blockly.Generator.prototype.workspaceToCode = function(workspace) {
   }
   console.log("starting");
   var code = [];
+
   this.init(workspace);
   var blocks = workspace.getTopBlocks(true);
     // added linkitz function to prepare memory allocation for all variables
   console.log("calling resolve var refs");
-  if (resolve_var_refs(workspace,0) == 0) {
+  if (resolve_var_refs(workspace,[]) == 0) {
       alert("unresolved variables issue");
   }
   else {
     console.log("out of resolve var refs");
+    console.log("GSV = " + global_scalar_variables);
+    console.log("GLV = " + JSON.stringify(global_list_variables));
+    console.log("blockid_return_value_desc = " + JSON.stringify(blockid_return_value_desc));
+    
   }
     // put in entrypoints
     for (var x = 0, block; block = blocks[x]; x++) {
