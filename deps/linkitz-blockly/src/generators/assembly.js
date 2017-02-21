@@ -94,14 +94,33 @@ var debug = 0;
 // Linkitz SPECIAL REGISTERS R0 - R127 ARE SET HERE
 
 // We maintain a dictionary of all global_list_variables
-// each element is a list of [head_address,list_length,item_length]
+//      WAS: each element is a list of [head_address,list_length,item_length]
+// NOW: each element is a list of [head_address,total_req_space,sublist_desc]
+// in order to support lists of lists of lists... 
+// sublist_desc = if a list of scalars, then just the digit 1
+// otherwise, in square brackets, a list of the item sizes of each subseqent sublist
+// so [118, 10, [3,3,1]] is a list of 3 elements,
+// each of which is a list of 3 elements, each of which is a list of 1 element
+// compare with [118, 10, [3,3]] which is a list of 3 elements,
+// each of which is a list of 3 elements, each of which is a scalar
+// depth of sublist nesting = length of sublist_desc
+
 // global_list_variables builds DOWN from R127 to R0
-// e.g. (118,10,3) starts at R118 and has three items each of which takes up 3 registers, plus the first element that stores the length
+// e.g. (118,10,[3]) starts at R118 and has three items each of which takes up 3 registers, plus the first element that stores the length
 
 var glv_next = 127; // glv_next points to the empty register at the bottom of list register space
 var global_list_variables = new Object();
-//console.log("new glv");
 
+// unknown_lists is a temporary holding list for lists that have been created but are not yet fully specified
+// a full spcified list has [head_address,list_length,sublist_desc]
+// an unknown list for a variable l has a [sublist_desc] which is a list describing a nested list structure
+var unknown_lists = new Object();
+
+// block_to_list_desc links a block.id with the structure of the value the block returns
+// [] for scalar, [a1,...,an] for lists.
+// this is so we can use the space allocation knowledge that was developed in the memory allocation phase
+var blockid_return_value_desc =new Object();
+ 
 // We maintain an array of all global_scalar_variables.
 // The variable_name's index in the array indicates the register number which holds the value
 // e.g. the variable_name in global_scalar_variables[5] has its value stored in R5
@@ -124,9 +143,10 @@ global_scalar_variables[7] = 'ambientlight'; // R7
 var gsv_next = 8 // gsv_next points to the next empty register index
 var global_scalar_variables_pp =''; // string for pretty printing the GSV list
 
+
 // proc_types indexed by name of each user-defined function that returns a value
-// proc_types[procName][0] = 0 if proc returns scalar, = 1 if proc returns a list
-// proc_types[procName][1] = length of register space taken by list values (0 if proc returns a scalar)
+// proc_types[procName][0] = 0 if proc returns scalar, = 1 if proc returns a list, -1 if not fully defined
+// proc_types[procName][1] = sublist_desc (0 if proc returns a scalar)
 var proc_types = new Object(); 
 var pnext = 0;
 
