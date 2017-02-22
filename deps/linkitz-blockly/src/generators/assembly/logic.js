@@ -32,6 +32,7 @@ Blockly.Assembly['controls_if'] = function(block) {
   // If/elseif/else condition.
   var n = 0;
   var this_if = ifCount++; // ifCount is global for generating unique labels across multiple conditional statements
+  console.log("1: this_if = " + this_if);
   var elseCount = block.elseCount_;
   var elseifcount = block.elseifCount_;
   console.log("in controls_if n="+n+", this_if="+this_if+", elseCount="+elseCount+", elseifcount="+elseifcount);
@@ -39,36 +40,47 @@ Blockly.Assembly['controls_if'] = function(block) {
   var code = argument;
   var branch = Blockly.Assembly.statementToCode(block, 'DO' + n); // branch = statements to be executed if argument is true/non-zero
       if ((elseCount == 0) && (elseifcount == 0)) { // this is simple if-then
+        console.log("2: this_if = " + this_if);
         code += 'BTR1SNZ \nGOTO endif_label_' + this_if + '\n'; // test value in R1, skip the instuction 'GOTO else_label' if non-zero
+        console.log("3: this_if = " + this_if);
         code += branch + 'GOTO endif_label_' + this_if + '\n';   // do the then clause and go to end
       }
       else if ((elseCount > 0 ) && (elseifcount == 0)) { // this is a simple if-then-else
+        console.log("4: this_if = " + this_if);
         code += 'BTR1SNZ \n GOTO else_label_' + this_if + '\n'; // test value in R1, skip the instuction 'GOTO else_label' if non-zero
+        console.log("5: this_if = " + this_if);
         code += branch + 'GOTO endif_label_' + this_if + '\n';
       } else {                                           // there are nested if statements with out without an else
-          code += 'BTR1SNZ \n GOTO elseif_label_' + this_if + '_1\n'; // test value in R1, skip the instuction 'GOTO else_label' if non-zero
+          console.log("6: this_if = " + this_if);code += 'BTR1SNZ \n GOTO elseif_label_' + this_if + '_1\n'; // test value in R1, skip the instuction 'GOTO else_label' if non-zero
           code += branch + 'GOTO endif_label_' + this_if + '\n';
      
           for (n = 1; n <= elseifcount; n++) {
             argument = Blockly.Assembly.valueToCode(block, 'IF' + n, Blockly.Assembly.ORDER_NONE) || 'Set R1 0\n';
             branch = Blockly.Assembly.statementToCode(block, 'DO' + n);
+            console.log("7: this_if = " + this_if);
             code += 'elseif_label_' + this_if + '_' + n + ':\n' + argument +  'BTR1SNZ \n';
             var z = n + 1;
             if (z  > elseifcount) { 
-              if (elseCount > 0) {code += 'GOTO else_label_' + this_if + '\n' + branch + 'GOTO endif_label_' + this_if + '\n'; }
+              if (elseCount > 0) {
+                console.log("8: this_if = " + this_if);
+                code += 'GOTO else_label_' + this_if + '\n' + branch + 'GOTO endif_label_' + this_if + '\n'; }
                 else {
+                  console.log("9: this_if = " + this_if);
                   code += 'GOTO endif_label_' + this_if + '\n' + branch + 'GOTO endif_label_' + this_if + '\n';
                   }
               } else {
+                 console.log("10: this_if = " + this_if);
                  code += 'GOTO elseif_label_' + this_if + '_' + z +'\n' + branch+ 'GOTO endif_label_' + this_if + '\n';
             }
           }
       }
   if (elseCount > 0) {
     branch = Blockly.Assembly.statementToCode(block, 'ELSE') || ' ';
-    code += ' else_label_' + ifCount + ':\n' + branch + 'GOTO endif_label_' + ifCount + '\n'
+    console.log("1: this_if = " + this_if);
+    code += ' else_label_' + this_if + ':\n' + branch + 'GOTO endif_label_' + this_if + '\n'
   }
-  return code + 'endif_label_' + ifCount + ':\n';
+  console.log("12: this_if = " + this_if);
+  return code + 'endif_label_' + this_if + ':\n';
 };
 
 Blockly.Assembly['logic_compare'] = function(block) {
