@@ -132,7 +132,7 @@ Blockly.Assembly['variables_set'] = function(block) {
       console.log("in loop1, current_block is (" + i + ") " + current_block);
   // ****************  looking for procedure definitions
       if (current_block.type == 'procedures_defreturn') { //********** returns scalar or list?
-        var procName = current_block.getFieldValue('NAME');
+        var procName = Blockly.Assembly.variableDB_.getName(current_block.getFieldValue('NAME'),Blockly.Procedures.NAME_TYPE);              
         console.log("procName: " + procName);
         if (procName in proc_types) { // already figured out return type
           continue; // move to next block
@@ -149,10 +149,10 @@ Blockly.Assembly['variables_set'] = function(block) {
                 proc_types[procName] = [0,0];
                 console.log(procName +" returns a scalar");
                 if (procName in proc_types) {
-                  console.log("added " + procName);
+                  console.log("added " + procName + " proc_types: " + JSON.stringify(proc_types));
                   }
                   else {
-                    console.log ("didn't add " + procName);
+                    console.log("didn't add " + procName);
                   }
                 // Find and remove procName from undef_vars list
                 console.log("deleting " + procName + " from unknown_lists " + JSON.stringify(unknown_lists));
@@ -172,7 +172,7 @@ Blockly.Assembly['variables_set'] = function(block) {
                     if (procName in proc_types) {
                       console.log("added " + procName);
                         } else {
-                          console.log ("didn't add " + procName);
+                          console.log("didn't add " + procName);
                           }
                     // Find and remove procName from undef_vars list
                       del_varname_from_undef_vars_list(procName);
@@ -199,7 +199,7 @@ Blockly.Assembly['variables_set'] = function(block) {
           var targetBlock = current_block.getInputTargetBlock('VALUE');
           if (targetBlock) {
             var inputType = targetBlock.type;
-            console.log("in resolve_var_refs:\nTarget Block is " + targetBlock  + ", which is being assigned input of type " + inputType);
+            console.log("in resolve_var_refs:\nTarget Block is " + targetBlock  + ", which is of type " + inputType);
           }
           if (global_scalar_variables.indexOf(varName) >=0) { // have to make sure it is being set to a scalar again
             console.log("in loop2 found scalar in GSV");
