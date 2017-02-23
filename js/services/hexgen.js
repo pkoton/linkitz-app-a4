@@ -353,7 +353,7 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
             //console.log("matching label:"+tokens[1]);
             var targetAddr = labels[tokens[1]];
             //console.log("targetAddr:"+targetAddr);
-            linkhex_line+=linkitzApp_hexgen_pad_words(linkitzApp_hexgen_byte_2_hex(Math.floor((targetAddr/2)/256)));
+            linkhex_line+=linkitzApp_hexgen_pad_words(linkitzApp_hexgen_byte_2_hex(0x80+Math.floor((targetAddr/2)/256)));
             linkhex_line+=linkitzApp_hexgen_pad_words(linkitzApp_hexgen_byte_2_hex(((targetAddr/2)%256)));
             hex_output+=linkitzApp_hexgen_make_hex_line(linkedaddr,linkhex_line);
         } else {
