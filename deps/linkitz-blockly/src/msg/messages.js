@@ -752,7 +752,7 @@ Blockly.Msg.LISTS_CREATE_EMPTY_TOOLTIP = 'Returns a list, of length 0, containin
 /// url - Information on building lists.
 Blockly.Msg.LISTS_CREATE_WITH_HELPURL = 'https://github.com/google/blockly/wiki/Lists#create-list-with';
 /// tooltip - See [https://github.com/google/blockly/wiki/Lists#create-list-with https://github.com/google/blockly/wiki/Lists#create-list-with].
-Blockly.Msg.LISTS_CREATE_WITH_TOOLTIP = 'Create a list with any number of items. Type of all items must be the same. Type is defined by the first item in the list. If first item is blank, type is scalar.';
+Blockly.Msg.LISTS_CREATE_WITH_TOOLTIP = 'Create a list with any number of items. Type of all items must be the same. Type is defined by the first item in the list.';
 /// block text - See [https://github.com/google/blockly/wiki/Lists#create-list-with https://github.com/google/blockly/wiki/Lists#create-list-with].
 Blockly.Msg.LISTS_CREATE_WITH_INPUT_WITH = 'create list with';
 /// block text - This appears in a sub-block when [https://github.com/google/blockly/wiki/Lists#changing-number-of-inputs changing the number of inputs in a ''''create list with'''' block].\n{{Identical|List}}
