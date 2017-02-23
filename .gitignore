@@ -4,6 +4,6 @@ archive/
 node_modules/
 manifest-build/
 *.pyc
-deps/linkitz-blockly/src/*.js
+deps/linkitz-blockly/src/*compressed.js
 deps/linkitz-blockly/src/msg/js/*.js
 deps/linkitz-blockly/src/blocks_compressed.js

@@ -1,0 +1,103 @@
+  .blocklyTreeRoot .blocklyTreeRow.LED {
+	border-color: #9862E6;
+  }
+  
+  .blocklyTreeRoot .blocklyTreeRow.LED .blocklyTreeLabel.:1.label {
+  	color: #9862E6;
+  }
+  .LED{
+  	fill: #9862E6;
+  }
+  
+  .blocklyTreeRoot .blocklyTreeRow.LED:hover,
+  .blocklyTreeRoot .blocklyTreeRow.LED.blocklyTreeSelected {
+  	background-color: #9862E6;
+  }
+
+.blocklyTreeRoot .blocklyTreeRow.Motion {
+	border-color: #0083CC;
+  }
+  .blocklyTreeRoot .blocklyTreeRow.Motion .blocklyTreeLabel {
+  	color: #0083CC;
+  }
+  .Motion{
+  	fill: #0083CC;
+  }
+  .blocklyTreeRoot .blocklyTreeRow.Motion:hover,
+  .blocklyTreeRoot .blocklyTreeRow.Motion.blocklyTreeSelected {
+  	background-color: #0083CC;
+  }
+  
+  .blocklyTreeRoot .blocklyTreeRow.Hub {
+	border-color: #FFCE00;
+  }
+  .blocklyTreeRoot .blocklyTreeRow.Hub .blocklyTreeLabel {
+  	color: #FFCE00;
+  }
+  .Hub{
+  	fill: #FFCE00;
+  }
+  .blocklyTreeRoot .blocklyTreeRow.Hub:hover,
+  .blocklyTreeRoot .blocklyTreeRow.Hub.blocklyTreeSelected {
+  	background-color: #FFCE00;
+  }
+  
+  .blocklyTreeRoot .blocklyTreeRow.catLogic {
+	border-color: #FF9903;
+  }
+  .blocklyTreeRoot .blocklyTreeRow.catLogic .blocklyTreeLabel {
+  	color: #FF9903;
+  }
+  .catLogic{
+  	fill: #FF9903;
+  }
+  .blocklyTreeRoot .blocklyTreeRow.catLogic:hover,
+  .blocklyTreeRoot .blocklyTreeRow.catLogic.blocklyTreeSelected {
+  	background-color: #FF9903;
+  }
+  
+  .blocklyTreeRoot .blocklyTreeRow.catLists {
+	border-color: #33cc66;
+  }
+  .blocklyTreeRoot .blocklyTreeRow.catLists .blocklyTreeLabel {
+  	color: #33cc66;
+  }
+  .catLists{
+  	fill: #33cc66;
+  }
+  .blocklyTreeRoot .blocklyTreeRow.catLists:hover,
+  .blocklyTreeRoot .blocklyTreeRow.catLists.blocklyTreeSelected {
+  	background-color: #33cc66;
+  }
+  
+  .blocklyTreeRoot .blocklyTreeRow.catVariables {
+	border-color: #E81A4B;
+  }
+  .blocklyTreeRoot .blocklyTreeRow.catVariables .blocklyTreeLabel {
+  	color: #E81A4B;
+  }
+  .catVariables{
+  	fill: #E81A4B;
+  }
+  .blocklyTreeRoot .blocklyTreeRow.catVariables:hover,
+  .blocklyTreeRoot .blocklyTreeRow.catVariables.blocklyTreeSelected {
+  	background-color: #E81A4B;
+  }
+  
+  .blocklyTreeRoot .blocklyTreeRow.catFunctions {
+	border-color: #0BD7E0;
+  }
+  .blocklyTreeRoot .blocklyTreeRow.catFunctions .blocklyTreeLabel {
+  	color: #0BD7E0;
+  }
+  .catFunctions{
+  	fill: #0BD7E0;
+  }
+  .blocklyTreeRoot .blocklyTreeRow.catFunctions:hover,
+  .blocklyTreeRoot .blocklyTreeRow.catFunctions.blocklyTreeSelected {
+  	background-color: #0BD7E0;
+  }
+
+  .blocklyTreeSelected .blocklyTreeLabel {
+    color: #fff;
+  }
