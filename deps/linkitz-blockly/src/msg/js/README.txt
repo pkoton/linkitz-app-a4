@@ -1,0 +1,1 @@
+This directory contains a bunch of automatically generated language files generated from messages.js
