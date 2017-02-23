@@ -25,10 +25,10 @@ Blockly.Assembly['flash_leds'] = function(block) {
   }
   else {
     var targetBlock = block.getInputTargetBlock('COLOR');
-     console.log("in flash_leds: input is block type " + targetBlock.type);
-     if (is_scalar(targetBlock)) { // ***** input is a scalar
+    console.log("in flash_leds: input is block type " + targetBlock.type);
+    if (is_scalar(targetBlock)) { // ***** input is a scalar
       var code = flash_arg + 'syscall flashHue R1\n';
-     }
+    }
      else {
      switch (targetBlock.type) { // ***** input is a list
       // Flash(getmotiondata) length 4 on stack, uses XYZ discards M
@@ -76,6 +76,16 @@ Blockly.Assembly['flash_leds'] = function(block) {
         } else if (proc_types[procName][0] >= 1) { // returns a list, value on stack
           code = flash_arg + 'syscall flashRGB\n';
         }
+        break;
+      case 'lists_getIndex_nonMut':
+        var list_name2 = Blockly.Assembly.variableDB_.getName(targetBlock.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+        if (global_list_variables[list_name2][2].length == 1) { // its a scalar, value in R1
+          var code = flash_arg + 'syscall flashHue R1\n';
+          }
+          else // it's a list, value on stack
+          {
+          code = flash_arg + 'syscall flashRGB\n';
+          }
         break;
       default: // we don't know what it is
         console.log('in flash_leds: input of unknown type');
