@@ -1,7 +1,7 @@
 {
 	"@metadata": {
 		"author": "Ellen Spertus <ellen.spertus@gmail.com>",
-		"lastupdated": "2017-02-01 22:06:54.025134",
+		"lastupdated": "2017-02-23 13:21:33.728538",
 		"locale": "en",
 		"messagedocumentation" : "qqq"
 	},
@@ -255,7 +255,7 @@
 	"LISTS_CREATE_EMPTY_TITLE": "create empty list",
 	"LISTS_CREATE_EMPTY_TOOLTIP": "Returns a list, of length 0, containing no data records",
 	"LISTS_CREATE_WITH_HELPURL": "https://github.com/google/blockly/wiki/Lists#create-list-with",
-	"LISTS_CREATE_WITH_TOOLTIP": "Create a list with any number of items. Type of all items must be the same. Type is defined by the first item in the list. If first item is blank, type is scalar.",
+	"LISTS_CREATE_WITH_TOOLTIP": "Create a list with any number of items. Type of all items must be the same. Type is defined by the first item in the list.",
 	"LISTS_CREATE_WITH_INPUT_WITH": "create list with",
 	"LISTS_CREATE_WITH_CONTAINER_TITLE_ADD": "list",
 	"LISTS_CREATE_WITH_CONTAINER_TOOLTIP": "Add, remove, or reorder sections to reconfigure this list block.",
