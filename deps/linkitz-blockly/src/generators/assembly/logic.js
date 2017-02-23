@@ -113,7 +113,7 @@ Blockly.Assembly['logic_compare'] = function(block) {
   {
     throw 'input2 to logic_compare block can\'t be a list';
   }
-  var code = argument0 + '\npush R1 \n' + argument1 + '\npop R2 \n' + operator + ' R2 R1 R1\n';
+  var code = argument0 + 'push R1 \n' + argument1 + 'pop R2 \n' + operator + ' R2 R1 R1\n';
   return [code, order];
 };
 

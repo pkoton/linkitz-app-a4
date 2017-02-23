@@ -127,7 +127,7 @@ Blockly.Assembly['lists_getIndex_nonMut'] = function(block) {
          //code += "push R1\npush R1"; //save it for bounds check, and for GETO call         
          //   // Bounds check - make sure we are not looking past end of list!
          //   //add list head address plus offset, compare with list last elt address
-         //code += "set R1 " + list_head_addr + "\npop R2\nAdd R1 R2 R1"; // R1 now holds address of last req element
+         //code += "set R1 " + list_head_addr + "\npop R2\nAdd R1 R2 R1\n"; // R1 now holds address of last req element
          // code += "set R2 " + list_last_elt_addr + "\n";
          // code += "cpmle R1 R2 R1\n"; // R1 will hold 1 if req item is not reading past last item
          // code += "BTR1SNZ\n"; //skip the next instruction if we are good to go 
