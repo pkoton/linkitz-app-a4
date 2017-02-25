@@ -228,7 +228,7 @@ Blockly.Assembly['variables_set'] = function(block) {
                 if (is_scalar(targetBlock)) {
                   //case "math_number": 
                   //case "math_arithmetic":
-                  //case "math_single":
+                  //case "math_magnitudee":
                   //case "math_binary":
                   //case "math_random_int":
                   //case "led_attached":
@@ -618,7 +618,7 @@ function addNewScalarVar(varName) {
     switch (blocktype) {
       case "math_number": // falls through to next
       case "math_arithmetic":
-      case "math_single":
+      case "math_magnitude":
       case "math_binary":
       case "math_random_int":
       case "led_attached":
