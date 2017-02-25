@@ -120,7 +120,7 @@
 	"MATH_ARITHMETIC_TOOLTIP_MULTIPLY": "tooltip - See [https://en.wikipedia.org/wiki/Multiplication https://en.wikipedia.org/wiki/Multiplication].",
 	"MATH_ARITHMETIC_TOOLTIP_DIVIDE": "tooltip - See [https://en.wikipedia.org/wiki/Division_(mathematics) https://en.wikipedia.org/wiki/Division_(mathematics)].",
 	"MATH_ARITHMETIC_TOOLTIP_POWER": "tooltip - See [https://en.wikipedia.org/wiki/Exponentiation https://en.wikipedia.org/wiki/Exponentiation].",
-	"MATH_SINGLE_HELPURL": "url - Information about the square root operation.",
+	"MATH_MAGNITUDE_HELPURL": "url - Information about the magnitude operation.",
 	"MATH_SINGLE_OP_ROOT": "dropdown - This computes the positive [https://en.wikipedia.org/wiki/Square_root square root] of its input.  For example, the square root of 16 is 4.",
 	"MATH_SINGLE_TOOLTIP_ROOT": "tooltip - Please use the same term as in the previous message.",
 	"MATH_SINGLE_OP_ABSOLUTE": "dropdown - This leaves positive numeric inputs changed and inverts negative inputs.  For example, the absolute value of 5 is 5; the absolute value of -5 is also 5.  For more information, see [https://en.wikipedia.org/wiki/Absolute_value https://en.wikipedia.org/wiki/Absolute_value].",

@@ -345,8 +345,8 @@ Blockly.Msg.MATH_ARITHMETIC_TOOLTIP_DIVIDE = 'Return the quotient of the two num
 /// tooltip - See [https://en.wikipedia.org/wiki/Exponentiation https://en.wikipedia.org/wiki/Exponentiation].
 Blockly.Msg.MATH_ARITHMETIC_TOOLTIP_POWER = 'Return the first number raised to the power of the second number.';
 
-/// url - Information about the square root operation.
-Blockly.Msg.MATH_SINGLE_HELPURL = 'https://en.wikipedia.org/wiki/Square_root';
+/// url - Information about the magnitude operation.
+Blockly.Msg.MATH_MAGNITUDE_HELPURL = 'https://en.wikipedia.org/wiki/Magnitude_(mathematics)';
 /// dropdown - This computes the positive [https://en.wikipedia.org/wiki/Square_root square root] of its input.  For example, the square root of 16 is 4.
 Blockly.Msg.MATH_SINGLE_OP_ROOT = 'square root';
 /// tooltip - Please use the same term as in the previous message.
