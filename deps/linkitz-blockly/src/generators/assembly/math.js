@@ -125,38 +125,53 @@ Blockly.Assembly['math_binary'] = function(block) {
   return [code,Blockly.Assembly.ORDER_ATOMIC];
 };
 
-Blockly.Assembly['math_single'] = function(block) {
-  // Math operators with single operand.
-  var operator = block.getFieldValue('OP');
+Blockly.Assembly['math_magnitude'] = function(block) {
+  // Magnitude is absolute value for scalars, square root of sum of squares for lists.
   var code;
-  var arg0 = block.getInputTargetBlock('NUM');
-  if (!arg0) {
-    argument0 = 'set R1 R0\n';
-  } else //arg0 exists
-  {
-    if (is_scalar(arg0) || (get_list_desc (arg0, [])[1].length == 0)) { // and arg1 is scalar
-    var argument0 = Blockly.Assembly.valueToCode(block, 'NUM', Blockly.Assembly.ORDER_ATOMIC);
-    }
-    else { //it's not scalar
-    throw 'input1 to math_single block can\'t be list';
-    }
-  }
-  if (operator == 'NEG') {
-    // Negation is a special case given its different operator precedence.
-    if (argument0[0] == '-') {
-      // --3 is not legal in assembly.
-      argument0 = ' ' + argument0;
-    }
-    code = argument0 + 'Set R2 -1\nMUL R1 R2 R1\n';
+  var targetBlock = block.getInputTargetBlock('NUM');
+  if (!targetBlock) {
+    code = 'set R1 R0\n';
     return [code, Blockly.Assembly.ORDER_UNARY_PREFIX];
   }
-  if (operator == 'ABS') {
+  if (is_scalar(targetBlock) || (get_list_desc (targetBlock, [])[1].length == 0)) { // and arg1 is scalar
+    var argument0 = Blockly.Assembly.valueToCode(block, 'NUM', Blockly.Assembly.ORDER_ATOMIC);
     code = argument0 + 'ABS R1 R1\n';
-  } 
-  
-  if (code) {
-    return [code, Blockly.Assembly.ORDER_ATOMIC];
+    return [code, Blockly.Assembly.ORDER_UNARY_PREFIX];
   }
+//it's a list
+  console.log("in math_magnitude of list");
+  var code = '';
+  ifCount++;
+  var minus1 = gsv_next; // used to decrement list index - everyone uses this
+  if (minus1 > glv_next) {
+  throw 'out of register space in math_magnitude';
+  }
+  gsv_next += 1;
+  var copy = gsv_next; // Rcopy holds second copy of list elt for calculating square
+  if (copy > glv_next) {
+    throw 'out of register space1 in math_magnitude';
+  }
+  gsv_next += 1;
+  var sum = gsv_next; //// Rsum will accumulate sum
+  if (sum > glv_next) {
+    throw 'out of register space2 in math_magnitude';
+  }
+  gsv_next += 1;
+  var list = Blockly.Assembly.valueToCode(block, 'LIST', Blockly.Assembly.ORDER_ATOMIC); 
+  code += list + "pop R1\n"; // list on stack, length is in R1
+  code += "set R" + sum + " 0\n";
+  code += "pop R2\npush R2\npop R"+copy+"\nMUL R2 R"+copy+" R2\n"; // calculate square
+  code += "ADD R2 R" + sum + " R" + sum + "\n"; // accumulate squares in Rsum
+  code += "set R" + minus1 + " -1\n";
+  code += "MAG_label_" + ifCount + ": ADD R1 R" + minus1 + " R1\n"; //decrement Rcount
+  code += "BTR1SNZ \n GOTO endMAG_label_" + ifCount + "\n";
+  code += "pop R2\npush R2\npop R"+copy+"\nMUL R2 R"+copy+" R2\n"; // calculate square
+  code += "ADD R2 R" + sum + " R" + sum + "\n"; // accumulated in Rsum
+  code += "GOTO MAG_label_" + ifCount + "\n";
+  code += "endMAG_label_: push R" + sum + "\npop R1\n"; //sum of squares is now in R1
+  code += "syscall SQRT R1 R1\n"; // finds its argument in R1, leaves result in R1?
+  gsv_next -= 3; // release minus1, sum and copy registers
+  return [code, Blockly.Assembly.ORDER_UNARY_PREFIX];
 }
 
 Blockly.Assembly['math_on_list'] = function(block) {
@@ -164,8 +179,11 @@ Blockly.Assembly['math_on_list'] = function(block) {
   var targetBlock = block.getInputTargetBlock('LIST');
   // first make sure input is a list. if it's a variable, it could be a scalar
   // in which case, just return the scalar (makes sense for all our math list operations)
-  if (is_scalar(targetBlock)){
-    var val = Blockly.Assembly.valueToCode(block, 'LIST', Blockly.Assembly.ORDER_ATOMIC) || '[]';
+  if (!targetBlock) {
+    code = 'set R1 R0\n';
+  }
+  else if (is_scalar(targetBlock)){
+    var val = Blockly.Assembly.valueToCode(block, 'LIST', Blockly.Assembly.ORDER_ATOMIC);
     console.log("in math_on_list: input is a scalar, value is " + val);
     code = val + "\n"; 
   }

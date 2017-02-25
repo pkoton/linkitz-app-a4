@@ -94,168 +94,27 @@ Blockly.Blocks['math_arithmetic'] = {
   }
 };
 
-Blockly.Blocks['math_single'] = {
+Blockly.Blocks['math_magnitude'] = {
   /**
-   * Block for advanced math operators with single operand.
+   * Block for computing the magnitude of an input
    * @this Blockly.Block
    */
   init: function() {
-    var OPERATORS =
-        [
-         [Blockly.Msg.MATH_SINGLE_OP_ABSOLUTE, 'ABS'],
-         ['-', 'NEG']];
     this.appendDummyInput()
       .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_10_Math.png",50,50,"*"));
-    this.setHelpUrl(Blockly.Msg.MATH_SINGLE_HELPURL);
+    this.appendDummyInput()
+        .appendField("Magnitude");
+        this.setHelpUrl(Blockly.Msg.MATH_MAGNITUDE_HELPURL);
     this.setColour(Blockly.Blocks.math.HUE);
     this.setOutput(true, 'Number');
-    this.appendValueInput('NUM')
-        .setCheck('Number')
-        .appendField(new Blockly.FieldDropdown(OPERATORS), 'OP');
+    this.appendValueInput('NUM');
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
-    this.setTooltip(function() {
-      var mode = thisBlock.getFieldValue('OP');
-      var TOOLTIPS = {
-        'ABS': Blockly.Msg.MATH_SINGLE_TOOLTIP_ABS,
-        'NEG': Blockly.Msg.MATH_SINGLE_TOOLTIP_NEG
-      };
-      return TOOLTIPS[mode];
-    });
+    this.setTooltip('Calculate the absolute value of a scalar input, or the magnitude of a list input.');
   }
 };
 
-Blockly.Blocks['math_trig'] = {
-  /**
-   * Block for trigonometry operators.
-   * @this Blockly.Block
-   */
-  init: function() {
-    var OPERATORS =
-        [[Blockly.Msg.MATH_TRIG_SIN, 'SIN'],
-         [Blockly.Msg.MATH_TRIG_COS, 'COS'],
-         [Blockly.Msg.MATH_TRIG_TAN, 'TAN'],
-         [Blockly.Msg.MATH_TRIG_ASIN, 'ASIN'],
-         [Blockly.Msg.MATH_TRIG_ACOS, 'ACOS'],
-         [Blockly.Msg.MATH_TRIG_ATAN, 'ATAN']];
-    this.appendDummyInput()
-      .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_10_Math.png",50,50,"*"));
-    this.setHelpUrl(Blockly.Msg.MATH_TRIG_HELPURL);
-    this.setColour(Blockly.Blocks.math.HUE);
-    this.setOutput(true, 'Number');
-    this.appendValueInput('NUM')
-        .setCheck('Number')
-        .appendField(new Blockly.FieldDropdown(OPERATORS), 'OP');
-    // Assign 'this' to a variable for use in the tooltip closure below.
-    var thisBlock = this;
-    this.setTooltip(function() {
-      var mode = thisBlock.getFieldValue('OP');
-      var TOOLTIPS = {
-        'SIN': Blockly.Msg.MATH_TRIG_TOOLTIP_SIN,
-        'COS': Blockly.Msg.MATH_TRIG_TOOLTIP_COS,
-        'TAN': Blockly.Msg.MATH_TRIG_TOOLTIP_TAN,
-        'ASIN': Blockly.Msg.MATH_TRIG_TOOLTIP_ASIN,
-        'ACOS': Blockly.Msg.MATH_TRIG_TOOLTIP_ACOS,
-        'ATAN': Blockly.Msg.MATH_TRIG_TOOLTIP_ATAN
-      };
-      return TOOLTIPS[mode];
-    });
-  }
-};
 
-Blockly.Blocks['math_constant'] = {
-  /**
-   * Block for constants: PI, E, the Golden Ratio, sqrt(2), 1/sqrt(2), INFINITY.
-   * @this Blockly.Block
-   */
-  init: function() {
-    var CONSTANTS =
-        [['\u03c0', 'PI'],
-         ['e', 'E'],
-         ['\u03c6', 'GOLDEN_RATIO'],
-         ['sqrt(2)', 'SQRT2'],
-         ['sqrt(\u00bd)', 'SQRT1_2'],
-         ['\u221e', 'INFINITY']];
-    this.appendDummyInput()
-      .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_10_Math.png",50,50,"*"));
-    this.setHelpUrl(Blockly.Msg.MATH_CONSTANT_HELPURL);
-    this.setColour(Blockly.Blocks.math.HUE);
-    this.setOutput(true, 'Number');
-    this.appendDummyInput()
-        .appendField(new Blockly.FieldDropdown(CONSTANTS), 'CONSTANT');
-    this.setTooltip(Blockly.Msg.MATH_CONSTANT_TOOLTIP);
-  }
-};
-
-Blockly.Blocks['math_number_property'] = {
-  /**
-   * Block for checking if a number is even, odd, prime, whole, positive,
-   * negative or if it is divisible by certain number.
-   * @this Blockly.Block
-   */
-  init: function() {
-    var PROPERTIES =
-        [[Blockly.Msg.MATH_IS_EVEN, 'EVEN'],
-         [Blockly.Msg.MATH_IS_ODD, 'ODD'],
-         [Blockly.Msg.MATH_IS_PRIME, 'PRIME'],
-         [Blockly.Msg.MATH_IS_WHOLE, 'WHOLE'],
-         [Blockly.Msg.MATH_IS_POSITIVE, 'POSITIVE'],
-         [Blockly.Msg.MATH_IS_NEGATIVE, 'NEGATIVE'],
-         [Blockly.Msg.MATH_IS_DIVISIBLE_BY, 'DIVISIBLE_BY']];
-    this.appendDummyInput()
-      .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_10_Math.png",50,50,"*"));
-    this.setColour(Blockly.Blocks.math.HUE);
-    this.appendValueInput('NUMBER_TO_CHECK')
-        .setCheck('Number');
-    var dropdown = new Blockly.FieldDropdown(PROPERTIES, function(option) {
-      var divisorInput = (option == 'DIVISIBLE_BY');
-      this.sourceBlock_.updateShape_(divisorInput);
-    });
-    this.appendDummyInput()
-        .appendField(dropdown, 'PROPERTY');
-    this.setInputsInline(true);
-    this.setOutput(true, 'Boolean');
-    this.setTooltip(Blockly.Msg.MATH_IS_TOOLTIP);
-  },
-  /**
-   * Create XML to represent whether the 'divisorInput' should be present.
-   * @return {Element} XML storage element.
-   * @this Blockly.Block
-   */
-  mutationToDom: function() {
-    var container = document.createElement('mutation');
-    var divisorInput = (this.getFieldValue('PROPERTY') == 'DIVISIBLE_BY');
-    container.setAttribute('divisor_input', divisorInput);
-    return container;
-  },
-  /**
-   * Parse XML to restore the 'divisorInput'.
-   * @param {!Element} xmlElement XML storage element.
-   * @this Blockly.Block
-   */
-  domToMutation: function(xmlElement) {
-    var divisorInput = (xmlElement.getAttribute('divisor_input') == 'true');
-    this.updateShape_(divisorInput);
-  },
-  /**
-   * Modify this block to have (or not have) an input for 'is divisible by'.
-   * @param {boolean} divisorInput True if this block has a divisor input.
-   * @private
-   * @this Blockly.Block
-   */
-  updateShape_: function(divisorInput) {
-    // Add or remove a Value Input.
-    var inputExists = this.getInput('DIVISOR');
-    if (divisorInput) {
-      if (!inputExists) {
-        this.appendValueInput('DIVISOR')
-            .setCheck('Number');
-      }
-    } else if (inputExists) {
-      this.removeInput('DIVISOR');
-    }
-  }
-};
 
 Blockly.Blocks['math_change'] = {
   /**
