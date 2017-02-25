@@ -1,7 +1,7 @@
 {
 	"@metadata": {
 		"author": "Ellen Spertus <ellen.spertus@gmail.com>",
-		"lastupdated": "2017-02-23 13:21:33.728538",
+		"lastupdated": "2017-02-24 22:26:19.201195",
 		"locale": "en",
 		"messagedocumentation" : "qqq"
 	},
@@ -126,7 +126,7 @@
 	"MATH_ARITHMETIC_TOOLTIP_MULTIPLY": "Return the product of the two numbers.",
 	"MATH_ARITHMETIC_TOOLTIP_DIVIDE": "Return the quotient of the two numbers.",
 	"MATH_ARITHMETIC_TOOLTIP_POWER": "Return the first number raised to the power of the second number.",
-	"MATH_SINGLE_HELPURL": "https://en.wikipedia.org/wiki/Square_root",
+	"MATH_MAGNITUDE_HELPURL": "https://en.wikipedia.org/wiki/Magnitude_(mathematics)",
 	"MATH_SINGLE_OP_ROOT": "square root",
 	"MATH_SINGLE_TOOLTIP_ROOT": "Return the square root of a number.",
 	"MATH_SINGLE_OP_ABSOLUTE": "absolute",
