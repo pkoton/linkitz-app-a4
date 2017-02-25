@@ -31,7 +31,7 @@ Blockly.Assembly['flash_leds'] = function(block) {
     }
      else {
      switch (targetBlock.type) { // ***** input is a list
-      // Flash(getmotiondata) length 4 on stack, uses XYZ discards M
+      // Flash(getmotiondata) length 3 on stack
       // Flash(len 3) (one color) flashes most recently used petal specified color
       // Flash(len 12) (four colors) flashes hub, petal 1, petal 2 and petal 3 the specified colors in that order
       // Flash(len 24) allows granular control of which LEDs on the petals are used to express a color 
@@ -137,7 +137,7 @@ Blockly.Assembly['on_motion_trigger'] = function(block) {
 // future work: if assigning to a scalar, return M
 
 Blockly.Assembly['getmotiondata'] = function(block) {
-  var code = 'Syscall GETMOTIONDATA\n';// this puts motion data on the stack in order top{4,M,L,N,K,...} 4 is length of data
+  var code = 'Syscall GETMOTIONDATA\n';// this puts motion data on the stack in order top{3,L,N,K,...} 3 is length of data
   return [code, Blockly.Assembly.ORDER_ATOMIC];
 };
 

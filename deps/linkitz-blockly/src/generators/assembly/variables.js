@@ -403,21 +403,14 @@ Blockly.Assembly['variables_set'] = function(block) {
               switch (set_to_value_type) {
               // ********* "EASY" value types where LIST is a known list of scalars, we're done *********
                 case 'colour_picker':
-                  console.log("in loop4 lists_setIndex_nonMut - found list by case colour_picker");
+                case 'getmotiondata':
+                  console.log("in loop4 lists_setIndex_nonMut - found list by case colour_picker or get motion");
                   list_desc.push(3); // color always a list of length 3 of scalars --> done!
                   var total_len = list_length_from_sublist_desc(list_desc);
                   addNewListVar(list_name,total_len,list_desc);
                   blockid_to_list_desc(targetBlock, list_desc);
                   break;
               
-                case 'getmotiondata':
-                  console.log("in loop4 lists_setIndex_nonMut - found list by case colour_picker");
-                  list_desc.push(4); // motion always a list of length 4 of scalars --> done!
-                  var total_len = list_length_from_sublist_desc(list_desc);
-                  addNewListVar(list_name,total_len,list_desc);
-                  blockid_to_list_desc(targetBlock,  list_desc);
-                  break;
-                  
                 // ********* "HARD" LISTS *********
                 
                 case 'lists_create_n': // list item is being assigned to another list of length n, no other info **********
