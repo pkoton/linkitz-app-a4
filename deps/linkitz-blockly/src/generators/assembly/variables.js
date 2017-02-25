@@ -249,16 +249,12 @@ Blockly.Assembly['variables_set'] = function(block) {
                   // ********* "EASY" LISTS where LIST LENGTH is known and list can be added immediately *********
 
                     case 'colour_picker':
+                    case 'getmotiondata':
                       console.log("in loop2 found list by case colour_picker");
-                      addNewListVar(varName,3,[3]); // color always a list of length 3 of scalars
+                      addNewListVar(varName,3,[3]); // color always a list of length 3 of scalars, getmotiondata returns LNK, a list of 3 scalars
                       blockid_return_value_desc[targetBlock.id] = [3];
                       break;
-                    case 'getmotiondata':
-                      console.log("in loop2 found list by case getmotiondata");
-                      addNewListVar(varName,4,[4]); // getmotiondata returns MagLNK, a list of length 4
-                      blockid_return_value_desc[targetBlock.id] = [4];
-                      break;
-                      
+                    
                     // ********* "HARD" LISTS *********
                     
                     case 'lists_create_n': // ************* a list of n scalars OR lists **********
@@ -679,17 +675,13 @@ function addNewScalarVar(varName) {
       console.log(">>>> in get_list_desc switch");
       switch (blocktype) {
        case "colour_picker":
+       case 'getmotiondata':
          res.push(3); //[3]
          full_spec = 1;
          blockid_return_value_desc[block.id] = [3];
          return [full_spec,res];
          break;
-       case 'getmotiondata':
-         res.push(4); //[4]
-         full_spec = 1;
-         blockid_return_value_desc[block.id] = [4];
-         return [full_spec,res];
-         break;
+       
        case "variables_get": // could be a scalar or a list
          var varName = Blockly.Assembly.variableDB_.getName(block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
          var in_GSV = global_scalar_variables.indexOf(varName); // is it in global_scalar_variables
