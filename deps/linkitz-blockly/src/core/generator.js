@@ -83,7 +83,20 @@ Blockly.Generator.prototype.workspaceToCode = function(workspace) {
 
   this.init(workspace);
   var blocks = workspace.getTopBlocks(true);
+  
     // added linkitz function to prepare memory allocation for all variables
+    // reset memory allocation from previous assembly generation
+  global_list_variables = new Object();
+  unknown_lists = new Object();
+  blockid_return_value_desc =new Object();
+  global_scalar_variables.length = 8; // only keep the "pre-assigned" registers
+  gsv_next = 8;
+  proc_types = new Object();
+  pnext = 0;
+  undef_vars = [];
+  undef_vars_next = 0;
+  ifCount = 0;
+  
   console.log("calling resolve var refs");
   if (resolve_var_refs(workspace,[]) == 0) {
       alert("unresolved variables issue");
