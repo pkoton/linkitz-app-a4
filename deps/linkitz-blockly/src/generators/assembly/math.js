@@ -141,36 +141,8 @@ Blockly.Assembly['math_magnitude'] = function(block) {
 //it's a list
   console.log("in math_magnitude of list");
   var code = '';
-  ifCount++;
-  var minus1 = gsv_next; // used to decrement list index - everyone uses this
-  if (minus1 > glv_next) {
-  throw 'out of register space in math_magnitude';
-  }
-  gsv_next += 1;
-  var copy = gsv_next; // Rcopy holds second copy of list elt for calculating square
-  if (copy > glv_next) {
-    throw 'out of register space1 in math_magnitude';
-  }
-  gsv_next += 1;
-  var sum = gsv_next; //// Rsum will accumulate sum
-  if (sum > glv_next) {
-    throw 'out of register space2 in math_magnitude';
-  }
-  gsv_next += 1;
-  var list = Blockly.Assembly.valueToCode(block, 'LIST', Blockly.Assembly.ORDER_ATOMIC); 
-  code += list + "pop R1\n"; // list on stack, length is in R1
-  code += "set R" + sum + " 0\n";
-  code += "pop R2\npush R2\npop R"+copy+"\nMUL R2 R"+copy+" R2\n"; // calculate square
-  code += "ADD R2 R" + sum + " R" + sum + "\n"; // accumulate squares in Rsum
-  code += "set R" + minus1 + " -1\n";
-  code += "MAG_label_" + ifCount + ": ADD R1 R" + minus1 + " R1\n"; //decrement Rcount
-  code += "BTR1SNZ \n GOTO endMAG_label_" + ifCount + "\n";
-  code += "pop R2\npush R2\npop R"+copy+"\nMUL R2 R"+copy+" R2\n"; // calculate square
-  code += "ADD R2 R" + sum + " R" + sum + "\n"; // accumulated in Rsum
-  code += "GOTO MAG_label_" + ifCount + "\n";
-  code += "endMAG_label_: push R" + sum + "\npop R1\n"; //sum of squares is now in R1
-  code += "syscall SQRT R1 R1\n"; // finds its argument in R1, leaves result in R1?
-  gsv_next -= 3; // release minus1, sum and copy registers
+  var list = Blockly.Assembly.valueToCode(block, 'LIST', Blockly.Assembly.ORDER_ATOMIC); // list on stack, length is TOS
+  code += list + "syscall MAGR1\n"; // finds its argument on stack, leaves result in R1
   return [code, Blockly.Assembly.ORDER_UNARY_PREFIX];
 }
 
