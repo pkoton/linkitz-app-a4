@@ -89,8 +89,6 @@ Blockly.Assembly.STATEMENT_PREFIX = null;
 
 //******************* LINKITZ STUFF *******************
 
-var debug = 0;
-
 // Linkitz SPECIAL REGISTERS R0 - R127 ARE SET HERE
 
 // We maintain a dictionary of all global_list_variables
@@ -140,7 +138,7 @@ global_scalar_variables[5] = 'motion_attached'; // R5
 global_scalar_variables[6] = 'batterylevel'; // R6
 global_scalar_variables[7] = 'ambientlight'; // R7
 
-var gsv_next = 8 // gsv_next points to the next empty register index
+var gsv_next = 8; // gsv_next points to the next empty register index
 var global_scalar_variables_pp =''; // string for pretty printing the GSV list
 
 

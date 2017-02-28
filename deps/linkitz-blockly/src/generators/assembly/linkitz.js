@@ -314,7 +314,7 @@ Blockly.Assembly['getidfromradioatport'] = function(block) {
 
 Blockly.Assembly['on_initialization'] = function(block) {
   var dothis = Blockly.Assembly.statementToCode(block, 'NAME');
-  if (debug) {alert("In on_initialization, code is " + dothis + "Syscall exit R0")};
+  console.log("In on_initialization, code is " + dothis + "Syscall exit R0");
   var code = 'On_initialization:\n' + dothis + Blockly.Assembly.INDENT + 'syscall exit R0\n';;
   return code;
 };
