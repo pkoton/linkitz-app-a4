@@ -87,6 +87,7 @@ Blockly.Generator.prototype.workspaceToCode = function(workspace) {
     // added linkitz function to prepare memory allocation for all variables
     // reset memory allocation from previous assembly generation
   global_list_variables = new Object();
+  glv_next = 127;
   unknown_lists = new Object();
   blockid_return_value_desc =new Object();
   global_scalar_variables.length = 8; // only keep the "pre-assigned" registers
