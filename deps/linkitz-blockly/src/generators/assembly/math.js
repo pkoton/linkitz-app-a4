@@ -58,30 +58,77 @@ Blockly.Assembly['math_arithmetic'] = function(block) {
   var tuple = OPERATORS[block.getFieldValue('OP')];
   var operator = tuple[0];
   var order = tuple[1];
-  var arg0 = block.getInputTargetBlock('A');
-  if (!arg0) {
-    var argument0 = 'set R1 0\n'; // treat as zero
-  } else //arg0 exists
+  var defaultArgument = ((operator == 'ADD')||(operator == 'MINUS')) ? 'R0' : '1';
+  var arg1usesR1, arg2usesR1 = 0;
+  var arg1 = block.getInputTargetBlock('A');
+  var arg2 = block.getInputTargetBlock('B');
+  if ((!arg1) && (!arg2)){
+    return ['',Blockly.Assembly.ORDER_ATOMIC]; // no-op
+  }
+  if (!arg1) {
+    var argument1 = 'set R1 '+ defaultArgument + '\n'; // treat as identity
+    arg1usesR1 = 1;
+  } else //arg1 exists
   {
-    if (is_scalar(arg0) || (get_list_desc (arg0, [])[1].length == 0)) { // and arg1 is scalar
-    var argument0 = Blockly.Assembly.valueToCode(block, 'A', order);
+    if (is_scalar(arg1) || (get_list_desc (arg1, [])[1].length == 0)) { // and arg1 is scalar
+      // if arg2 is in GSV just us that register
+      if (arg1.type == 'variables_get') {
+        console.log("here0");
+        var varName1 = Blockly.Assembly.variableDB_.getName(arg1.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+        var in_GSV1 = global_scalar_variables.indexOf(varName1); // if in global_scalar_variable
+          if (in_GSV1 >= 0) {
+            var argument1 = "R" + in_GSV1; // Rsrc1 is in R+in_GSV
+          }
+      }
+        else {
+          console.log("here1");
+          var argument1 = Blockly.Assembly.valueToCode(block, 'A', order); // Rsrc1 is in R1
+          console.log("argument1 = " +argument1);
+          arg1usesR1 = 1;
+        }
     }
     else { //it's not scalar
     throw 'input1 to math_arithmetic block can\'t be list';
     }
   }
-  var arg1 = block.getInputTargetBlock('B');
-  if (!arg1) { //blank input
-    var argument1 = 'set R1 0\n'; // treat as zero
-  } else  //arg1 exists
+  if (!arg2) { //blank input
+    var argument2 = 'set R1 '+ defaultArgument + '\n'; // treat as identity
+    arg2usesR1 = 1;
+  } else  //arg2 exists
   {
-    if (is_scalar(arg1) || (get_list_desc (arg1, [])[1].length == 0)) { // and arg1 is scalar
-    var argument1 = Blockly.Assembly.valueToCode(block, 'B', order);  
+    if (is_scalar(arg2) || (get_list_desc (arg2, [])[1].length == 0)) { // and arg2 is scalar
+    if (arg2.type == 'variables_get') {
+      console.log("here2");
+      var varName2 = Blockly.Assembly.variableDB_.getName(arg1.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+      var in_GSV2 = global_scalar_variables.indexOf(varName2); // if in global_scalar_variable
+        if (in_GSV2 >= 0) {
+          var argument2 = "R" + in_GSV2; // Rsrc2 is R + in_GSV
+        }
+    }
+        else {
+          console.log("here2a");
+          var argument2 = Blockly.Assembly.valueToCode(block, 'B', order); // Rsrc2 is in R1
+          console.log("argument2 = " +argument2);
+          arg2usesR1=1;
+        }
     } else { //it's not scalar
       throw 'input2 to math_arithmetic block can\'t be list';
       }
   }
-  var code = argument0 + 'push R1 \n' + argument1 + 'pop R2 \n' + operator + ' R2 R1 R1\n';
+  if ((arg1usesR1==1) && (arg2usesR1==1)) {
+    console.log("here3");
+    var code = argument1 + 'push R1 \n' + argument2 + 'pop R2 \n' + operator + ' R2 R1 R1\n'; //  note: Rsrc1 is in R2
+    return [code,Blockly.Assembly.ORDER_ATOMIC];
+  }
+  if (arg1usesR1==1) {
+    var code = argument1 + operator + ' R1 R' +  in_GSV2 + ' R1\n'; // Rsrc1 is in R1
+    return [code,Blockly.Assembly.ORDER_ATOMIC];
+  }
+  if (arg2usesR1==1) {
+    var code = argument2 + operator + ' R' +  in_GSV1 + ' R1 R1\n'; // note: Rscr2 is in R1
+    return [code,Blockly.Assembly.ORDER_ATOMIC];
+  }
+  var code =operator + ' R' +  in_GSV1 + ' R' +  in_GSV2 + ' R1\n'; // => oper Rsrc1 Rsrc2 R1
   return [code,Blockly.Assembly.ORDER_ATOMIC];
 };
 
