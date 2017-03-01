@@ -36,17 +36,17 @@ goog.require('Blockly.Assembly');
   console.log("in variables_get: name is " + varName);
   var in_GSV = global_scalar_variables.indexOf(varName); // if in global_scalar_variables, put in R1
   if (in_GSV >= 0) {
-    var code = 'push R' + in_GSV + '\npop R1\n';
+    var code = 'LOADR1FROM R' + in_GSV + '\n';
     return [code, Blockly.Assembly.ORDER_ATOMIC];
   } else if (varName in global_list_variables) { // if in global_list_variables [head,Rused,desc], put on stack
-      var code = '';
       var headaddr = global_list_variables[varName][0];
-      var llen = global_list_variables[varName][1];
-      var topOfList = headaddr + llen - 1;
-        console.log("headaddr " + headaddr + " llen " + llen + " topOfList " + topOfList);
-        for (var i = 0; i < llen; i++) { //push values on stack
-          code += ' push R' +  (topOfList - i) + '\n';
-        }
+      //var llen = global_list_variables[varName][1];
+      //var topOfList = headaddr + llen - 1;
+      //  console.log("headaddr " + headaddr + " llen " + llen + " topOfList " + topOfList);
+      //  for (var i = 0; i < llen; i++) { //push values on stack
+      //    code += ' push R' +  (topOfList - i) + '\n';
+      //  }
+      var code = "pushL R" + headaddr + "\n";
       return [code, Blockly.Assembly.ORDER_ATOMIC];
     }
     else {
@@ -76,19 +76,20 @@ Blockly.Assembly['variables_set'] = function(block) {
       var found = global_scalar_variables.indexOf(varName);
       if (found >= 0) { // setting a scalar, value is in R1
         console.log("in variables_set, scalar variable " + varName + " defined at R" + found);
-        var code =  argument0 +'Push R1\nPop R' + found + '\n';
+        var code =  argument0 +'LOADR1TO R' + found + '\n';
         return code;
       }
       else if (varName in global_list_variables) { // setting a list, values and length are on the stack
         console.log("in variables_set (2): global_list_variables[varName] is " + global_list_variables[varName] + " global_list_variables[varName][0] is " + global_list_variables[varName][0]);
         found = global_list_variables[varName][0]; //headaddr
-        var list_len = global_list_variables[varName][1];
-        var pops = argument0 + 'Pop R' + found + '\n'; // don't need length, we already have it  pop it into R that holds length
-        console.log("in variables_set, list variable " + varName + " defined at R" + found);
-        for (var i = 1; i < list_len; i++) {
-         pops = pops + 'Pop R' + (found + i) + '\n';
-        }
-        var code = pops;
+        //var list_len = global_list_variables[varName][1];
+        //var pops = argument0 + 'Pop R' + found + '\n'; // don't need length, we already have it  pop it into R that holds length
+        //console.log("in variables_set, list variable " + varName + " defined at R" + found);
+        //for (var i = 1; i < list_len; i++) {
+        // pops = pops + 'Pop R' + (found + i) + '\n';
+        //}
+        //var code = pops;
+        var code = "popL R" + found + "\n";
         return code;
         }
         else {
