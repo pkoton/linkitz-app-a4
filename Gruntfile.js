@@ -35,7 +35,8 @@ module.exports = function(grunt) {
           {expand: true, src: ['app-entry.js', 'app-main.html', 'manifest.json'], dest: 'build/'},
           {expand: true, cwd: 'manifest-build', src: ['manifest-dev.json'], dest: 'build/', rename: function (dest,src) {return dest + 'manifest.json'; }},
           {expand: true, cwd: 'blockly-assets', src: ['blocklyframe.html', 'blocklyframe.js'], dest: 'build/'},
-          {expand: true, cwd: 'deps/linkitz-blockly/src', src: ['blockly_compressed.js', 'blocks_compressed.js', 'assembly_compressed.js', 'images/**', 'media/**', 'msg/**'], dest: 'build/blockly/'},
+          {expand: true, cwd: 'deps/linkitz-blockly/src', src: ['blockly_compressed.js', 'blocks_compressed.js', 'assembly_compressed.js',  'media/**', 'msg/**'], dest: 'build/blockly/'},
+          {expand: true, cwd: 'deps/linkitz-blockly/src', src: ['images/**'], dest: 'build/'}, // trying to move images out of build/blockly to /build
           {expand: true, cwd: 'blockly-assets', src: ['style.css', 'msg/**'], dest: 'build/blockly/'},
         ],
       },
