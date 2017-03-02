@@ -33,10 +33,10 @@ goog.require('Blockly.Blocks');
  * Common HSV hue for all blocks in this category.
  */
 // this was changed from aqua to orange for minimum block set
-// Blockly.Blocks.logic.HUE = 236;
-Blockly.Blocks.logic.HUE = 35.7;
-Blockly.Blocks.logic.Saturation = 0.988;
-Blockly.Blocks.logic.Value = 0.999;
+Blockly.Blocks.logic.HUE = '#ff9903';
+//Blockly.Blocks.logic.HUE = 35.7;
+//Blockly.Blocks.logic.Saturation = 0.988;
+//Blockly.Blocks.logic.Value = 1.0;
 
 Blockly.Blocks['controls_if'] = {
   /**

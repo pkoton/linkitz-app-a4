@@ -103,7 +103,7 @@ Blockly.Blocks['math_magnitude'] = {
     this.appendDummyInput()
       .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_10_Math.png",50,50,"*"));
     this.appendDummyInput()
-        .appendField("Magnitude");
+        .appendField("magnitude");
         this.setHelpUrl(Blockly.Msg.MATH_MAGNITUDE_HELPURL);
     this.setColour(Blockly.Blocks.math.HUE);
     this.setOutput(true, 'Number');
@@ -338,11 +338,11 @@ Blockly.Blocks['math_random_int'] = {
    */
   init: function() {
     this.appendDummyInput()
-      .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_10_Math.png",50,50,"*"));
-      this.appendDummyInput().appendField("Random integer from -127 to 127");
+      .appendField(new Blockly.FieldImage("../../images/dice.png",50,50,"*"));
+      this.appendDummyInput().appendField("random");
       this.setOutput(true,"Number");
       this.setColour(Blockly.Blocks.math.HUE);
-      this.setTooltip(Blockly.Msg.MATH_RANDOM_INT_TOOLTIP);
+      this.setTooltip("Generates a random integer between -127 to 127");
       this.setHelpUrl(Blockly.Msg.MATH_RANDOM_INT_HELPURL);
     }
 };

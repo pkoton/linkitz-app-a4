@@ -58,7 +58,7 @@ Blockly.Blocks['flash_leds'] = {
     this.setNextStatement(true);
     // this.setColour(290,0.674,0.75);
     this.setColour('#873299');
-    this.setTooltip('');
+    this.setTooltip('Use this block to make your Linkitz light up');
     this.setHelpUrl('http://www.example.com/');
   }
 };
@@ -164,8 +164,7 @@ Blockly.Blocks['on_motion_trigger'] = {
   init: function() {
     this.appendDummyInput()
 		.appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_1_Motion.png", 50, 50, "On Motion Trigger"));
-    this.appendDummyInput()
-        .appendField("On Motion");
+    
     this.appendStatementInput("NAME")
         .setCheck(null);
     this.setInputsInline(true);
@@ -546,9 +545,9 @@ Blockly.Blocks['radiogetrange'] = {
 Blockly.Blocks['RegularEventSpeed'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
+	.appendField(new Blockly.FieldImage("../../images/timer_icon.png", 50, 50, "*"));
     this.appendDummyInput()
-        .appendField("Set Regular Event Speed");
+        .appendField("Set");
     this.setInputsInline(true);
    this.appendValueInput("PERIOD")
         .setCheck("Number");
@@ -565,9 +564,7 @@ Blockly.Blocks['RegularEventSpeed'] = {
 Blockly.Blocks['on_regular_event'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
-    this.appendDummyInput()
-        .appendField("On Regular Event");
+        .appendField(new Blockly.FieldImage("../../images/timer_icon.png", 50, 50, "*"));
     this.setInputsInline(true);
     this.appendStatementInput("NAME");
     this.setColour('#FFCE00');
@@ -608,9 +605,7 @@ Blockly.Blocks['on_initialization'] = {
 Blockly.Blocks['getambientlight'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
-    this.appendDummyInput()
-        .appendField("Get ambient light");
+        .appendField(new Blockly.FieldImage("../../images/ambient.png", 50, 50, "*"));
     this.setInputsInline(true);
     this.setOutput(true);
     this.setColour('#FFCE00');
@@ -623,9 +618,7 @@ Blockly.Blocks['getambientlight'] = {
 Blockly.Blocks['getbatterylevel'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
-    this.appendDummyInput()
-        .appendField("Get battery level");
+        .appendField(new Blockly.FieldImage("../../images/battery.png", 50, 50, "*"));
     this.setInputsInline(true);
     this.setOutput(true, "Number");
     this.setColour('#FFCE00');
