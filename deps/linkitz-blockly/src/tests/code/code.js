@@ -626,7 +626,7 @@ Code.initLanguage = function() {
   document.getElementById('runButton').title = MSG['runTooltip'];
   document.getElementById('trashButton').title = MSG['trashTooltip'];
 
-  var categories = ['Motion','LED','Hub','catLogic', 'catLists',
+  var categories = ['Motion','LED','Hub','catLogic', 'catMath','catLists',
                     'catVariables', 'catFunctions'];
   for (var i = 0, cat; cat = categories[i]; i++) {
     document.getElementById(cat).setAttribute('name', MSG[cat]);
