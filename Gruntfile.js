@@ -62,7 +62,8 @@ module.exports = function(grunt) {
           {expand: true, src: ['app-entry.js', 'app-main.html', 'manifest.json'], dest: 'release/'},
           {expand: true, cwd: 'manifest-build', src: ['manifest-release.json'], dest: 'release/', rename: function (dest,src) {return dest + 'manifest.json'; }},          
           {expand: true, cwd: 'blockly-assets', src: ['blocklyframe.html', 'blocklyframe.js'], dest: 'release/'},
-          {expand: true, cwd: 'deps/linkitz-blockly/src', src: ['blockly_compressed.js', 'blocks_compressed.js', 'assembly_compressed.js', 'images/**', 'media/**', 'msg/**'], dest: 'release/blockly/'},
+          {expand: true, cwd: 'deps/linkitz-blockly/src', src: ['blockly_compressed.js', 'blocks_compressed.js', 'assembly_compressed.js', 'media/**', 'msg/**'], dest: 'release/blockly/'},
+          {expand: true, cwd: 'deps/linkitz-blockly/src', src: ['images/**'], dest: 'release/'},
           {expand: true, cwd: 'blockly-assets', src: ['style.css', 'msg/**'], dest: 'release/blockly/'},
         ],
       }
