@@ -33,6 +33,7 @@ Blockly.Assembly.addReservedWords('Math');
 
 Blockly.Assembly['math_number'] = function(block) {
   // Numeric value.
+  var code = '';
   var number_arg = parseFloat(block.getFieldValue('NUM'));
   var order;
   if (number_arg == Infinity) {
@@ -42,12 +43,14 @@ Blockly.Assembly['math_number'] = function(block) {
     code = '-double.INFINITY';
     order = Blockly.Assembly.ORDER_UNARY_PREFIX;
   } 
-  var code = 'set R1 '+ number_arg + '\n';
+  code += 'set R1 '+ number_arg + '\n';
   return [code, Blockly.Assembly.ORDER_ATOMIC];
 };
 
+
 Blockly.Assembly['math_arithmetic'] = function(block) {
   // Basic arithmetic operators, and power.
+  var code = '; starting math_arithmetic\n';
   var OPERATORS = {
     'ADD': ['ADD', Blockly.Assembly.ORDER_ATOMIC],
     'MINUS': ['SUB', Blockly.Assembly.ORDER_ATOMIC],
@@ -117,23 +120,116 @@ Blockly.Assembly['math_arithmetic'] = function(block) {
   }
   if ((arg1usesR1==1) && (arg2usesR1==1)) {
     console.log("here3");
-    var code = argument1 + 'push R1 \n' + argument2 + 'pop R2 \n' + operator + ' R2 R1 R1\n'; //  note: Rsrc1 is in R2
-    return [code,Blockly.Assembly.ORDER_ATOMIC];
-  }
+    code += argument2 + 'LoadR1to R2 \n' + argument1 + '\n' + operator + ' R1 R2 R1\n'; //  note: Rsrc1 is in R1
+    
+  } else
   if (arg1usesR1==1) {
-    var code = argument1 + operator + ' R1 R' +  in_GSV2 + ' R1\n'; // Rsrc1 is in R1
-    return [code,Blockly.Assembly.ORDER_ATOMIC];
-  }
+    code += argument1 + operator + ' R1 R' +  in_GSV2 + ' R1\n'; // Rsrc1 is in R1
+  } else
   if (arg2usesR1==1) {
-    var code = argument2 + operator + ' R' +  in_GSV1 + ' R1 R1\n'; // note: Rscr2 is in R1
-    return [code,Blockly.Assembly.ORDER_ATOMIC];
+    code += argument2 + operator + ' R' +  in_GSV1 + ' R1 R1\n'; // note: Rscr2 is in R1
+  } else {
+    code +=operator + ' R' +  in_GSV1 + ' R' +  in_GSV2 + ' R1\n'; // => oper Rsrc1 Rsrc2 R1
   }
-  var code =operator + ' R' +  in_GSV1 + ' R' +  in_GSV2 + ' R1\n'; // => oper Rsrc1 Rsrc2 R1
+  code += '; ending math_arithmetic\n';
   return [code,Blockly.Assembly.ORDER_ATOMIC];
 };
 
+// original working code
+//Blockly.Assembly['math_arithmetic'] = function(block) {
+//  // Basic arithmetic operators, and power.
+//  var code = '; starting math_arithmetic\n';
+//  var OPERATORS = {
+//    'ADD': ['ADD', Blockly.Assembly.ORDER_ATOMIC],
+//    'MINUS': ['SUB', Blockly.Assembly.ORDER_ATOMIC],
+//    'MULTIPLY': ['MUL', Blockly.Assembly.ORDER_ATOMIC],
+//    'DIVIDE': ['DIV', Blockly.Assembly.ORDER_ATOMIC],
+//    'POWER': ['POW', Blockly.Assembly.ORDER_EXPONENTIATION]  // Handle power separately.
+//  };
+//  var tuple = OPERATORS[block.getFieldValue('OP')];
+//  var operator = tuple[0];
+//  var order = tuple[1];
+//  var defaultArgument = ((operator == 'ADD')||(operator == 'MINUS')) ? 'R0' : '1';
+//  var arg1usesR1, arg2usesR1 = 0;
+//  var arg1 = block.getInputTargetBlock('A');
+//  var arg2 = block.getInputTargetBlock('B');
+//  if ((!arg1) && (!arg2)){
+//    return ['',Blockly.Assembly.ORDER_ATOMIC]; // no-op
+//  }
+//  if (!arg1) {
+//    var argument1 = 'set R1 '+ defaultArgument + '\n'; // treat as identity
+//    arg1usesR1 = 1;
+//  } else //arg1 exists
+//  {
+//    if (is_scalar(arg1) || (get_list_desc (arg1, [])[1].length == 0)) { // and arg1 is scalar
+//      // if arg2 is in GSV just us that register
+//      if (arg1.type == 'variables_get') {
+//        console.log("here0");
+//        var varName1 = Blockly.Assembly.variableDB_.getName(arg1.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+//        var in_GSV1 = global_scalar_variables.indexOf(varName1); // if in global_scalar_variable
+//          if (in_GSV1 >= 0) {
+//            var argument1 = "R" + in_GSV1; // Rsrc1 is in R+in_GSV
+//          }
+//      }
+//        else {
+//          console.log("here1");
+//          var argument1 = Blockly.Assembly.valueToCode(block, 'A', order); // Rsrc1 is in R1
+//          console.log("argument1 = " +argument1);
+//          arg1usesR1 = 1;
+//        }
+//    }
+//    else { //it's not scalar
+//    throw 'input1 to math_arithmetic block can\'t be list';
+//    }
+//  }
+//  if (!arg2) { //blank input
+//    var argument2 = 'set R1 '+ defaultArgument + '\n'; // treat as identity
+//    arg2usesR1 = 1;
+//  } else  //arg2 exists
+//  {
+//    if (is_scalar(arg2) || (get_list_desc (arg2, [])[1].length == 0)) { // and arg2 is scalar
+//    if (arg2.type == 'variables_get') {
+//      console.log("here2");
+//      var varName2 = Blockly.Assembly.variableDB_.getName(arg1.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+//      var in_GSV2 = global_scalar_variables.indexOf(varName2); // if in global_scalar_variable
+//        if (in_GSV2 >= 0) {
+//          var argument2 = "R" + in_GSV2; // Rsrc2 is R + in_GSV
+//        }
+//    }
+//        else {
+//          console.log("here2a");
+//          var argument2 = Blockly.Assembly.valueToCode(block, 'B', order); // Rsrc2 is in R1
+//          console.log("argument2 = " +argument2);
+//          arg2usesR1=1;
+//        }
+//    } else { //it's not scalar
+//      throw 'input2 to math_arithmetic block can\'t be list';
+//      }
+//  }
+//  if ((arg1usesR1==1) && (arg2usesR1==1)) {
+//    console.log("here3");
+//    code += argument1 + 'push R1 \n' + argument2 + 'pop R2 \n' + operator + ' R2 R1 R1\n'; //  note: Rsrc1 is in R2
+//    code += '; ending math_arithmetic\n';
+//    return [code,Blockly.Assembly.ORDER_ATOMIC];
+//  }
+//  if (arg1usesR1==1) {
+//    var code = argument1 + operator + ' R1 R' +  in_GSV2 + ' R1\n'; // Rsrc1 is in R1
+//    code += '; ending math_arithmetic\n';
+//    return [code,Blockly.Assembly.ORDER_ATOMIC];
+//  }
+//  if (arg2usesR1==1) {
+//    var code = argument2 + operator + ' R' +  in_GSV1 + ' R1 R1\n'; // note: Rscr2 is in R1
+//    code += '; ending math_arithmetic\n';
+//    return [code,Blockly.Assembly.ORDER_ATOMIC];
+//  }
+//  var code =operator + ' R' +  in_GSV1 + ' R' +  in_GSV2 + ' R1\n'; // => oper Rsrc1 Rsrc2 R1
+//  code += '; ending math_arithmetic\n';
+//  return [code,Blockly.Assembly.ORDER_ATOMIC];
+//};
+
 Blockly.Assembly['math_binary'] = function(block) {
   // Basic arithmetic operators, and power.
+  var code = '; starting math_binary\n';
   var OPERATORS = {
     'BITWISEAND': ['band3', Blockly.Assembly.ORDER_ATOMIC],
     'BITWISEOR': ['bor3', Blockly.Assembly.ORDER_ATOMIC]
@@ -145,7 +241,9 @@ Blockly.Assembly['math_binary'] = function(block) {
   var arg0 = block.getInputTargetBlock('A');
   var arg1 = block.getInputTargetBlock('B');
   if ((!arg0) && (!arg1)) { // no args returns false
-    return ['set R1 R0\n',Blockly.Assembly.ORDER_ATOMIC];
+    code += 'set R1 R0\n';
+    code += '; ending math_binary\n';
+    return [code,Blockly.Assembly.ORDER_ATOMIC];
   }
   if (!arg0) {
     argument0 = 'set R1 ' + defaultArgument;
@@ -168,49 +266,52 @@ Blockly.Assembly['math_binary'] = function(block) {
       throw 'input2 to math_binary block can\'t be list';
       }
   }
-    var code = argument0 + 'push R1 \n' + argument1 + 'pop R2 \n' + operator + ' R2 R1 R1\n';
-  return [code,Blockly.Assembly.ORDER_ATOMIC];
+    code += argument0 + 'push R1 \n' + argument1 + 'pop R2 \n' + operator + ' R2 R1 R1\n';
+    code += '; ending math_binary\n';
+    return [code,Blockly.Assembly.ORDER_ATOMIC];
 };
 
 Blockly.Assembly['math_magnitude'] = function(block) {
   // Magnitude is absolute value for scalars, square root of sum of squares for lists.
-  var code;
+  var code = '; starting math_magnitude\n';
   var targetBlock = block.getInputTargetBlock('NUM');
   if (!targetBlock) {
-    code = 'set R1 R0\n';
+    code += 'set R1 R0\n';
+    code += '; ending math_magnitude\n';
     return [code, Blockly.Assembly.ORDER_UNARY_PREFIX];
   }
   if (is_scalar(targetBlock) || (get_list_desc (targetBlock, [])[1].length == 0)) { // and arg1 is scalar
     var argument0 = Blockly.Assembly.valueToCode(block, 'NUM', Blockly.Assembly.ORDER_ATOMIC);
-    code = argument0 + 'ABS R1 R1\n';
+    code += argument0 + 'ABS R1 R1\n';
+    code += '; ending math_magnitude\n';
     return [code, Blockly.Assembly.ORDER_UNARY_PREFIX];
   }
 //it's a list
   console.log("in math_magnitude of list");
-  var code = '';
   var list = Blockly.Assembly.valueToCode(block, 'LIST', Blockly.Assembly.ORDER_ATOMIC); // list on stack, length is TOS
   code += list + "syscall MAGR1\n"; // finds its argument on stack, leaves result in R1
+  code += '; ending math_magnitude\n';
   return [code, Blockly.Assembly.ORDER_UNARY_PREFIX];
 }
 
 Blockly.Assembly['math_on_list'] = function(block) {
   // Math functions for lists.
+  var code = '; starting math_on_list\n';
   var targetBlock = block.getInputTargetBlock('LIST');
   // first make sure input is a list. if it's a variable, it could be a scalar
   // in which case, just return the scalar (makes sense for all our math list operations)
   if (!targetBlock) {
-    code = 'set R1 R0\n';
+    code += 'set R1 R0\n';
   }
   else if (is_scalar(targetBlock)){
     var val = Blockly.Assembly.valueToCode(block, 'LIST', Blockly.Assembly.ORDER_ATOMIC);
     console.log("in math_on_list: input is a scalar, value is " + val);
-    code = val + "\n"; 
+    code += val + "\n"; 
   }
   else {
   var func = block.getFieldValue('OP');
   var inputType = targetBlock.type;
   console.log("in math_on_list: targetBlock.type " + inputType);
-  var code = '';
   ifCount++;
   
     var minus1 = gsv_next; // used to decrement list index - everyone uses this
@@ -232,7 +333,8 @@ Blockly.Assembly['math_on_list'] = function(block) {
         code += "pop R2\n"; // R2 will accumulate sum, initial value is first list item
         code += "set R" + minus1 + " -1\n";
         code += "SUM_label_" + ifCount + ": ADD R1 R" + minus1 + " R1\n"; //decrement R1
-        code += "BTR1SNZ \n GOTO endSUM_label_" + ifCount + "\n";
+        code += 'BTR1SNZ \n; skip next instruction if R1 is non-zero\n'; 
+        code += ' GOTO endSUM_label_" + ifCount + "\n';
         code += "pop R" + next_stack_item + "\n";
         code += "ADD R2 R" + next_stack_item + " R2\n";
         code += "GOTO SUM_label_" + ifCount + "\n";
@@ -257,11 +359,13 @@ Blockly.Assembly['math_on_list'] = function(block) {
       code += "set R" + minus1 + " -1\n";
       code += "pop R" + min + "\n";
       code += "min_label_" + ifCount + ": ADD R1 R" + minus1 + " R1\n"; //decrement R1 
-      code += "BTR1SNZ \n GOTO endMin_label_" + ifCount + "\n"; // if no more elements, go to end
+      code += 'BTR1SNZ \n; skip next instruction if R1 is non-zero\n'; 
+      code += ' GOTO endMin_label_" + ifCount + "\n'; // if no more elements, go to end
       code += "push R1\npop R" + save + "\n"; // save counter
       code += "pop R2\n"; //get next item from stack
       code += "cmplt R2 R" + min + " R1 \n"; // R1 = 1 if Rmin must be replaced by value in R2
-      code += "BTR1SNZ\n GOTO skip_label_" + ifCount + "\n"; // if Rmin must be replaced skip goto
+      code += 'BTR1SNZ\n; skip next instruction if R1 is non-zero\n'; 
+      code += ' GOTO skip_label_" + ifCount + "\n'; // if Rmin must be replaced skip goto
       code += "push R2\npop R" + min + "\n"; // R2 is new Rmin
       code += "skip_label_"  + ifCount + ": push R" + save + "\npop R1\n"; // restore counter
       code += "GOTO min_label_" + ifCount + "\n";
@@ -286,11 +390,13 @@ Blockly.Assembly['math_on_list'] = function(block) {
       code += "set R" + minus1 + " -1\n";
       code += "pop R" + max + "\n";
       code += "max_label_" + ifCount + ": ADD R1 R" + minus1 + " R1\n"; //decrement R1 
-      code += "BTR1SNZ \n GOTO endmax_label_" + ifCount + "\n"; // if no more elements, go to end
+      code += 'BTR1SNZ \n; skip next instruction if R1 is non-zero\n'; 
+      code += ' GOTO endmax_label_" + ifCount + "\n'; // if no more elements, go to end
       code += "push R1\npop R" + save + "\n"; // save counter
       code += "pop R2\n"; //get next item from stack
       code += "cmpgt R2 R" + max + " R1 \n"; // R1 = 1 if Rmax must be replaced by value in R2
-      code += "BTR1SNZ\n GOTO skip_label_" + ifCount + "\n"; // if Rmax must be replaced skip goto
+      code += 'BTR1SNZ\n; skip next instruction if R1 is non-zero\n'; 
+      code += ' GOTO skip_label_" + ifCount + "\n'; // if Rmax must be replaced skip goto
       code += "push R2\npop R" + max + "\n"; // R2 is new Rmax
       code += "skip_label_"  + ifCount + ": push R" + save + "\npop R1\n"; // restore counter
       code += "GOTO max_label_" + ifCount + "\n";
@@ -314,7 +420,8 @@ Blockly.Assembly['math_on_list'] = function(block) {
         code += "pop R2\n"; // R2 will accumulate sum
         code += "set R" + minus1 + " -1\n";
         code += "AVG_label_" + ifCount + ": ADD R1 R" + minus1 + " R1\n"; //decrement R1
-        code += "BTR1SNZ \n GOTO endAVG_label_" + ifCount + "\n";
+        code += 'BTR1SNZ \n; skip next instruction if R1 is non-zero\n'; 
+        code += ' GOTO endAVG_label_" + ifCount + "\n';
         code += "pop R" + next_stack_item + "\n";
         code += "ADD R2 R" + next_stack_item + " R2\n";
         code += "GOTO AVG_label_" + ifCount + "\n";
@@ -326,6 +433,7 @@ Blockly.Assembly['math_on_list'] = function(block) {
     }
   }
   gsv_next--; // release the minus1 register
+  code += '; ending math_on_list\n';
   return [code, Blockly.Assembly.ORDER_ATOMIC];
 };
 
