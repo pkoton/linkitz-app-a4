@@ -16,31 +16,32 @@
 // If no input, treats as Hue = 0 and calls flashHue
 
 Blockly.Assembly['flash_leds'] = function(block) {
+  var code = "; starting flash_leds\n";
   var flash_arg = Blockly.Assembly.valueToCode(block, 'COLOR', Blockly.Assembly.ORDER_ATOMIC) ;
   console.log("in flash_leds: input is *" + flash_arg +'*');
   if (flash_arg == 'None' || flash_arg =='') {
     // *****  input is blank or null
     //alert('input is null');
-    var code = 'Push R0\nsyscall flashRGB\n'; 
+    code += 'Push R0\nsyscall flashRGB\n'; 
   }
   else {
     var targetBlock = block.getInputTargetBlock('COLOR');
     console.log("in flash_leds: input is block type " + targetBlock.type);
     if (is_scalar(targetBlock)) { // ***** input is a scalar
-      var code = flash_arg + 'syscall flashHue R1\n';
+      code += flash_arg + 'syscall flashHue R1\n';
     }
      else {
      switch (targetBlock.type) { // ***** input is a list
-      // Flash(getmotiondata) length 3 on stack
+      // Flash(get_motion_data) length 3 on stack
       // Flash(len 3) (one color) flashes most recently used petal specified color
       // Flash(len 12) (four colors) flashes hub, petal 1, petal 2 and petal 3 the specified colors in that order
       // Flash(len 24) allows granular control of which LEDs on the petals are used to express a color 
       case 'colour_picker':
-      case 'getmotiondata':
+      case 'get_motion_data':
       case 'array':
       case 'lists_create_n':
       case 'lists_create_with':
-        var code = flash_arg + 'syscall flashRGB\n'; 
+        code += flash_arg + 'syscall flashRGB\n'; 
         break;
       
       // ***** Input could be either a scalar or a list
@@ -48,11 +49,11 @@ Blockly.Assembly['flash_leds'] = function(block) {
         var varName = targetBlock.getFieldValue('VAR');
         console.log("in flash_leds: variables_get varName is " +varName);
         if (global_scalar_variables.indexOf(varName) >= 0) { // it's a scalar variable
-          var code = flash_arg + 'syscall flashHue R1\n'; // value is put in R1
+          code += flash_arg + 'syscall flashHue R1\n'; // value is put in R1
           }
           else if (varName in global_list_variables) { // it's a list
             // leave values onto stack
-            var code = '';
+            code += '';
             var headaddr = global_list_variables[varName][0];
             var llen = global_list_variables[varName][1];
             var topOfList = headaddr + llen - 1;
@@ -64,7 +65,7 @@ Blockly.Assembly['flash_leds'] = function(block) {
             }
               else {
                 console.log('in flash_leds: variable not defined');
-                var code = "FAIL1 at flash_leds\n";       
+                code += "FAIL1 at flash_leds\n";       
                 }
         break;
       case 'procedures_callreturn':
@@ -72,50 +73,55 @@ Blockly.Assembly['flash_leds'] = function(block) {
         console.log("in flash_leds: procedures_callreturn  on " + procName);
         // look up if proc retuns scalar or list
         if (proc_types[procName][0] == 0) { //returns a scalar, value is in R1
-          var code = flash_arg + 'syscall flashHue R1\n';
+          code += flash_arg + 'syscall flashHue R1\n';
         } else if (proc_types[procName][0] >= 1) { // returns a list, value on stack
-          code = flash_arg + 'syscall flashRGB\n';
+          code += flash_arg + 'syscall flashRGB\n';
         }
         break;
       case 'lists_getIndex_nonMut':
         var list_name2 = Blockly.Assembly.variableDB_.getName(targetBlock.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
         if (global_list_variables[list_name2][2].length == 1) { // its a scalar, value in R1
-          var code = flash_arg + 'syscall flashHue R1\n';
+          code += flash_arg + 'syscall flashHue R1\n';
           }
           else // it's a list, value on stack
           {
-          code = flash_arg + 'syscall flashRGB\n';
+          code += flash_arg + 'syscall flashRGB\n';
           }
         break;
       default: // we don't know what it is
         console.log('in flash_leds: input of unknown type');
-        var code = "FAIL2 at flash_leds\n";
+        code += "FAIL2 at flash_leds\n";
         break;
      }
     }
   }
+  code += "; ending flash_leds\n";
   return code;
 }
 
 Blockly.Assembly['led_attached'] = function(block) {
+  var code = "; starting led_attached\n";
   var found = global_scalar_variables.indexOf('led_attached');
   if (found >= 0) { // it better be!
-    var code = 'Push R' + found + '\nPop R1\nset R2 '+ mask + '\nband3 R1 R2 R1\n'; // only look at the lower bits
+    code += 'Push R' + found + '\nPop R1\nset R2 '+ mask + '\nband3 R1 R2 R1\n'; // only look at the lower bits
     // the value in R1, if 0 then no led attached, else 2 4 8 tells you where
     } else {
-      var code = 'Set R1 0\n'; // if you can't find led_attached in GSV, treat as no led attached
+      code += 'Set R1 0\n'; // if you can't find led_attached in GSV, treat as no led attached
     }
+  code += "; ending led_attached\n";
   return [code, Blockly.Assembly.ORDER_ATOMIC];
 };
 
 Blockly.Assembly['usb_attached'] = function(block) {
+  var code = "; starting usb_attached\n";
   var found = global_scalar_variables.indexOf('usb_attached');
   if (found >= 0) { // it better be!
-    var code = 'Push R' + found + '\nPop R1\nset R2 '+ mask + '\nband3 R1 R2 R1\n'; // only look at the lower bits
+    code += 'Push R' + found + '\nPop R1\nset R2 '+ mask + '\nband3 R1 R2 R1\n'; // only look at the lower bits
     // the value in R1, if 0 then no usb attached, else 2 4 8 tells you where
     } else {
-      var code = 'Set R1 0\n'; // if you can't find usb_attached in GSV, treat as no usb attached
+      code += 'Set R1 0\n'; // if you can't find usb_attached in GSV, treat as no usb attached
     }
+  code += "; ending usb_attached\n";
   return [code, Blockly.Assembly.ORDER_ATOMIC];
 };
 
@@ -125,8 +131,10 @@ Blockly.Assembly['usb_attached'] = function(block) {
 
 
 Blockly.Assembly['on_motion_trigger'] = function(block) {
+  var code = "; starting on_motion_trigger\n";
   var dothis = Blockly.Assembly.statementToCode(block, 'NAME');
-  var code = 'On_motion_trigger:\n' + dothis + 'syscall exit R0\n';
+  code += 'On_motion_trigger:\n' + dothis + 'syscall exit R0\n';
+  code += "; ending on_motion_trigger\n";
   return code;
 };
 
@@ -136,20 +144,22 @@ Blockly.Assembly['on_motion_trigger'] = function(block) {
 // If more then one motion sensor is present, value is not defined
 // future work: if assigning to a scalar, return M
 
-Blockly.Assembly['getmotiondata'] = function(block) {
-  var code = 'Syscall GETMOTIONDATA\n';// this puts motion data on the stack in order top{3,L,N,K,...} 3 is length of data
+Blockly.Assembly['get_motion_data'] = function(block) {
+  var code = 'Syscall get_motion_data\n';// this puts motion data on the stack in order top{3,L,N,K,...} 3 is length of data
   return [code, Blockly.Assembly.ORDER_ATOMIC];
 };
 
 
 Blockly.Assembly['motion_attached'] = function(block) {
+  var code = "; starting motion_attached\n";
   var found = global_scalar_variables.indexOf('motion_attached');
   if (found >= 0) { // it better be!
-    var code = 'Push R' + found + '\nPop R1\nset R2 '+ mask + '\nband3 R1 R2 R1\n'; // only look at the lower bits
+    code += 'Push R' + found + '\nPop R1\nset R2 '+ mask + '\nband3 R1 R2 R1\n'; // only look at the lower bits
     // the value in R1, if 0 then no motion attached, else 2 4 8 tells you where
     } else {
-      var code = 'Set R1 0\n'; // if you can't find motion_attached in GSV, treat as no motion attached
+      code += 'Set R1 0\n'; // if you can't find motion_attached in GSV, treat as no motion attached
     }
+  code += "; ending motion_attached\n";
   return [code, Blockly.Assembly.ORDER_ATOMIC];
 };
 
@@ -313,49 +323,59 @@ Blockly.Assembly['getidfromradioatport'] = function(block) {
 // **************************************************************************************************
 
 Blockly.Assembly['on_initialization'] = function(block) {
+  var code = '; starting on_initialization\n';
   var dothis = Blockly.Assembly.statementToCode(block, 'NAME');
   console.log("In on_initialization, code is " + dothis + "Syscall exit R0");
-  var code = 'On_initialization:\n' + dothis + Blockly.Assembly.INDENT + 'syscall exit R0\n';;
+  code += 'On_initialization:\n' + dothis + Blockly.Assembly.INDENT + 'syscall exit R0\n';
+  code += '; ending on_initialization\n';
   return code;
 };
 
 Blockly.Assembly['on_regular_event'] = function(block) {
+  var code = "; starting on_regular_event\n";
   var dothis = Blockly.Assembly.statementToCode(block, 'NAME');
-  var code = 'on_regular_event:\n' + dothis + Blockly.Assembly.INDENT + 'syscall exit R0\n';
+  code += 'on_regular_event:\n' + dothis + Blockly.Assembly.INDENT + 'syscall exit R0\n';
+  code += "; ending on_regular_event\n";
   return code;
 };
 
 // Advanced: return the battery "life" or "health" -- however that is defined -- as an integer from 1= very bad to 10 = very good
 // return 0 is an error
 
-Blockly.Assembly['getbatterylevel'] = function(block) {
+Blockly.Assembly['get_battery_level'] = function(block) {
+  var code = "; starting get_battery_level\n";
   var found = global_scalar_variables.indexOf('batterylevel');
   if (found >= 0) { // it better be!
-    var code = 'Push R' + found + '\nPop R1\n'; // put current battery reading into R1
+    code += 'Push R' + found + '\nPop R1\n'; // put current battery reading into R1
     } else {
-      var code = 'Set R1 0\n'; // put 0 into R1
+      code += 'Set R1 0\n'; // put 0 into R1
     }
+  code += "; ending get_battery_level\n";
   return [code, Blockly.Assembly.ORDER_ATOMIC];
 };
 
 // Advanced: returns a reading from the ambient light sensor in the hub
 
-Blockly.Assembly['getambientlight'] = function(block) {
+Blockly.Assembly['get_ambient_light'] = function(block) {
+  var code = "; starting get_ambient_light\n";
   var found = global_scalar_variables.indexOf('ambientlight');
   if (found >= 0) { // it better be!
-    var code = 'Push R' + found + '\nPop R1\n'; // put current ambient light reading into R1
+    code += 'Push R' + found + '\nPop R1\n'; // put current ambient light reading into R1
     } else { 
-      var code = 'Set R1 0\n'; // put 0 into R1 
+      code += 'Set R1 0\n'; // put 0 into R1 
     }
+  code += "; ending get_ambient_light\n";
   return [code, Blockly.Assembly.ORDER_ATOMIC];
 };
 
 
-Blockly.Assembly['RegularEventSpeed'] = function(block) {
+Blockly.Assembly['set_regular_event_speed'] = function(block) {
+  var code = "; starting get_ambient_light\n";
   var argument0 = block.getInputTargetBlock('PERIOD');
   if (!argument0) {
     console.log("here RES1");
-    var code = 'Syscall SET_REG_EVENT_SPEED R0\n';
+    code += 'Syscall SET_REG_EVENT_SPEED R0\n';
+    code += "; ending set_regular_event_speed\n";
     return code;
     }
     else {
@@ -376,7 +396,8 @@ Blockly.Assembly['RegularEventSpeed'] = function(block) {
         console.log("here RES3");
         throw 'inputs to SET_REG_EVENT_SPEED block can\'t be lists';
       }
-      var code = argument0 + 'Syscall SET_REG_EVENT_SPEED R1\n'; //finds it's argument in R1
+      code += argument0 + 'Syscall SET_REG_EVENT_SPEED R1\n'; //finds it's argument in R1
+      code += "; ending set_regular_event_speed\n";
       return code;
     }
 };
@@ -463,15 +484,18 @@ Blockly.Assembly['check_type'] = function(block) {
 
 Blockly.Assembly['controls_while'] = function(block) {
   // Do while loop.
+  var code = "; starting controls_while\n";
   var this_count = ifCount++;
   var argument0 = Blockly.Assembly.valueToCode(block, 'TEST', Blockly.Assembly.ORDER_NONE) || 'False';
-  var code = 'WHILE_label_' + this_count + ': ' + argument0;
-  code += 'BTR1SNZ \n GOTO endWHILE_label_' + this_count + '\n';
+  code += 'WHILE_label_' + this_count + ': ' + argument0;
+  code += 'BTR1SNZ \n; skip next instruction if R1 is non-zero\n'; 
+  code += 'GOTO endWHILE_label_' + this_count + '\n';
   var branch = Blockly.Assembly.statementToCode(block, 'DO');
   console.log("DO statement is *" + branch + "*\n");
   if (branch) {
   branch = Blockly.Assembly.addLoopTrap(branch, block.id) || Blockly.Assembly.PASS;
   }
   code += branch + '\nGOTO ' + 'WHILE_label_' + this_count + '\n endWHILE_label_' + this_count + ':\n';
+  code += "; ending controls_while\n";
   return code;
 };

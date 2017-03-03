@@ -195,7 +195,7 @@ Blockly.Blocks['motion_attached'] = {
 // If no motion link is present, returns (0,0,0,0)
 // If more then one motion sensor is present, behavior is undefined
 
-Blockly.Blocks['getmotiondata'] = {
+Blockly.Blocks['get_motion_data'] = {
   init: function() {
     this.appendDummyInput()
 		.appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_15.1_DataMove.png", 40, 40, "Get Motion Data"));
@@ -216,7 +216,7 @@ Blockly.Blocks['getmotiondata'] = {
 Blockly.Blocks['setmotiontrigger'] = {
   init: function() {
     this.appendDummyInput()
-		.appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_1_Motion.png", 50, 50, "GetMotionData"));
+		.appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_1_Motion.png", 50, 50, "Get_motion_data"));
     this.appendDummyInput()
         .appendField("Set Motion Trigger");
     this.appendValueInput("NAME")
@@ -542,7 +542,7 @@ Blockly.Blocks['radiogetrange'] = {
 
 // https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#v4hgbw
 
-Blockly.Blocks['RegularEventSpeed'] = {
+Blockly.Blocks['set_regular_event_speed'] = {
   init: function() {
     this.appendDummyInput()
 	.appendField(new Blockly.FieldImage("../../images/timer_icon.png", 50, 50, "*"));
@@ -602,7 +602,7 @@ Blockly.Blocks['on_initialization'] = {
 };
 
 // This block returns a reading from the ambient light sensor in the hub
-Blockly.Blocks['getambientlight'] = {
+Blockly.Blocks['get_ambient_light'] = {
   init: function() {
     this.appendDummyInput()
         .appendField(new Blockly.FieldImage("../../images/ambient.png", 50, 50, "*"));
@@ -615,7 +615,7 @@ Blockly.Blocks['getambientlight'] = {
 };
 // return the battery "life" or "health" -- however that is defined -- as an integer from 1= very bad to 10 = very good
 
-Blockly.Blocks['getbatterylevel'] = {
+Blockly.Blocks['get_battery_level'] = {
   init: function() {
     this.appendDummyInput()
         .appendField(new Blockly.FieldImage("../../images/battery.png", 50, 50, "*"));

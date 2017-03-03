@@ -32,11 +32,13 @@ goog.require('Blockly.Assembly');
  
  Blockly.Assembly['variables_get'] = function(block) {
   // Variable getter.
+  var code = '; starting variables_get\n';
   var varName = Blockly.Assembly.variableDB_.getName(block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
   console.log("in variables_get: name is " + varName);
   var in_GSV = global_scalar_variables.indexOf(varName); // if in global_scalar_variables, put in R1
   if (in_GSV >= 0) {
-    var code = 'LOADR1FROM R' + in_GSV + '\n';
+    code += 'LOADR1FROM R' + in_GSV + '\n';
+    code += '; ending variables_get\n';
     return [code, Blockly.Assembly.ORDER_ATOMIC];
   } else if (varName in global_list_variables) { // if in global_list_variables [head,Rused,desc], put on stack
       var headaddr = global_list_variables[varName][0];
@@ -46,7 +48,8 @@ goog.require('Blockly.Assembly');
       //  for (var i = 0; i < llen; i++) { //push values on stack
       //    code += ' push R' +  (topOfList - i) + '\n';
       //  }
-      var code = "pushL R" + headaddr + "\n";
+      code += "pushL R" + headaddr + "\n";
+      code += '; ending variables_get\n';
       return [code, Blockly.Assembly.ORDER_ATOMIC];
     }
     else {
@@ -56,30 +59,33 @@ goog.require('Blockly.Assembly');
 
 Blockly.Assembly['variables_set'] = function(block) {
   // Variable setter
-  
   // *** need to add code to ensure we are not trying to set a scalar to a list and V.V.
-
-  var argument0 = Blockly.Assembly.valueToCode(block, 'VALUE', Blockly.Assembly.ORDER_NONE); // used to be ORDER_ASSIGNMENT
-  if (!argument0) {
+var targetBlock = block.getInputTargetBlock('VALUE');
+if (!targetBlock) {
     // *****  input is null
     console.log('input is empty, skipping');
     var code = '';
     return code;
   }
   else {
-    var targetBlock = block.getInputTargetBlock('VALUE');
-    if (targetBlock) {
+    var varName = Blockly.Assembly.variableDB_.getName(block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+    console.log("in variables_set: varName is " + varName);
+    var found = global_scalar_variables.indexOf(varName); // assigning to a scalar
+    if (found >= 0) {
       var inputType = targetBlock.type;
-      var varName = Blockly.Assembly.variableDB_.getName(block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
-      console.log("in variables_set: input is of type " + inputType + ", varName is " + varName + ", value is " + argument0);
-      // console.log("in variables_set: GLV is " + JSON.stringify(global_list_variables));
-      var found = global_scalar_variables.indexOf(varName);
-      if (found >= 0) { // setting a scalar, value is in R1
+      if (inputType == 'math_number') { // it is a scalar being set to a simple number - do a direct set of the register and return
+        var number_arg = parseInt(targetBlock.getFieldValue('NUM'));
+        var code =  'set R' + found + ' ' + number_arg + '\n';
+        return code;
+      }
+        var argument0 = Blockly.Assembly.valueToCode(block, 'VALUE', Blockly.Assembly.ORDER_NONE); // used to be ORDER_ASSIGNMENT
+        // setting a scalar, value is in R1
         console.log("in variables_set, scalar variable " + varName + " defined at R" + found);
         var code =  argument0 +'LOADR1TO R' + found + '\n';
         return code;
       }
-      else if (varName in global_list_variables) { // setting a list, values and length are on the stack
+      else
+      if (varName in global_list_variables) { // setting a list, values and length are on the stack
         console.log("in variables_set (2): global_list_variables[varName] is " + global_list_variables[varName] + " global_list_variables[varName][0] is " + global_list_variables[varName][0]);
         found = global_list_variables[varName][0]; //headaddr
         //var list_len = global_list_variables[varName][1];
@@ -93,12 +99,10 @@ Blockly.Assembly['variables_set'] = function(block) {
         return code;
         }
         else {
-        // ************* else if its a  non-color-picker list, where is input ??? *************
-         console.log("in variables_set, " + varName + " not found"); 
+          console.log("in variables_set, " + varName + " not found");
           var code = varName  + ' UNDEFINED\n';
           return code;
         }
-    }
   }
 }
  
@@ -239,8 +243,8 @@ Blockly.Assembly['variables_set'] = function(block) {
                   //case "logic_operation":
                   //case "lists_length":
                   //case "math_on_list":
-                  //case "getbatterylevel":
-                  //case "getambientlight":
+                  //case "get_battery_level":
+                  //case "get_ambient_light":
                     console.log("in loop2 found scalar by case");
                     addNewScalarVar(varName);
                 }
@@ -250,9 +254,9 @@ Blockly.Assembly['variables_set'] = function(block) {
                   // ********* "EASY" LISTS where LIST LENGTH is known and list can be added immediately *********
 
                     case 'colour_picker':
-                    case 'getmotiondata':
+                    case 'get_motion_data':
                       console.log("in loop2 found list by case colour_picker");
-                      addNewListVar(varName,3,[3]); // color always a list of length 3 of scalars, getmotiondata returns LNK, a list of 3 scalars
+                      addNewListVar(varName,3,[3]); // color always a list of length 3 of scalars, get_motion_data returns LNK, a list of 3 scalars
                       blockid_return_value_desc[targetBlock.id] = [3];
                       break;
                     
@@ -404,7 +408,7 @@ Blockly.Assembly['variables_set'] = function(block) {
               switch (set_to_value_type) {
               // ********* "EASY" value types where LIST is a known list of scalars, we're done *********
                 case 'colour_picker':
-                case 'getmotiondata':
+                case 'get_motion_data':
                   console.log("in loop4 lists_setIndex_nonMut - found list by case colour_picker or get motion");
                   list_desc.push(3); // color always a list of length 3 of scalars --> done!
                   var total_len = list_length_from_sublist_desc(list_desc);
@@ -618,8 +622,8 @@ function addNewScalarVar(varName) {
       case "logic_operation":
       case "lists_length":
       case "math_on_list":
-      case "getbatterylevel":
-      case "getambientlight":
+      case "get_battery_level":
+      case "get_ambient_light":
         res = 1;
         blockid_return_value_desc[block.id] = [];
         break;
@@ -669,7 +673,7 @@ function addNewScalarVar(varName) {
       console.log(">>>> in get_list_desc switch");
       switch (blocktype) {
        case "colour_picker":
-       case 'getmotiondata':
+       case 'get_motion_data':
          res.push(3); //[3]
          full_spec = 1;
          blockid_return_value_desc[block.id] = [3];

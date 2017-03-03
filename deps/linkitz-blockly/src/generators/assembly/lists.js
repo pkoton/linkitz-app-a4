@@ -35,6 +35,7 @@ Blockly.Assembly.addReservedWords('Math');
 
 Blockly.Assembly['lists_create_with'] = function(block) { 
   // Create a list with any number of elements of any type.
+  var code = '; starting lists_create_with\n';
   var itemNum1 = block.itemCount_;
   if (block.id in blockid_return_value_desc) { // we already have a full description of this block
     var list_info = blockid_return_value_desc[block.id];
@@ -50,7 +51,6 @@ Blockly.Assembly['lists_create_with'] = function(block) {
   console.log("temp = " + JSON.stringify(temp));
    var sublist_length = list_length_from_sublist_desc(temp);
   }
-  var code = '';
   var total_length = list_length_from_sublist_desc(list_info);
   console.log("in lists_create_with, must create structure of " + itemNum1 + " items each of which is  " + JSON.stringify(temp));
   if (temp.length == 0) { // [] where i is integer means we are creating with scalars
@@ -88,6 +88,7 @@ Blockly.Assembly['lists_create_with'] = function(block) {
       }
       code += "Set R1 " + (itemNum1 * sublist_length) + '\nPush R1\n';
   }
+  code += '; ending lists_create_with\n';
   return [code, Blockly.Assembly.ORDER_ATOMIC];
 };
 

@@ -117,8 +117,8 @@ Blockly.Python['onmotiontrigger'] = function(block) {
 // If no motion link is present, returns an empty list
 // If more then one motion sensor is present ...?
 
-Blockly.Python['getmotiondata'] = function(block) {
-  var code = '[' + getMotionData() + ']\n';
+Blockly.Python['get_motion_data'] = function(block) {
+  var code = '[' + get_motion_data() + ']\n';
   return code;
 };
 
@@ -296,7 +296,7 @@ Blockly.Python['on_regular_event'] = function(block) {
 
 // Advanced: return the battery "life" or "health" -- however that is defined -- as an integer from 1= very bad to 10 = very good
 
-Blockly.Python['getbatterylevel'] = function(block) {
+Blockly.Python['get_battery_level'] = function(block) {
   // TODO: Assemble JavaScript into code variable.
   var code = '...';
   // TODO: Change ORDER_NONE to the correct strength.
@@ -305,7 +305,7 @@ Blockly.Python['getbatterylevel'] = function(block) {
 
 // Advanced: returns a reading from the ambient light sensor in the hub
 
-Blockly.Python['getambientlight'] = function(block) {
+Blockly.Python['get_ambient_light'] = function(block) {
   // TODO: Assemble JavaScript into code variable.
   var code = '...';
   // TODO: Change ORDER_NONE to the correct strength.

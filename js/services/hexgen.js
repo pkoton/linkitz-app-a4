@@ -106,7 +106,7 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
         02: FlashHue
         03: Random
     06:ArglessSyscall (Syscall)
-        01: GetMotionData
+        01: Get_motion_data
         02: FlashRGB 
     08:Set
     09:Goto
@@ -283,7 +283,7 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
                 address+=6;
 
             } else if(token_list[1].match(/flashRGB/i)||
-                token_list[1].match(/getmotiondata/i)){
+                token_list[1].match(/get_motion_data/i)){
             //flashRGB takes it's arguments from the top of the stack.
             //get_motion_data places arguments onto the stack 
             //it implicitly pops a list off of the stack.
@@ -291,7 +291,7 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
                 hex_line+=linkitzApp_hexgen_pad_words("06");
                 if(token_list[1].match(/flashRGB/i)){
                     hex_line+=linkitzApp_hexgen_pad_words("01");
-                } else if(token_list[1].match(/getmotiondata/i)){
+                } else if(token_list[1].match(/get_motion_data/i)){
                     hex_line+=linkitzApp_hexgen_pad_words("02");
                 } else {
             		throw("Could not match token:"+token_list[1]+" in:"+line);

@@ -28,7 +28,7 @@ goog.provide('Blockly.Assembly.procedures');
 
 goog.require('Blockly.Assembly');
 
-Blockly.Assembly['procedures_defreturn'] = function(block) { 
+Blockly.Assembly['procedures_defreturn'] = function(block) {
   console.log('in procedures def [no] return');
   // Define a procedure with a return value.
   var funcName = Blockly.Assembly.variableDB_.getName(block.getFieldValue('NAME'),

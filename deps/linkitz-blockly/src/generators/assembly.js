@@ -43,7 +43,7 @@ Blockly.Assembly = new Blockly.Generator('Assembly');
  * @private
  */
 Blockly.Assembly.addReservedWords(
-    'syscall,exit,set_reg_event_speed,flashhue,getmotiondata,flashrgb,set,goto,push,pop,band3,bor3,add,sub,mul,div,pow,'+
+    'syscall,exit,set_reg_event_speed,flashhue,get_motion_data,flashrgb,set,goto,push,pop,band3,bor3,add,sub,mul,div,pow,'+
     //FIXME When we;re done we can remove the following which applies to dart and not to Linkitz assembly
 
     // import keyword

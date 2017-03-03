@@ -197,7 +197,7 @@ Blockly.Assembly['lists_getIndex_nonMut'] = function(block) {
 
 Blockly.Assembly['lists_setIndex_nonMut'] = function(block) {
   // Set element at index.
-  var code = '';
+  var code = '; starting lists_setIndex_nonMut\n';
   var mode = 'SET';
   console.log("in lists_setIndex_nonMut");
   var where = block.getFieldValue('WHERE') || 'FROM_START';
@@ -206,6 +206,7 @@ Blockly.Assembly['lists_setIndex_nonMut'] = function(block) {
   console.log("list name is " + list_name);
   if (global_scalar_variables.indexOf(list_name) >=0) {
       console.log("selected variable is a scalar!");
+      code += "; ending lists_setIndex_nonMut\n";
       return [code, Blockly.Assembly.ORDER_NONE];
       }
   var list_head_addr = global_list_variables[list_name][0];
@@ -237,6 +238,7 @@ Blockly.Assembly['lists_setIndex_nonMut'] = function(block) {
         code += 'pop R' + list_elt_addr + '\n';
       }
     }
+    code += "; ending lists_setIndex_nonMut\n";
     return code;  
   } //end FIRST
   else if (where == 'LAST') {
@@ -253,6 +255,7 @@ Blockly.Assembly['lists_setIndex_nonMut'] = function(block) {
         code += "pop R" + list_elt_addr + "\n";
       }
     }
+    code += "; ending lists_setIndex_nonMut\n";
     return code;  
   } // end LAST
   else if (where == 'FROM_START') {
@@ -282,6 +285,7 @@ Blockly.Assembly['lists_setIndex_nonMut'] = function(block) {
       }
     }
   gsv_next -= 1;
+  code += "; ending lists_setIndex_nonMut\n";
   return code;   
   } // end FROM_START
   else if (where == 'FROM_END') {
@@ -314,6 +318,7 @@ Blockly.Assembly['lists_setIndex_nonMut'] = function(block) {
       }
     }
     gsv_next -= 1;
+    code += "; ending lists_setIndex_nonMut\n";
     return code;  
   } //end FROM_END
   throw 'Unhandled combination (lists_setIndex)';
@@ -326,7 +331,7 @@ Blockly.Assembly['lists_setIndex_nonMut'] = function(block) {
 
 Blockly.Assembly['lists_create_n'] = function(block) { 
   console.log("in lists_create_n");
-  var code = '';
+  var code = '; starting lists_create_n\n';
   if (block.id in blockid_return_value_desc) {
     console.log("have block.id");
     var list_desc = blockid_return_value_desc[block.id];
@@ -355,6 +360,7 @@ Blockly.Assembly['lists_create_n'] = function(block) {
     }
     code += 'Set R1 ' + numItems + '\nPush R1\n';
   }
+  code += "; ending lists_create_n\n";
   return [code, Blockly.Assembly.ORDER_ATOMIC];
 };
 
