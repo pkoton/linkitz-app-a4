@@ -266,7 +266,7 @@ Blockly.Assembly['math_binary'] = function(block) {
       throw 'input2 to math_binary block can\'t be list';
       }
   }
-    code += argument0 + 'push R1 \n' + argument1 + 'pop R2 \n' + operator + ' R2 R1 R1\n';
+    code += argument0 + 'loadR1to R2\n' + argument1 + '\n' + operator + ' R2 R1 R1\n';
     code += '; ending math_binary\n';
     return [code,Blockly.Assembly.ORDER_ATOMIC];
 };
@@ -298,12 +298,14 @@ Blockly.Assembly['math_on_list'] = function(block) {
   // Math functions for lists.
   var code = '; starting math_on_list\n';
   var targetBlock = block.getInputTargetBlock('LIST');
-  // first make sure input is a list. if it's a variable, it could be a scalar
-  // in which case, just return the scalar (makes sense for all our math list operations)
+  // handle null input - return 0
   if (!targetBlock) {
+    console.log("here: math_on_list 1");
     code += 'set R1 R0\n';
   }
-  else if (is_scalar(targetBlock)){
+  else
+  // handle scalar input. Just return the scalar (makes sense for all our math list operations)
+  if (is_scalar(targetBlock)){
     var val = Blockly.Assembly.valueToCode(block, 'LIST', Blockly.Assembly.ORDER_ATOMIC);
     console.log("in math_on_list: input is a scalar, value is " + val);
     code += val + "\n"; 
@@ -334,11 +336,11 @@ Blockly.Assembly['math_on_list'] = function(block) {
         code += "set R" + minus1 + " -1\n";
         code += "SUM_label_" + ifCount + ": ADD R1 R" + minus1 + " R1\n"; //decrement R1
         code += 'BTR1SNZ \n; skip next instruction if R1 is non-zero\n'; 
-        code += ' GOTO endSUM_label_" + ifCount + "\n';
+        code += " GOTO endSUM_label_" + ifCount + "\n";
         code += "pop R" + next_stack_item + "\n";
         code += "ADD R2 R" + next_stack_item + " R2\n";
         code += "GOTO SUM_label_" + ifCount + "\n";
-        code += "endSUM_label_: push R2 \npop R1\n"; //result of sum is now in R1
+        code += "endSUM_label_: LOADR1FROM R2\n"; //result of sum is now in R1
         gsv_next--; // release next_stack_item regsiter
       break;
     case 'MIN': // get min element, leave in R1
@@ -361,15 +363,15 @@ Blockly.Assembly['math_on_list'] = function(block) {
       code += "min_label_" + ifCount + ": ADD R1 R" + minus1 + " R1\n"; //decrement R1 
       code += 'BTR1SNZ \n; skip next instruction if R1 is non-zero\n'; 
       code += ' GOTO endMin_label_" + ifCount + "\n'; // if no more elements, go to end
-      code += "push R1\npop R" + save + "\n"; // save counter
+      code += 'LOADR1TO R' + save + "\n"; // save counter
       code += "pop R2\n"; //get next item from stack
       code += "cmplt R2 R" + min + " R1 \n"; // R1 = 1 if Rmin must be replaced by value in R2
       code += 'BTR1SNZ\n; skip next instruction if R1 is non-zero\n'; 
       code += ' GOTO skip_label_" + ifCount + "\n'; // if Rmin must be replaced skip goto
       code += "push R2\npop R" + min + "\n"; // R2 is new Rmin
-      code += "skip_label_"  + ifCount + ": push R" + save + "\npop R1\n"; // restore counter
+      code += "skip_label_"  + ifCount + ": loadR1from R" + save + "\n"; // restore counter
       code += "GOTO min_label_" + ifCount + "\n";
-      code += "endMin_label_: push R"+ min + "\npop R1\n"; // result of MIN is now in R1
+      code += "endMin_label_: loadR1from R"+ min + "\n"; // result of MIN is now in R1
       gsv_next -= 2; // release min and save registers
       break;
     case 'MAX': // get max element, leave in R1
@@ -392,7 +394,7 @@ Blockly.Assembly['math_on_list'] = function(block) {
       code += "max_label_" + ifCount + ": ADD R1 R" + minus1 + " R1\n"; //decrement R1 
       code += 'BTR1SNZ \n; skip next instruction if R1 is non-zero\n'; 
       code += ' GOTO endmax_label_" + ifCount + "\n'; // if no more elements, go to end
-      code += "push R1\npop R" + save + "\n"; // save counter
+      code += "LoadR1to R" + save + "\n"; // save counter
       code += "pop R2\n"; //get next item from stack
       code += "cmpgt R2 R" + max + " R1 \n"; // R1 = 1 if Rmax must be replaced by value in R2
       code += 'BTR1SNZ\n; skip next instruction if R1 is non-zero\n'; 
@@ -400,7 +402,7 @@ Blockly.Assembly['math_on_list'] = function(block) {
       code += "push R2\npop R" + max + "\n"; // R2 is new Rmax
       code += "skip_label_"  + ifCount + ": push R" + save + "\npop R1\n"; // restore counter
       code += "GOTO max_label_" + ifCount + "\n";
-      code += "endmax_label_: push R"+ max + "\npop R1\n"; // result of max is now in R1
+      code += "endmax_label_: LoadR1from R"+ max + "\npop R1\n"; // result of max is now in R1
       gsv_next -= 2; // release max and save registers
     break;
       case 'AVERAGE': // calculate AVERAGE, leave in R1
@@ -416,7 +418,7 @@ Blockly.Assembly['math_on_list'] = function(block) {
         gsv_next++;
         console.log("in math_on_list: AVERAGE");
         code += list + "pop R1\n"; // length is in R1
-        code += "push R1\npop R"+ sav +"\n"; //list length is used twice, sav saves it for denominator
+        code += "loadR1to R"+ sav +"\n"; //list length is used twice, sav saves it for denominator
         code += "pop R2\n"; // R2 will accumulate sum
         code += "set R" + minus1 + " -1\n";
         code += "AVG_label_" + ifCount + ": ADD R1 R" + minus1 + " R1\n"; //decrement R1
