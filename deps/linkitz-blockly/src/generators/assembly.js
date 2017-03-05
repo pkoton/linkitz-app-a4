@@ -87,6 +87,9 @@ Blockly.Assembly.ORDER_NONE = 99;          // (...)
 Blockly.Assembly.INDENT = '   ';
 Blockly.Assembly.STATEMENT_PREFIX = null;
 
+var ISA = new  Object();
+ISA['PUSHL'] = 1;
+ISA['POPL'] = 1;
 //******************* LINKITZ STUFF *******************
 
 // Linkitz SPECIAL REGISTERS R0 - R127 ARE SET HERE
