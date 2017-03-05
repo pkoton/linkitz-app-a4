@@ -33,8 +33,9 @@ goog.require('Blockly.Assembly');
 
 Blockly.Assembly.addReservedWords('Math');
 
-Blockly.Assembly['lists_create_with'] = function(block) { 
+Blockly.Assembly['lists_create_with'] = function(block) {
   // Create a list with any number of elements of any type.
+  // List values are created, and left, on stack
   var code = '; starting lists_create_with\n';
   var itemNum1 = block.itemCount_;
   if (block.id in blockid_return_value_desc) { // we already have a full description of this block
