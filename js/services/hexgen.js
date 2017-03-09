@@ -87,8 +87,12 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
         //throw(tokens);
 
 
+        hex_output+=(";"+line+"\n");
+        if(line.match(/^\s*;/)){
+        	//line is a comment
+        	token_list = [];
+        } else if(line.match(/.+:.*/)){
         //line is of the form "label:data"
-        if(line.match(/.+:.*/)){
             var label_and_data=line.split(":");
             labels[label_and_data[0]] = address;
             //console.log("setting labels["+label_and_data[0]+"]to:"+address);
