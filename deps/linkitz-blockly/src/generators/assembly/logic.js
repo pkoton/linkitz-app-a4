@@ -101,7 +101,7 @@ Blockly.Assembly['logic_compare'] = function(block) {
     'GTE': 'cmpge'
   };
   var operator = OPERATORS[block.getFieldValue('OP')];
-  var order = Blockly.Assembly.ORDER_ATOMIC;
+  var order = Blockly.Assembly.ORDER_NONE;
   var arg0 = block.getInputTargetBlock('A');
   var arg1 = block.getInputTargetBlock('B');
   if (!arg0 || !arg1) { // return false if missing either or both arguments - args are NOT ON STACK OR IN R1 YET
@@ -164,7 +164,7 @@ Blockly.Assembly['logic_operation'] = function(block) {
   
 Blockly.Assembly['logic_negate'] = function(block) {
   // Negation.
-  var order = Blockly.Assembly.ORDER_UNARY_PREFIX;
+  var order = Blockly.Assembly.ORDER_NONE;
   var argument0 = Blockly.Assembly.valueToCode(block, 'BOOL', order) || 'true';
   var code = '!' + argument0;
   return [code, order];
@@ -173,11 +173,11 @@ Blockly.Assembly['logic_negate'] = function(block) {
 Blockly.Assembly['logic_boolean'] = function(block) {
   // Boolean values true and false.
   var code = (block.getFieldValue('BOOL') == 'TRUE') ? 'true' : 'false';
-  return [code, Blockly.Assembly.ORDER_ATOMIC];
+  return [code, Blockly.Assembly.ORDER_NONE];
 };
 
 Blockly.Assembly['logic_null'] = function(block) {
   // Null data type.
-  return ['null', Blockly.Assembly.ORDER_ATOMIC];
+  return ['null', Blockly.Assembly.ORDER_NONE];
 };
 

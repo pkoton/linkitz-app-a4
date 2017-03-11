@@ -90,7 +90,7 @@ Blockly.Assembly['colour_picker'] = function(block) {
       'Set R1 ' + lkzify(colorRGB[0]) + '\nPush R1\n' + // R
       'Set R1 3' + '\nPush R1\n'; // add length of color list =3
   code += "; ending colour_picker\n";
-  return [code, Blockly.Assembly.ORDER_ATOMIC];
+  return [code, Blockly.Assembly.ORDER_NONE];
 };
 
 // all the following need to have the numbers lkzify'd before using
@@ -108,7 +108,7 @@ Blockly.Assembly['colour_random'] = function(block) {
         '      \'${hex[rnd.nextInt(16)]}${hex[rnd.nextInt(16)]}\';',
         '}']);
   var code = functionName + '()';
-  return [code, Blockly.Assembly.ORDER_UNARY_POSTFIX];
+  return [code, Blockly.Assembly.ORDER_NONE];
 };
 
 Blockly.Assembly['colour_rgb'] = function(block) {
@@ -141,7 +141,7 @@ Blockly.Assembly['colour_rgb'] = function(block) {
         '  return \'#$rs$gs$bs\';',
         '}']);
   var code = functionName + '(' + red + ', ' + green + ', ' + blue + ')';
-  return [code, Blockly.Assembly.ORDER_UNARY_POSTFIX];
+  return [code, Blockly.Assembly.ORDER_NONE];
 };
 
 Blockly.Assembly['colour_blend'] = function(block) {
@@ -181,5 +181,5 @@ Blockly.Assembly['colour_blend'] = function(block) {
         '  return \'#$rs$gs$bs\';',
         '}']);
   var code = functionName + '(' + c1 + ', ' + c2 + ', ' + ratio + ')';
-  return [code, Blockly.Assembly.ORDER_UNARY_POSTFIX];
+  return [code, Blockly.Assembly.ORDER_NONE];
 };

@@ -90,7 +90,7 @@ Blockly.Assembly['lists_create_with'] = function(block) {
       code += "Set R1 " + (itemNum1 * sublist_length) + '\nPush R1\n';
   }
   code += '; ending lists_create_with\n';
-  return [code, Blockly.Assembly.ORDER_ATOMIC];
+  return [code, Blockly.Assembly.ORDER_NONE];
 };
 
 

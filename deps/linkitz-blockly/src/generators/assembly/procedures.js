@@ -101,7 +101,7 @@ Blockly.Assembly['procedures_callreturn'] = function(block) {
   //// if there are args they have to be pushed on the stack - to be written!
   //var code = funcName + '(' + args.join(', ') + ')';
   //}
-  return [code, Blockly.Assembly.ORDER_ATOMIC];
+  return [code, Blockly.Assembly.ORDER_NONE];
 };
 
 Blockly.Assembly['procedures_callnoreturn'] = function(block) {

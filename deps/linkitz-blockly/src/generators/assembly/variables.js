@@ -39,7 +39,7 @@ goog.require('Blockly.Assembly');
   if (in_GSV >= 0) {
     code += 'LOADR1FROM R' + in_GSV + '\n';
     code += '; ending variables_get\n';
-    return [code, Blockly.Assembly.ORDER_ATOMIC];
+    return [code, Blockly.Assembly.ORDER_NONE];
   } else if (varName in global_list_variables) { // if in global_list_variables [head,Rused,desc], put on stack
       var headaddr = global_list_variables[varName][0];
       if ('PUSHL' in ISA) {
@@ -55,7 +55,7 @@ goog.require('Blockly.Assembly');
         }
       }
       code += '; ending variables_get\n';
-      return [code, Blockly.Assembly.ORDER_ATOMIC];
+      return [code, Blockly.Assembly.ORDER_NONE];
     }
     else {
   add_varname_to_undef_vars_list(varName);
@@ -84,14 +84,14 @@ if (!targetBlock) {
         var code =  'set R' + found + ' ' + number_arg + '\n';
         return code;
       }
-        argument0 = Blockly.Assembly.valueToCode(block, 'VALUE', Blockly.Assembly.ORDER_NONE); // used to be ORDER_ASSIGNMENT
+        argument0 = Blockly.Assembly.valueToCode(block, 'VALUE', Blockly.Assembly.ORDER_NONE); // used to be ORDER_NONE
         // setting a scalar, value is in R1
         console.log("in variables_set, scalar variable " + varName + " defined at R" + found);
         var code =  argument0 +'LOADR1TO R' + found + '\n';
         return code;
       }
       else if (varName in global_list_variables) { // setting a list, values and length are on the stack
-        argument0 = Blockly.Assembly.valueToCode(block, 'VALUE', Blockly.Assembly.ORDER_NONE); // used to be ORDER_ASSIGNMENT
+        argument0 = Blockly.Assembly.valueToCode(block, 'VALUE', Blockly.Assembly.ORDER_NONE); // used to be ORDER_NONE
         console.log("in variables_set (2): global_list_variables[varName] is " + global_list_variables[varName] + " global_list_variables[varName][0] is " + global_list_variables[varName][0]);
         found = global_list_variables[varName][0]; //headaddr
         var list_len = global_list_variables[varName][1];

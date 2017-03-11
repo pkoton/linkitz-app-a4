@@ -37,7 +37,7 @@ Blockly.Assembly['controls_repeat_ext'] = function(block) {
   } else {
     // External number.
     var repeats = Blockly.Assembly.valueToCode(block, 'TIMES',
-        Blockly.Assembly.ORDER_ASSIGNMENT) || '0';
+        Blockly.Assembly.ORDER_NONE) || '0';
   }
   var branch = Blockly.Assembly.statementToCode(block, 'DO');
   branch = Blockly.Assembly.addLoopTrap(branch, block.id);
@@ -63,7 +63,7 @@ Blockly.Assembly['controls_whileUntil'] = function(block) {
   // Do while/until loop.
   var until = block.getFieldValue('MODE') == 'UNTIL';
   var argument0 = Blockly.Assembly.valueToCode(block, 'TEST',
-      until ? Blockly.Assembly.ORDER_UNARY_PREFIX :
+      until ? Blockly.Assembly.ORDER_NONE :
       Blockly.Assembly.ORDER_NONE) || 'false';
   var branch = Blockly.Assembly.statementToCode(block, 'DO');
   branch = Blockly.Assembly.addLoopTrap(branch, block.id);
@@ -78,11 +78,11 @@ Blockly.Assembly['controls_for'] = function(block) {
   var variable0 = Blockly.Assembly.variableDB_.getName(
       block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
   var argument0 = Blockly.Assembly.valueToCode(block, 'FROM',
-      Blockly.Assembly.ORDER_ASSIGNMENT) || '0';
+      Blockly.Assembly.ORDER_NONE) || '0';
   var argument1 = Blockly.Assembly.valueToCode(block, 'TO',
-      Blockly.Assembly.ORDER_ASSIGNMENT) || '0';
+      Blockly.Assembly.ORDER_NONE) || '0';
   var increment = Blockly.Assembly.valueToCode(block, 'BY',
-      Blockly.Assembly.ORDER_ASSIGNMENT) || '1';
+      Blockly.Assembly.ORDER_NONE) || '1';
   var branch = Blockly.Assembly.statementToCode(block, 'DO');
   branch = Blockly.Assembly.addLoopTrap(branch, block.id);
   var code;
@@ -143,7 +143,7 @@ Blockly.Assembly['controls_forEach'] = function(block) {
   var variable0 = Blockly.Assembly.variableDB_.getName(
       block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
   var argument0 = Blockly.Assembly.valueToCode(block, 'LIST',
-      Blockly.Assembly.ORDER_ASSIGNMENT) || '[]';
+      Blockly.Assembly.ORDER_NONE) || '[]';
   var branch = Blockly.Assembly.statementToCode(block, 'DO');
   branch = Blockly.Assembly.addLoopTrap(branch, block.id);
   var code = 'for (var ' + variable0 + ' in ' + argument0 + ') {\n' +

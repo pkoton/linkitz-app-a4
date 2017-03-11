@@ -34,19 +34,19 @@ Blockly.Assembly.addReservedWords('Html,Math');
 Blockly.Assembly['text'] = function(block) {
   // Text value.
   var code = Blockly.Assembly.quote_(block.getFieldValue('TEXT'));
-  return [code, Blockly.Assembly.ORDER_ATOMIC];
+  return [code, Blockly.Assembly.ORDER_NONE];
 };
 
 Blockly.Assembly['text_join'] = function(block) {
   // Create a string made up of any number of elements of any type.
   var code;
   if (block.itemCount_ == 0) {
-    return ['\'\'', Blockly.Assembly.ORDER_ATOMIC];
+    return ['\'\'', Blockly.Assembly.ORDER_NONE];
   } else if (block.itemCount_ == 1) {
     var argument0 = Blockly.Assembly.valueToCode(block, 'ADD0',
-        Blockly.Assembly.ORDER_UNARY_POSTFIX) || '\'\'';
+        Blockly.Assembly.ORDER_NONE) || '\'\'';
     code = argument0 + '.toString()';
-    return [code, Blockly.Assembly.ORDER_UNARY_POSTFIX];
+    return [code, Blockly.Assembly.ORDER_NONE];
   } else {
     code = new Array(block.itemCount_);
     for (var n = 0; n < block.itemCount_; n++) {
@@ -54,7 +54,7 @@ Blockly.Assembly['text_join'] = function(block) {
           Blockly.Assembly.ORDER_NONE) || '\'\'';
     }
     code = '[' + code.join(',') + '].join()';
-    return [code, Blockly.Assembly.ORDER_UNARY_POSTFIX];
+    return [code, Blockly.Assembly.ORDER_NONE];
   }
 };
 
@@ -63,22 +63,22 @@ Blockly.Assembly['text_append'] = function(block) {
   var varName = Blockly.Assembly.variableDB_.getName(block.getFieldValue('VAR'),
       Blockly.Variables.NAME_TYPE);
   var argument0 = Blockly.Assembly.valueToCode(block, 'TEXT',
-      Blockly.Assembly.ORDER_UNARY_POSTFIX) || '\'\'';
+      Blockly.Assembly.ORDER_NONE) || '\'\'';
   return varName + ' = [' + varName + ', ' + argument0 + '].join();\n';
 };
 
 Blockly.Assembly['text_length'] = function(block) {
   // String or array length.
   var argument0 = Blockly.Assembly.valueToCode(block, 'VALUE',
-      Blockly.Assembly.ORDER_UNARY_POSTFIX) || '\'\'';
-  return [argument0 + '.length', Blockly.Assembly.ORDER_UNARY_POSTFIX];
+      Blockly.Assembly.ORDER_NONE) || '\'\'';
+  return [argument0 + '.length', Blockly.Assembly.ORDER_NONE];
 };
 
 Blockly.Assembly['text_isEmpty'] = function(block) {
   // Is the string null or array empty?
   var argument0 = Blockly.Assembly.valueToCode(block, 'VALUE',
-      Blockly.Assembly.ORDER_UNARY_POSTFIX) || '\'\'';
-  return [argument0 + '.isEmpty', Blockly.Assembly.ORDER_UNARY_POSTFIX];
+      Blockly.Assembly.ORDER_NONE) || '\'\'';
+  return [argument0 + '.isEmpty', Blockly.Assembly.ORDER_NONE];
 };
 
 Blockly.Assembly['text_indexOf'] = function(block) {
@@ -88,9 +88,9 @@ Blockly.Assembly['text_indexOf'] = function(block) {
   var argument0 = Blockly.Assembly.valueToCode(block, 'FIND',
       Blockly.Assembly.ORDER_NONE) || '\'\'';
   var argument1 = Blockly.Assembly.valueToCode(block, 'VALUE',
-      Blockly.Assembly.ORDER_UNARY_POSTFIX) || '\'\'';
+      Blockly.Assembly.ORDER_NONE) || '\'\'';
   var code = argument1 + '.' + operator + '(' + argument0 + ') + 1';
-  return [code, Blockly.Assembly.ORDER_UNARY_POSTFIX];
+  return [code, Blockly.Assembly.ORDER_NONE];
 };
 
 Blockly.Assembly['text_charAt'] = function(block) {
@@ -100,11 +100,11 @@ Blockly.Assembly['text_charAt'] = function(block) {
   var at = Blockly.Assembly.valueToCode(block, 'AT',
       Blockly.Assembly.ORDER_NONE) || '1';
   var text = Blockly.Assembly.valueToCode(block, 'VALUE',
-      Blockly.Assembly.ORDER_UNARY_POSTFIX) || '\'\'';
+      Blockly.Assembly.ORDER_NONE) || '\'\'';
   switch (where) {
     case 'FIRST':
       var code = text + '[0]';
-      return [code, Blockly.Assembly.ORDER_UNARY_POSTFIX];
+      return [code, Blockly.Assembly.ORDER_NONE];
     case 'FROM_START':
       // Blockly uses one-based indicies.
       if (at.match(/^-?\d+$/)) {
@@ -115,7 +115,7 @@ Blockly.Assembly['text_charAt'] = function(block) {
         at += ' - 1';
       }
       var code = text + '[' + at + ']';
-      return [code, Blockly.Assembly.ORDER_UNARY_POSTFIX];
+      return [code, Blockly.Assembly.ORDER_NONE];
     case 'LAST':
       at = 1;
       // Fall through.
@@ -127,7 +127,7 @@ Blockly.Assembly['text_charAt'] = function(block) {
             '  return text[text.length - x];',
             '}']);
       code = functionName + '(' + text + ', ' + at + ')';
-      return [code, Blockly.Assembly.ORDER_UNARY_POSTFIX];
+      return [code, Blockly.Assembly.ORDER_NONE];
     case 'RANDOM':
       Blockly.Assembly.definitions_['import_dart_math'] =
           'import \'dart:math\' as Math;';
@@ -139,7 +139,7 @@ Blockly.Assembly['text_charAt'] = function(block) {
             '  return text[x];',
             '}']);
       code = functionName + '(' + text + ')';
-      return [code, Blockly.Assembly.ORDER_UNARY_POSTFIX];
+      return [code, Blockly.Assembly.ORDER_NONE];
   }
   throw 'Unhandled option (text_charAt).';
 };
@@ -147,7 +147,7 @@ Blockly.Assembly['text_charAt'] = function(block) {
 Blockly.Assembly['text_getSubstring'] = function(block) {
   // Get substring.
   var text = Blockly.Assembly.valueToCode(block, 'STRING',
-      Blockly.Assembly.ORDER_UNARY_POSTFIX) || '\'\'';
+      Blockly.Assembly.ORDER_NONE) || '\'\'';
   var where1 = block.getFieldValue('WHERE1');
   var where2 = block.getFieldValue('WHERE2');
   var at1 = Blockly.Assembly.valueToCode(block, 'AT1',
@@ -182,7 +182,7 @@ Blockly.Assembly['text_getSubstring'] = function(block) {
     var code = functionName + '(' + text + ', \'' +
         where1 + '\', ' + at1 + ', \'' + where2 + '\', ' + at2 + ')';
   }
-  return [code, Blockly.Assembly.ORDER_UNARY_POSTFIX];
+  return [code, Blockly.Assembly.ORDER_NONE];
 };
 
 Blockly.Assembly['text_changeCase'] = function(block) {
@@ -197,7 +197,7 @@ Blockly.Assembly['text_changeCase'] = function(block) {
   if (operator) {
     // Upper and lower case are functions built into Dart.
     var argument0 = Blockly.Assembly.valueToCode(block, 'TEXT',
-        Blockly.Assembly.ORDER_UNARY_POSTFIX) || '\'\'';
+        Blockly.Assembly.ORDER_NONE) || '\'\'';
     code = argument0 + operator;
   } else {
     // Title case is not a native Dart function.  Define one.
@@ -222,7 +222,7 @@ Blockly.Assembly['text_changeCase'] = function(block) {
         Blockly.Assembly.ORDER_NONE) || '\'\'';
     code = functionName + '(' + argument0 + ')';
   }
-  return [code, Blockly.Assembly.ORDER_UNARY_POSTFIX];
+  return [code, Blockly.Assembly.ORDER_NONE];
 };
 
 Blockly.Assembly['text_trim'] = function(block) {
@@ -234,8 +234,8 @@ Blockly.Assembly['text_trim'] = function(block) {
   };
   var operator = OPERATORS[block.getFieldValue('MODE')];
   var argument0 = Blockly.Assembly.valueToCode(block, 'TEXT',
-      Blockly.Assembly.ORDER_UNARY_POSTFIX) || '\'\'';
-  return [argument0 + operator, Blockly.Assembly.ORDER_UNARY_POSTFIX];
+      Blockly.Assembly.ORDER_NONE) || '\'\'';
+  return [argument0 + operator, Blockly.Assembly.ORDER_NONE];
 };
 
 Blockly.Assembly['text_print'] = function(block) {
@@ -264,7 +264,7 @@ Blockly.Assembly['text_prompt_ext'] = function(block) {
         'import \'dart:math\' as Math;';
     code = 'Math.parseDouble(' + code + ')';
   }
-  return [code, Blockly.Assembly.ORDER_UNARY_POSTFIX];
+  return [code, Blockly.Assembly.ORDER_NONE];
 };
 
 Blockly.Assembly['text_prompt'] = Blockly.Assembly['text_prompt_ext'];
