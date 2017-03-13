@@ -362,6 +362,7 @@ Blockly.Flyout.prototype.hide = function() {
  */
 Blockly.Flyout.prototype.show = function(xmlList) {
   this.hide();
+  // top level linkitz blocks can only be on workspace once, so if they are on workspace, hide in flyout
   var hide_onInit = false;
   var hide_onReg = false;
   var hide_onMotion = false;
