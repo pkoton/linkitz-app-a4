@@ -72,53 +72,61 @@ Blockly.Generator.prototype.STATEMENT_PREFIX = null;
  * Does not generate code for "uncontained" blocks - just skips them
  * because they will never be executed
  */
+/** only need to call resolve_variable_references (in generator.js) if we are generating assembly code,
+    * so set a global var as a flag. This flag is set to TRUE when assembly tab is clicked
+  */
+  var assembly_generator = false;
+    
 Blockly.Generator.prototype.workspaceToCode = function(workspace) {
   if (!workspace) {
     // Backwards compatability from before there could be multiple workspaces.
     console.warn('No workspace specified in workspaceToCode call.  Guessing.');
     workspace = Blockly.getMainWorkspace();
   }
-  console.log("starting");
+  // console.log("starting, assembly_generator = " + assembly_generator);
   var code = [];
 
   this.init(workspace);
   var blocks = workspace.getTopBlocks(true);
   
-    // added linkitz function to prepare memory allocation for all variables
-    // reset memory allocation from previous assembly generation
-  global_list_variables = new Object();
-  glv_next = 127;
-  unknown_lists = new Object();
-  blockid_return_value_desc =new Object();
-  global_scalar_variables.length = 8; // only keep the "pre-assigned" registers
-  gsv_next = 8;
-  proc_types = new Object();
-  pnext = 0;
-  undef_vars = [];
-  undef_vars_next = 0;
-  ifCount = 0;
-  
-  console.log("calling resolve var refs");
-  if (resolve_var_refs(workspace,[]) == 0) {
-      alert("unresolved variables issue");
-  }
-  else {
-    console.log("out of resolve var refs");
-    console.log("GSV = " + global_scalar_variables);
-    console.log("GLV = " + JSON.stringify(global_list_variables));
-    console.log("blockid_return_value_desc = " + JSON.stringify(blockid_return_value_desc));
-    
-  }
-    // put in entrypoints
-    for (var x = 0, block; block = blocks[x]; x++) {
-      var blocktype = block.type;
-      if (blocktype == 'on_motion_trigger') {var entrypoint1 = 1};
-      if (blocktype == 'on_regular_event') {var entrypoint2 = 1};
-      if (blocktype == 'on_initialization') {var entrypoint3 = 1};
+    if (assembly_generator) {
+      // console.log("assembly_generator = true" + assembly_generator);
+      // added linkitz function to prepare memory allocation for all variables
+      // reset memory allocation from previous assembly generation
+      global_list_variables = new Object();
+      glv_next = 127;
+      unknown_lists = new Object();
+      blockid_return_value_desc =new Object();
+      global_scalar_variables.length = 8; // only keep the "pre-assigned" registers
+      gsv_next = 8;
+      proc_types = new Object();
+      pnext = 0;
+      undef_vars = [];
+      undef_vars_next = 0;
+      ifCount = 0;
+      
+      // console.log("calling resolve var refs");
+      if (resolve_var_refs(workspace,[]) == 0) {
+          alert("unresolved variables issue");
+      }
+      else {
+        // console.log("out of resolve var refs");
+        console.log("GSV = " + global_scalar_variables);
+        console.log("GLV = " + JSON.stringify(global_list_variables));
+        // console.log("blockid_return_value_desc = " + JSON.stringify(blockid_return_value_desc)); 
+      }
+        // put in entrypoints
+        for (var x = 0, block; block = blocks[x]; x++) {
+          var blocktype = block.type;
+          if (blocktype == 'on_motion_trigger') {var entrypoint1 = 1};
+          if (blocktype == 'on_regular_event') {var entrypoint2 = 1};
+          if (blocktype == 'on_initialization') {var entrypoint3 = 1};
+        }
+        if (entrypoint1) {code.push('GOTO on_motion_trigger');} else {code.push('Syscall exit R0');}
+        if (entrypoint2) {code.push('GOTO on_regular_event');} else {code.push('Syscall exit R0');}
+        if (entrypoint3) {code.push('GOTO on_initialization');} else {code.push('Syscall exit R0');}
     }
-    if (entrypoint1) {code.push('GOTO on_motion_trigger');} else {code.push('Syscall exit R0');}
-    if (entrypoint2) {code.push('GOTO on_regular_event');} else {code.push('Syscall exit R0');}
-    if (entrypoint3) {code.push('GOTO on_initialization');} else {code.push('Syscall exit R0');}
+    // console.log("passed assembly check");
     
     for (var x = 0, block; block = blocks[x]; x++) {
       var blocktype = block.type;
@@ -201,10 +209,12 @@ Blockly.Generator.prototype.blockToCode = function(block) {
   }
 
   var func = this[block.type];
-  console.log("in Assembly.blockToCode, block type is " + block.type);
+  //console.log("in " + this.name_ + ".blockToCode, block is " + block + ", block.type is " + block.type);
+  //console.log("in " + this.name_ + ".blockToCode, this is " + this + ", func is " + func);
   goog.asserts.assertFunction(func,
       'Language "%s" does not know how to generate code for block type "%s".',
       this.name_, block.type);
+  //console.log("in " + this.name_ + ".blockToCode, about to execute func.call(block, block)");
   // First argument to func.call is the value of 'this' in the generator.
   // Prior to 24 September 2013 'this' was the only way to access the block.
   // The current prefered method of accessing the block is through the second
