@@ -333,7 +333,7 @@ Blockly.Assembly['on_initialization'] = function(block) {
 
 Blockly.Assembly['on_regular_event'] = function(block) {
   var code = "; starting on_regular_event\n";
-  var dothis = Blockly.Assembly.statementToCode(block, 'NAME');
+  var dothis = Blockly.Assembly.statementToCode(block, 'DO_THIS');
   code += 'on_regular_event:\n' + dothis + Blockly.Assembly.INDENT + 'syscall exit R0\n';
   code += "; ending on_regular_event\n";
   return code;
