@@ -47,7 +47,7 @@ Blockly.Blocks['usb_attached'] = {
 Blockly.Blocks['flash_leds'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_4.2_Sparkle.png", 50, 50, "Flash color"));
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_4.2_Sparkle.png", 50, 50, "Flash"));
   //  this.appendDummyInput()
   //      .appendField("Flash LEDs")
   //      .appendField("color");
@@ -165,7 +165,7 @@ Blockly.Blocks['on_motion_trigger'] = {
     this.appendDummyInput()
 		.appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_1_Motion.png", 50, 50, "On Motion Trigger"));
     
-    this.appendStatementInput("NAME")
+    this.appendStatementInput("DO_THIS")
         .setCheck(null);
     this.setInputsInline(true);
     this.setColour('#0083CC');
@@ -564,9 +564,9 @@ Blockly.Blocks['set_regular_event_speed'] = {
 Blockly.Blocks['on_regular_event'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("../../images/timer_icon.png", 50, 50, "*"));
+        .appendField(new Blockly.FieldImage("../../images/timer_icon.png", 50, 50, "on_regular_event"));
     this.setInputsInline(true);
-    this.appendStatementInput("NAME");
+    this.appendStatementInput("DO_THIS");
     this.setColour('#FFCE00');
     this.setTooltip('');
     this.setHelpUrl('http://www.example.com/');
