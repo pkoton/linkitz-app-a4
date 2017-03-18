@@ -326,6 +326,7 @@ Code.renderContent = function() {
       content.innerHTML = code;
     }
   } else if (content.id == 'content_assembly') {
+    assembly_generator = true;
     var code = Blockly.Assembly.workspaceToCode(Code.workspace);
     // code = generate_hex(code);
     content.textContent = code;
