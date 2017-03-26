@@ -87,7 +87,7 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
         //throw(tokens);
 
 
-        hex_output+=(";"+line+"\n");
+        //hex_output+=(";"+line+"\n");
         if(line.match(/^\s*;/)){
         	//line is a comment
         	token_list = [];
