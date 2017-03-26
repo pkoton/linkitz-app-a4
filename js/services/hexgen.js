@@ -94,8 +94,8 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
         } else if(line.match(/.+:.*/)){
         //line is of the form "label:data"
             var label_and_data=line.split(":");
-            labels[label_and_data[0]] = address;
-            //console.log("setting labels["+label_and_data[0]+"]to:"+address);
+            labels[label_and_data[0].trim()] = address;
+            console.log("setting labels["+label_and_data[0].trim()+"]to:"+address);
             token_list = label_and_data[1].trim().split(/\s+/);
         } else {//line is of the form data
             token_list=line.trim().split(/\s+/);
@@ -126,15 +126,16 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
     15:DIV
     16:POW
     17:LAND
-    18:LOR (this is redundant to a bitwise or)
+    18:XOR
+    19:XNOR
+    1A:CMPLT
+    1B:CMPLE
+    1C:CMPEQ
     
-    20:CMPEQ
-    21:CMPNEQ
-    22:CMPLT
-    23:CMPLE
-    24:CMPGT
-    25:CMPGE
+    30:LOADR1FROM
+    31:LOADR1To
     
+    40:BTR1SNZ
 
 
 
@@ -147,8 +148,19 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
     	//console.log("token_list is:"+token_list);
         if(token_list.length==0||token_list[0]==""){
             //console.log("skipping empty line")
-        } else if(token_list[0].match(/cmpeq/i)){
-            hex_line+=linkitzApp_hexgen_pad_words("20");
+        } else if(token_list[0].match(/btr1snz/i)){
+            hex_line+=linkitzApp_hexgen_pad_words("40");
+            unlinkedCodeLines.push([address,hex_line,token_list]);
+            address+=2;
+        }else if(token_list[0].match(/cmpeq/i)){
+            hex_line+=linkitzApp_hexgen_pad_words("1C");
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[3]);
+            unlinkedCodeLines.push([address,hex_line,token_list]);
+            address+=8;
+        }else if(token_list[0].match(/xnor/i)){
+            hex_line+=linkitzApp_hexgen_pad_words("19");
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[3]);
@@ -158,38 +170,38 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
             hex_line+=linkitzApp_hexgen_pad_words("00");
             unlinkedCodeLines.push([address,hex_line,token_list]);
             address+=2;
-        } else if(token_list[0].match(/cmpneq/i)){
-            hex_line+=linkitzApp_hexgen_pad_words("21");
+        } else if(token_list[0].match(/cmpneq/i)||token_list[0].match(/xor/i)){
+            hex_line+=linkitzApp_hexgen_pad_words("18");
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[3]);
             unlinkedCodeLines.push([address,hex_line,token_list]);
             address+=8;
         } else if(token_list[0].match(/cmplt/i)){
-            hex_line+=linkitzApp_hexgen_pad_words("22");
+            hex_line+=linkitzApp_hexgen_pad_words("1A");
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[3]);
             unlinkedCodeLines.push([address,hex_line,token_list]);
             address+=8;
         } else if(token_list[0].match(/cmple/i)){
-            hex_line+=linkitzApp_hexgen_pad_words("23");
+            hex_line+=linkitzApp_hexgen_pad_words("1B");
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[3]);
             unlinkedCodeLines.push([address,hex_line,token_list]);
             address+=8;
         } else if(token_list[0].match(/cmpgt/i)){
-            hex_line+=linkitzApp_hexgen_pad_words("24");
-            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
+            hex_line+=linkitzApp_hexgen_pad_words("1A");
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[3]);
             unlinkedCodeLines.push([address,hex_line,token_list]);
             address+=8;
         } else if(token_list[0].match(/cmpge/i)){
-            hex_line+=linkitzApp_hexgen_pad_words("25");
-            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
+            hex_line+=linkitzApp_hexgen_pad_words("1B");
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[3]);
             unlinkedCodeLines.push([address,hex_line,token_list]);
             address+=8;
@@ -250,7 +262,7 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
             unlinkedCodeLines.push([address,hex_line,token_list]);
             address+=8;
         } else if(token_list[0].match(/lor/i)){
-            hex_line+=linkitzApp_hexgen_pad_words("18");
+            hex_line+=linkitzApp_hexgen_pad_words("11");
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[3]);
@@ -343,6 +355,16 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
             unlinkedCodeLines.push([address,hex_line,token_list]);
             address+=6;
+        } else if(token_list[0].match(/loadr1to/i)){
+            hex_line+=linkitzApp_hexgen_pad_words("30");
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
+            unlinkedCodeLines.push([address,hex_line,token_list]);
+            address+=4;
+        } else if(token_list[0].match(/loadr1from/i)){
+            hex_line+=linkitzApp_hexgen_pad_words("31");
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
+            unlinkedCodeLines.push([address,hex_line,token_list]);
+            address+=4;
         } else {
             throw("Could not match token: \""+token_list[0]+"\" in: "+line);
         }
@@ -354,16 +376,16 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
         var tokens = unlinkedCodeLines[line_ptr][2]
         if(tokens[0].match(/goto/i)){
             linkhex_line = linkitzApp_hexgen_pad_words("09");
-            //console.log("matching label:"+tokens[1]);
+            console.log("matching label:"+tokens[1]);
             var targetAddr = labels[tokens[1]];
-            //console.log("targetAddr:"+targetAddr);
+            console.log("targetAddr:"+targetAddr);
             linkhex_line+=linkitzApp_hexgen_pad_words(linkitzApp_hexgen_byte_2_hex(0x80+Math.floor((targetAddr/2)/256)));
             linkhex_line+=linkitzApp_hexgen_pad_words(linkitzApp_hexgen_byte_2_hex(((targetAddr/2)%256)));
             hex_output+=linkitzApp_hexgen_make_hex_line(linkedaddr,linkhex_line);
         } else {
             hex_output+=linkitzApp_hexgen_make_hex_line(linkedaddr,linkhex_line);
         }
-        //console.log("token list:"+tokens+" Places hex:"+linkhex_line+" At addr:"+linkedaddr);
+        console.log("token list:"+tokens+" Places hex:"+linkhex_line+" At addr:"+linkedaddr);
         
     }
     hex_output+=":00000001FF\n";
