@@ -195,13 +195,13 @@ Blockly.Assembly.init = function(workspace) {
 Blockly.Assembly.finish = function(code) {
   // Indent every line.
   
-  // if (code) {
-    //global_scalar_variables_pp = global_scalar_variables.join(',');
-    //code = 'global_scalar_variables=['+ global_scalar_variables_pp + ']\n' + code;
-    // code = Blockly.Assembly.prefixLines(code, Blockly.Assembly.INDENT);
-    // var global_list_variables_pp = global_list_variables.join('\n');
-    // var global_list_variables_pp = JSON.stringify(global_list_variables);
-    //code = 'global_list_variables=['+ global_list_variables_pp + ']\n' + code;
+  //if (code) {
+  //  global_scalar_variables_pp = global_scalar_variables.join(',');
+  //  code = 'global_scalar_variables=['+ global_scalar_variables_pp + ']\n' + code;
+  //  // code = Blockly.Assembly.prefixLines(code, Blockly.Assembly.INDENT);
+  //  // var global_list_variables_pp = global_list_variables.join('\n');
+  //   var global_list_variables_pp = JSON.stringify(global_list_variables);
+  //  code = 'global_list_variables=['+ global_list_variables_pp + ']\n' + code;
   //}
 
   // Convert the definitions dictionary into a list.
