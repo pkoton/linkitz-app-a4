@@ -442,7 +442,7 @@ Blockly.Assembly['math_on_list'] = function(block) {
 Blockly.Assembly['math_random_int'] = function(block) {
   // Random integer between -127 and 127.
   var code = 'Syscall RANDOM R1\n'; // TBD
-  return [code, Blockly.Assembly.NONE];
+  return [code, Blockly.Assembly.ORDER_NONE];
 };
 
 
