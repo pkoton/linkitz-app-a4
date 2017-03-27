@@ -41,6 +41,7 @@ function onBlocklyLoaded() {
 }
 
 function onBlocklyGenerate() {
+    assembly_generator = true;
     var code = Blockly.Assembly.workspaceToCode(Blockly.mainWorkspace);
 //    var code = "  On_motion_trigger:\n    Syscall Flash ([3, 255,0,0])\n\n  Syscall Return Null\n";
     window.parent.postMessage({method: 'onBlocklyGenerate', arg: code}, '*');

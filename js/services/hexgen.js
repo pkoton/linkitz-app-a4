@@ -76,11 +76,7 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
     //we're prepared for parsing
     var assembly_lines = assembly_code.toLowerCase().split("\n");
     var line_ptr;
-    //first three lines store
-        //list of list variables
-        //list of scalar variables
-        //list of all registers
-    for(line_ptr=2;line_ptr<assembly_lines.length;line_ptr++){
+    for(line_ptr=0;line_ptr<assembly_lines.length;line_ptr++){
         //Parse a line
         var line = assembly_lines[line_ptr];
         var token_list;
@@ -137,6 +133,9 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
     
     40:BTR1SNZ
 
+    50:GETO
+    51:SETO
+
 
 
 
@@ -148,10 +147,34 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
     	//console.log("token_list is:"+token_list);
         if(token_list.length==0||token_list[0]==""){
             //console.log("skipping empty line")
-        } else if(token_list[0].match(/btr1snz/i)){
+        }else if(token_list[0].match(/btr1snz/i)){
             hex_line+=linkitzApp_hexgen_pad_words("40");
             unlinkedCodeLines.push([address,hex_line,token_list]);
             address+=2;
+        }else if(token_list[0].match(/popl/i)){
+            hex_line+=linkitzApp_hexgen_pad_words("0D");
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
+            unlinkedCodeLines.push([address,hex_line,token_list]);
+            address+=4;
+        }else if(token_list[0].match(/pushl/i)){
+            hex_line+=linkitzApp_hexgen_pad_words("0E");
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
+            unlinkedCodeLines.push([address,hex_line,token_list]);
+            address+=4;
+        }else if(token_list[0].match(/geto/i)){
+            hex_line+=linkitzApp_hexgen_pad_words("50");
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[3]);
+            unlinkedCodeLines.push([address,hex_line,token_list]);
+            address+=8;
+        }else if(token_list[0].match(/seto/i)){
+            hex_line+=linkitzApp_hexgen_pad_words("51");
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[2]);
+            hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[3]);
+            unlinkedCodeLines.push([address,hex_line,token_list]);
+            address+=8;
         }else if(token_list[0].match(/cmpeq/i)){
             hex_line+=linkitzApp_hexgen_pad_words("1C");
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);

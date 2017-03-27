@@ -135,7 +135,7 @@ Blockly.Assembly['lists_getIndex_nonMut'] = function(block) {
          //  // the following code executed if bounds OK
          // code += 'pop R1\n'; // restore starting offset to R1
          if (list_elt_size ==1) {
-          code += 'GETO ' + list_head_addr + ' R1 R1\n';
+          code += 'GETO R' + list_head_addr + ' R1 R1\n';
           }
         else {
          var save_temp = gsv_next; //*** ******check to make sure this is not hitting glv_next
@@ -145,7 +145,7 @@ Blockly.Assembly['lists_getIndex_nonMut'] = function(block) {
           gsv_next += 1;
           code += "set R2 -1\n";
          for (var i = 0; i < list_elt_size; i++) {
-          code += 'GETO ' + list_head_addr + ' R1 R' + save_temp + '\n';
+          code += 'GETO R' + list_head_addr + ' R1 R' + save_temp + '\n';
           code += 'Push R'+ save_temp + '\n';
           code += 'Add R1 R2 R1\n'; // calculate next offset
           }
@@ -273,7 +273,7 @@ Blockly.Assembly['lists_setIndex_nonMut'] = function(block) {
     var value = Blockly.Assembly.valueToCode(block, 'TO', Blockly.Assembly.ORDER_NONE) || 'null';
     console.log("value = " + value); // value is in R1 or on stack
     if (list_elt_size ==1) { // value is in R1
-      code += value + 'SETO ' + list_head_addr + ' R' + save_offset + ' R1\n';
+      code += value + 'SETO R' + list_head_addr + ' R' + save_offset + ' R1\n';
     }
     else { // value is on stack starting with list length which we don't need
       code += value + "Pop R0\n"; // get rid of length
@@ -306,7 +306,7 @@ Blockly.Assembly['lists_setIndex_nonMut'] = function(block) {
     var value = Blockly.Assembly.valueToCode(block, 'TO', Blockly.Assembly.ORDER_NONE) || 'null';
     console.log("value = " + value); // value is in R1 or on stack
     if (list_elt_size ==1) { // value is in R1
-      code += value + 'SETO ' + list_head_addr + ' R' + save_offset + ' R1\n';
+      code += value + 'SETO R' + list_head_addr + ' R' + save_offset + ' R1\n';
     }
     else { // value is on stack starting with list length which we don't need
       code += value + "Pop R0\n"; // get rid of length
