@@ -34,11 +34,16 @@ goog.require('Blockly.Assembly');
 // using helper function lkzify
 
 function lkzify(num) {
+
     if (num <= 0) {
         return 0;
         }
     else {
-        num = Math.floor(num/2);
+		var gamma = 2;
+		var rangein = 255;
+		var rangeout = 127;
+		var A=rangeout/Math.pow(rangein,gamma);
+        num = Math.floor(A*Math.pow(num,gamma));
         return num;
     }
 }
