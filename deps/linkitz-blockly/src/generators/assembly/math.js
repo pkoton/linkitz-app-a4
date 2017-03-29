@@ -55,8 +55,7 @@ Blockly.Assembly['math_arithmetic'] = function(block) {
     'ADD': ['ADD', Blockly.Assembly.ORDER_NONE],
     'MINUS': ['SUB', Blockly.Assembly.ORDER_NONE],
     'MULTIPLY': ['MUL', Blockly.Assembly.ORDER_NONE],
-    'DIVIDE': ['DIV', Blockly.Assembly.ORDER_NONE],
-    'POWER': ['POW', Blockly.Assembly.ORDER_NONE]  // Handle power separately.
+    'DIVIDE': ['DIV', Blockly.Assembly.ORDER_NONE]
   };
   var tuple = OPERATORS[block.getFieldValue('OP')];
   var operator = tuple[0];
@@ -228,7 +227,7 @@ Blockly.Assembly['math_arithmetic'] = function(block) {
 //};
 
 Blockly.Assembly['math_binary'] = function(block) {
-  // Basic arithmetic operators, and power.
+  // Bitwise AND and Bitwise OR
   var code = '; starting math_binary\n';
   var OPERATORS = {
     'BITWISEAND': ['band3', Blockly.Assembly.ORDER_NONE],

@@ -65,8 +65,7 @@ Blockly.Blocks['math_arithmetic'] = {
         [[Blockly.Msg.MATH_ADDITION_SYMBOL, 'ADD'],
          [Blockly.Msg.MATH_SUBTRACTION_SYMBOL, 'MINUS'],
          [Blockly.Msg.MATH_MULTIPLICATION_SYMBOL, 'MULTIPLY'],
-         [Blockly.Msg.MATH_DIVISION_SYMBOL, 'DIVIDE'],
-         [Blockly.Msg.MATH_POWER_SYMBOL, 'POWER']];
+         [Blockly.Msg.MATH_DIVISION_SYMBOL, 'DIVIDE']];
     this.appendDummyInput()
       .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_10_Math.png",50,50,"*"));
     this.setHelpUrl(Blockly.Msg.MATH_ARITHMETIC_HELPURL);
