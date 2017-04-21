@@ -329,9 +329,9 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
                 //console.log("syscall has no arguments")
                 hex_line+=linkitzApp_hexgen_pad_words("06");
                 if(token_list[1].match(/flashRGB/i)){
-                    hex_line+=linkitzApp_hexgen_pad_words("02");
-                } else if(token_list[1].match(/get_motion_data/i)){
                     hex_line+=linkitzApp_hexgen_pad_words("01");
+                } else if(token_list[1].match(/get_motion_data/i)){
+                    hex_line+=linkitzApp_hexgen_pad_words("02");
                 } else {
             		throw("Could not match token:"+token_list[1]+" in:"+line);
                 }

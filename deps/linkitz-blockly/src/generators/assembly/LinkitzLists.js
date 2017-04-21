@@ -281,7 +281,7 @@ Blockly.Assembly['lists_setIndex_nonMut'] = function(block) {
       for (var i = 0; i < list_elt_size; i++) {
         code += "Pop R1\n"
         code += 'SETO R' + list_head_addr + ' R' + save_offset + ' R1\n';
-        code += 'Add R' + save_offset + ' R' + gsv_next + ' R' + save_offset + '\n'; // calculate next offset
+        code += 'Add R" + save_offset + " R' + gsv_next + ' R' + save_offset + '\n'; // calculate next offset
       }
     }
   gsv_next -= 1;
