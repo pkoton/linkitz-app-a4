@@ -27,12 +27,16 @@ linkitzApp.factory('LinkitzToy',
     }
 
     function linkitzConnect() {
-        var deviceId = linkitz.getLastDevice().deviceId;
+        var lastDevice = linkitz.getLastDevice();
+        var deviceId;
+        if (lastDevice) {
+            deviceId = linkitz.getLastDevice().deviceId;
+        }
         var deferred = $q.defer();
 
-        if (!deviceId) {
+        if ((!lastDevice) || (!deviceId)) {
             deferred.reject("No device found, not connecting.");
-        }
+        } else {
 
         linkitz.connect(deviceId,
             function onConnect (connId) {
@@ -51,6 +55,7 @@ linkitzApp.factory('LinkitzToy',
                     deferred.reject("Error connecting to Linkitz: \n" + reason);
                 });
             });
+        }
 
         return deferred.promise;
     }
