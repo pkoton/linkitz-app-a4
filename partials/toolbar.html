@@ -8,47 +8,49 @@
 </div>
 
 <!-- left side of toolbar, markup in LTR order -->
+<!-- fa = Font Awesome icons font -->
 
-<div class="navbar-text btn-group">
-  <a class="btn btn-default" href="#" ng-click="clearEditor()" tooltip-placement="bottom" uib-tooltip="New Program">
-    <span>
-      <img src="images/newfile.png" height="28px" width="28px">
-    </span>
+<div class="navbar-text">
+  <a class="btn btn-default" href="#" ng-click="clearEditor()" tooltip-placement="bottom" uib-tooltip="Clear All Blocks">
+    <i class="fa fa-file-o fa-3x"></i>
   </a>
+  &nbsp;
   <a class="btn btn-default" href="#" ng-click="saveEditor()" tooltip-placement="bottom" uib-tooltip="Save Program">
-    <i class="fa fa-save fa-2x"></i>
+    <i class="fa fa-save fa-3x"></i> 
   </a>
 </div>
 
-<div class="navbar-text btn-group" is-open="savedDropdownOpen" uib-dropdown>
-  <button id="saved-programs" type="button" class="btn btn-default btn-high wide-450" uib-dropdown-toggle ng-disabled="disabled">
-    Saved Programs <span class="caret"></span>
+<div class="navbar-text" is-open="savedDropdownOpen" uib-dropdown>
+  <button id="saved-programs" type="button" class="btn btn-default btn-lg wide-450" uib-dropdown-toggle ng-disabled="disabled">
+    Saved Programs <i class="fa fa-caret-down fa-lg"></i>
   </button>
   <ul class="dropdown-menu wide-450" uib-dropdown-menu role="menu" aria-labelledby="saved-programs">
     <li ng-repeat-start="hub in hubs" class="dropdown-header">Hub {{hub.hubId}}</li>
     <li role="menuitem" ng-repeat="program in hub.hubPrograms">
-      <a href="#" ng-click="loadEditor(program)"><i class="fa fa-file-code-o fa-fw"></i>Program {{ program.codeid }}</a>
+      <a href="#" ng-click="loadEditor(program)"><i class="fa fa-square-o"></i>Program {{ program.codeid }}</a> <!-- add scrolling in loadEditor -->
     </li>
     <li ng-repeat-end class="divider"></li>
   </ul>
 </div>
 
-<div class="navbar-text btn-group">
-  <a class="btn btn-default" href="#" ng-click="buildAndUploadProgram()" tooltip-placement="bottom" uib-tooltip="Upload Program">
-    <i class="fa fa-link fa-2x"></i>
+<div class="navbar-text">
+  <a class="btn btn-default" href="#" ng-click="toggleConnect()" tooltip-placement="bottom" uib-tooltip="Load Program to Linkitz">
+      <i class="fa fa-3x" ng-class="connectTransitioning ? 'fa-spinner fa-pulse': 'fa-share-square-o'"></i>
   </a>
 </div>
 
 <!-- right side of toolbar, markup in RTL order -->
 
 <div class="navbar-text btn-group navbar-right">
-  <a class="btn btn-default" href="#" ng-click="modals.about.open()" tooltip-placement="bottom" uib-tooltip="About"><i class="fa fa-info-circle fa-2x"></i></a>
+  <a class="btn btn-default" href="#" ng-click="modals.about.open()" tooltip-placement="bottom" uib-tooltip="About"><i class="fa fa-info-circle fa-3x"></i></a>
 </div>
 
+<!-- got rid of connect button, folded its functions into link button
 <div class="navbar-text btn-group navbar-right">
-  <button id="saved-programs" type="button" ng-click="toggleConnect()" ng-class="{'a4-icon-disconnect': isConnected, 'a4-icon-connect': !isConnected}" class="btn btn-default btn-high" >{{isConnected ? "Disconnect" : "Connect"}}</button>
+  <button id="saved-programs" type="button" ng-click="toggleConnect()" ng-class="{'a4-icon-disconnect': isConnected, 'a4-icon-connect': !isConnected}"
+  class="btn btn-default btn-high" >{{isConnected ? "Disconnect" : "Connect"}}</button>
 </div>
-
+-->
 
 <!-- End Spacer -->
 <p class="navbar-text pull-right"><a id="user-login" href="#" class="navbar-link"></a></p>
