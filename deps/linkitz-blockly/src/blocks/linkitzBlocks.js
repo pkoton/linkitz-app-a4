@@ -592,7 +592,7 @@ Blockly.Blocks['on_initialization'] = {
     this.appendDummyInput()
         .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_6_Hub.png", 50, 50, "*"));
     this.appendDummyInput()
-        .appendField("On Initialization");
+        .appendField("On Start");
     this.setInputsInline(true);
     this.appendStatementInput("NAME");
     this.setColour('#FFCE00');
