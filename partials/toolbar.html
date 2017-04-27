@@ -27,7 +27,7 @@
   <ul class="dropdown-menu wide-450" uib-dropdown-menu role="menu" aria-labelledby="saved-programs">
     <li ng-repeat-start="hub in hubs" class="dropdown-header">Hub {{hub.hubId}}</li>
     <li role="menuitem" ng-repeat="program in hub.hubPrograms">
-      <a href="#" ng-click="loadEditor(program)"><i class="fa fa-square-o"></i>Program {{ program.codeid }}</a> <!-- add scrolling in loadEditor -->
+      <a href="#" ng-click="loadEditor(program)"><i class="fa fa-square-o"></i>&nbsp;Program {{ program.codeid }}</a> <!-- add scrolling in loadEditor -->
     </li>
     <li ng-repeat-end class="divider"></li>
   </ul>
