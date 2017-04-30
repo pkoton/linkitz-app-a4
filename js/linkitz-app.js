@@ -137,7 +137,7 @@ linkitzApp.controller('LinkitzAppController', [
 	$scope.toggleConnect = function toggleConnect()
 	{
 	    $scope.connectTransitioning = true;
-	    var catch_msg = "Error connecting to Linkitz";
+	    var catch_msg = "Load code: Error connecting to Linkitz";
 	    LinkitzToy.connect()
 	    .then(function () {
 		return LinkitzToy.verifyDevice();
@@ -150,7 +150,7 @@ linkitzApp.controller('LinkitzAppController', [
 		$scope.setHubID(connectedID);
 	    })
 	    .then(function () {
-		catch_msg = "Error programming Linkitz";
+		catch_msg = "Load code: Error programming Linkitz";
 	    })
 	    .then($scope.generateCode)
 	    .then(HexGenerator.processAssembly)
@@ -163,7 +163,7 @@ linkitzApp.controller('LinkitzAppController', [
 		LogService.appLogMsg("Signed.");
 	    })
 	    .then(function () {
-		catch_msg = "Error disconnecting from Linkitz";
+		catch_msg = "Load code: Error disconnecting from Linkitz";
 	    })
 	    .then(LinkitzToy.disconnect)
 	    .then(function () {
