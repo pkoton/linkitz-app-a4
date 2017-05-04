@@ -36,32 +36,56 @@ Blockly.Assembly['lists_length'] = function(block) {
   var code='';
   console.log("in lists_length");
   var targetBlock = block.getInputTargetBlock('VALUE');
-  var list_name = Blockly.Assembly.variableDB_.getName(targetBlock.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
-  if (global_scalar_variables.indexOf(list_name) >=0) {
-    code += "set R1 1\n"; // pretend its a list of length 1
-    
-  } else if (list_name in global_list_variables) { // if in global_list_variables [head,Rused,desc], put on stack
-    var llen = global_list_variables[list_name][1] -1
-    code += "set R1 " + llen + "\n";
-  }
-  //var inputType = targetBlock.type;
+  //console.log("target block is " + targetBlock);
+  var inputType = targetBlock.type;
   //console.log("in lists_length, inputType is " + inputType);
-  //// some error checking: make sure input is a list, if it's a variable, it could be a scalar
-  //// in which case, just return R0
-  //if (is_scalar(targetBlock)){
-  //  code += "set R1 1\npush R1\npset R1 1\npush R1\n"; // pretend its a list of length 1 
-  //}
-  //else {
-  //  var list = Blockly.Assembly.valueToCode(block, 'VALUE', Blockly.Assembly.ORDER_NONE) || '[]'; 
-  //  console.log("in lists_length: valueToCode for list is " + list); // input list is on stack, length is TOS
-  //  code += list + "pop R1\n"; // total length is in R1 
-  //      code += "set R2 -1\n\n"; // total_length is registers used + 1 so...
-  //      code += "LEN_label_" + ifCount + ": ADD R1 R2 R1\n"; //decrement R1
-  //      code += "BTR1SNZ \n GOTO endLEN_label_" + ifCount + "\n"; // clean up the stack by popping the values off into R0
-  //      code += "pop R0\n";
-  //      code += "GOTO LEN_label_" + ifCount + "\n";
-  //      code += "endLEN_label_: NOP\n"; //result of lists_length is in R1
-  //}
+  switch (inputType) { 
+      case 'colour_picker':
+      case 'get_motion_data':
+        // console.log("in lists_length, length = 3");
+        code += "set R1 3\n";
+        break;
+      case 'lists_create_n':
+        // console.log("in lists_length, length = " + parseInt(targetBlock.getFieldValue('NUM_ITEMS')));
+        code += "set R1 " + parseInt(targetBlock.getFieldValue('NUM_ITEMS')) + "\n";
+        break;
+      case 'lists_create_with':
+      case 'array':
+        // console.log("in lists_length, length = " + targetBlock.itemCount_);
+        code += "set R1 " + targetBlock.itemCount_ + "\n";
+        break;
+      case 'procedures_callreturn':
+        var procName = Blockly.Assembly.variableDB_.getName(targetBlock.getFieldValue('NAME'),Blockly.Procedures.NAME_TYPE);
+        console.log("in lists_length: procedures_callreturn " + procName);
+        if (procName in proc_types) { // already figured out return type
+          console.log(procName + " in proc_types");
+          if (proc_types[procName][0] == 0) { //returns a scalar
+            code += "set R1 1\n"; // pretend its a list of length 1
+          } else if (!(proc_types[procName][0] == 0)) { // returns a list, get sublist_desc
+            var top_level_length = proc_types[procName][2][0];
+            console.log("in lists_length, top_level_len = " + top_level_length);
+            code += "set R1 " + top_level_length + "\n";
+          }
+        }
+        else {
+          throw 'Can\'t get list length from procedure returned value';
+        }
+        break;   
+      case 'variables_get':    
+        var list_name = Blockly.Assembly.variableDB_.getName(targetBlock.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+        if (global_scalar_variables.indexOf(list_name) >=0) { //it's a scalar
+          code += "set R1 1\n"; // pretend its a list of length 1
+        }
+        else if (list_name in global_list_variables) { // if in global_list_variables [head,Rused,desc]
+          var llen = global_list_variables[list_name][2][0]
+          code += "set R1 " + llen + "\n";
+        } else {
+          console.log("can't determine list length");
+        }
+        break;
+      default:
+        throw 'Can\'t get list length';  
+    } 
   return [code, Blockly.Assembly.ORDER_NONE];
 };
 
