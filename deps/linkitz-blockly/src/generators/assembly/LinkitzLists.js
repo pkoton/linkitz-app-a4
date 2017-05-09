@@ -107,9 +107,10 @@ Blockly.Assembly['lists_getIndex_nonMut'] = function(block) {
   if (global_list_variables[list_name][2].length == 1) {
     var list_elt_size = 1;
     } else
-    {var temp = global_list_variables[list_name][2].slice(); // make a copy of list_desc
-    temp.shift(); // remove first item; temp now describes the structure of each list item
-    var list_elt_size = list_length_from_sublist_desc(temp);
+    {
+      var temp = global_list_variables[list_name][2].slice(); // make a copy of list_desc
+      temp.shift(); // remove first item; temp now describes the structure of each list item
+      var list_elt_size = list_length_from_sublist_desc(temp);
     }
   var list_num_items = global_list_variables[list_name][2][0];
   console.log("in lists_getIndex_nonMut, list_first_elt_addr = " +list_first_elt_addr+ "\n");
@@ -119,11 +120,12 @@ Blockly.Assembly['lists_getIndex_nonMut'] = function(block) {
   
     if (where == 'FIRST') {
       if (list_elt_size ==1) {
-        code += 'Push R' + list_first_elt_addr + '\nPop R1\n';
+        // code += 'Push R' + list_first_elt_addr + '\nPop R1\n';
+        code += 'LOADR1FROM R'+ list_first_elt_addr + '\n';
       } else {
         for (var i = list_elt_size - 1; i >= 0; i--) {
-        list_elt_addr = list_first_elt_addr + i;
-        code += 'Push R' + list_elt_addr + '\n';
+          list_elt_addr = list_first_elt_addr + i;
+          code += 'Push R' + list_elt_addr + '\n';
         }
         code += 'set R1 ' + list_elt_size +"\npush R1\n";
       }
@@ -131,20 +133,26 @@ Blockly.Assembly['lists_getIndex_nonMut'] = function(block) {
     } // end FIRST
     else if (where == 'LAST') {
         if (list_elt_size ==1) {
-        code += 'Push R' + list_last_elt_addr + '\nPop R1\n';
+        // code += 'Push R' + list_last_elt_addr + '\nPop R1\n';
+        code += 'LOADR1FROM R'+ list_last_elt_addr + '\n';
       } else {
         for (var i = 0; i < list_elt_size; i++) {
-        var list_elt_addr = list_last_elt_addr - i;
-        code += 'Push R' + list_elt_addr + '\n';
+          var list_elt_addr = list_last_elt_addr - i;
+          code += 'Push R' + list_elt_addr + '\n';
         }
         code += 'set R1 ' + list_elt_size +"\npush R1\n";
       }
         return [code, Blockly.Assembly.ORDER_NONE];     
     } //end LAST
     else if (where == 'FROM_START') { // Blockly uses one-based indicies
+      console.log("LIST ELEMENT SIZE: " + list_elt_size);
         var at2 = Blockly.Assembly.valueToCode(block, 'AT',Blockly.Assembly.ORDER_NONE) || '1';
         console.log("AT2 is "+ at2);
         code += at2; // result in R1
+        if (list_elt_size == 1) {   // SPECIAL CASE FOR list_elt_size = 1 
+          code += 'GETO R' + list_head_addr + ' R1 R1\n';
+          }
+        else {
          // calculate this: (at2 * list_elt_size)
          code += "set R2 " + list_elt_size + "\n";
          code += "Mul R1 R2 R1\n"; // R1 holds the starting offset. the first thing to be pushed=last item elt
@@ -158,10 +166,7 @@ Blockly.Assembly['lists_getIndex_nonMut'] = function(block) {
          // code += "GOTO BOUNDS_ERR" + bounds_label;  // jump to error handler
          //  // the following code executed if bounds OK
          // code += 'pop R1\n'; // restore starting offset to R1
-         if (list_elt_size ==1) {
-          code += 'GETO R' + list_head_addr + ' R1 R1\n';
-          }
-        else {
+         
          var save_temp = gsv_next; //*** ******check to make sure this is not hitting glv_next
           if (save_temp > glv_next) {
             throw 'out of register space (lists_getIndex)';
@@ -183,37 +188,40 @@ Blockly.Assembly['lists_getIndex_nonMut'] = function(block) {
          return [code, Blockly.Assembly.ORDER_NONE];
     } // end FROM_START
      else if (where == 'FROM_END') {
-      var at1 = block.getInputTargetBlock('AT') || '1';
-        var at = at1.toString();
-        console.log("AT is "+ at);
-        var at2 = Blockly.Assembly.valueToCode(block, 'AT',Blockly.Assembly.ORDER_NONE) || '1';
-        console.log("AT2 is "+ at2);
-        code += at2; // result in R1
-        // calculate this: (list_num_items - (at2 - 1)) * list_elt_size
-        code += "set R2 1\nSUB R1 R2 R2\n"; // (at2- 1) in R2
-        code += "set R1 " + list_num_items + "\n";
-        code += "SUB R1 R2 R1\n"; // (list_num_items - (at2 - 1)) in R1
-        code += "set R2 " + list_elt_size + "\n";
-        code += "MUL R2 R1 R1\n"; //((list_num_items - (at2 - 1)) * list_elt_size) in R1
-        // R1 now holds the starting offset ( the last element of the requested item)
-        if (list_elt_size ==1) {
-          code += 'GETO R' + list_head_addr + ' R1 R1\n';
+          var at1 = block.getInputTargetBlock('AT') || '1';
+          var at = at1.toString();
+          console.log("AT is "+ at);
+          var at2 = Blockly.Assembly.valueToCode(block, 'AT',Blockly.Assembly.ORDER_NONE) || '1';
+          console.log("AT2 is "+ at2);
+          code += at2; // result in R1
+          if (list_elt_size ==1) {
+            code += "set R2 1\nSUB R1 R2 R2\n"; // (at2- 1) in R2
+            code += "set R1 " + list_num_items + "\n";
+            code += "SUB R1 R2 R1\n"; // (list_num_items - (at2 - 1)) in R1, this is offset of requested item
+            code += 'GETO R' + list_head_addr + ' R1 R1\n'; 
           }
         else {
-         var save_temp = gsv_next; //*** ******check to make sure this is not hitting glv_next
-          if (save_temp > glv_next) {
-            throw 'out of register space (lists_getIndex)';
+          // calculate this: (list_num_items - (at2 - 1)) * list_elt_size
+          code += "set R2 1\nSUB R1 R2 R2\n"; // (at2- 1) in R2
+          code += "set R1 " + list_num_items + "\n";
+          code += "SUB R1 R2 R1\n"; // (list_num_items - (at2 - 1)) in R1
+          code += "set R2 " + list_elt_size + "\n";
+          code += "MUL R2 R1 R1\n"; //((list_num_items - (at2 - 1)) * list_elt_size) in R1
+          // R1 now holds the starting offset ( the last element of the requested item)
+           var save_temp = gsv_next; //*** ******check to make sure this is not hitting glv_next
+            if (save_temp > glv_next) {
+              throw 'out of register space (lists_getIndex)';
+            }
+            gsv_next += 1;
+            code += "set R2 -1\n";
+           for (var i = 0; i < list_elt_size; i++) {
+            code += 'GETO R' + list_head_addr + ' R1 R' + save_temp + '\n';
+            code += 'Push R'+ save_temp + '\n';
+            code += 'Add R1 R2 R1\n'; // calculate next offset
+            }
+            code += 'set R1 ' + list_elt_size +"\npush R1\n";
           }
-          gsv_next += 1;
-          code += "set R2 -1\n";
-         for (var i = 0; i < list_elt_size; i++) {
-          code += 'GETO R' + list_head_addr + ' R1 R' + save_temp + '\n';
-          code += 'Push R'+ save_temp + '\n';
-          code += 'Add R1 R2 R1\n'; // calculate next offset
-          }
-          code += 'set R1 ' + list_elt_size +"\npush R1\n";
-        }
-       gsv_next -= 1; 
+         gsv_next -= 1; 
         return [code, Blockly.Assembly.ORDER_NONE];
     } //end FROM_END 
   throw 'Unhandled combination (lists_getIndex).';
@@ -253,7 +261,8 @@ Blockly.Assembly['lists_setIndex_nonMut'] = function(block) {
     var value = Blockly.Assembly.valueToCode(block, 'TO', Blockly.Assembly.ORDER_NONE) || 'null';
     console.log("value = " + value); // value is in R1 or on stack
     if (list_elt_size ==1) { // value is in R1
-      code += value + 'Push R1\nPop R' + list_first_elt_addr + '\n';
+      //code += value + 'Push R1\nPop R' + list_first_elt_addr + '\n';
+      code += value + 'LoadR1to R' + list_first_elt_addr + '\n';
     }
     else { //value is on stack, including the TOS = length which we don't need
       code += value + "Pop R0\n"; // get rid of length
@@ -270,7 +279,8 @@ Blockly.Assembly['lists_setIndex_nonMut'] = function(block) {
     var value = Blockly.Assembly.valueToCode(block, 'TO', Blockly.Assembly.ORDER_NONE) || 'null';
     console.log("value = " + value); // value is in R1 or on stack
     if (list_elt_size ==1) { // value is in R1
-      code += value + 'Push R1\nPop R' + list_last_elt_addr + '\n';
+      //code += value + 'Push R1\nPop R' + list_last_elt_addr + '\n';
+      code += value + 'LoadR1to R' + list_last_elt_addr + '\n';
     }
     else { //value is on stack, including the TOS = length which we don't need
       code += value + "Pop R0\n"; // get rid of length
@@ -283,65 +293,82 @@ Blockly.Assembly['lists_setIndex_nonMut'] = function(block) {
     return code;  
   } // end LAST
   else if (where == 'FROM_START') {
-    var at = Blockly.Assembly.valueToCode(block, 'AT',Blockly.Assembly.ORDER_NONE) || '1';
-    console.log("AT is "+ at);
-    // index of req item is now in R1, calculate pointer to [start of] item
-    code += at + "set R2 1\nSub R1 R2 R1\nset R2 " +  list_elt_size + "\nMul R1 R2 R1\n Set R2 1\n Add R1 R2 R2\n";
-    // R2 now has offset from head of list to req item
-    var save_offset = gsv_next; //*** ******check to make sure this is not hitting glv_next
-    if (save_offset > glv_next) {
-    throw 'out of register space (lists_setIndex)';
-    }
-    gsv_next += 1;
-    code += "push R2\npop R" + save_offset + "\n";
-    var value = Blockly.Assembly.valueToCode(block, 'TO', Blockly.Assembly.ORDER_NONE) || 'null';
-    console.log("value = " + value); // value is in R1 or on stack
-    if (list_elt_size ==1) { // value is in R1
-      code += value + 'SETO R' + list_head_addr + ' R' + save_offset + ' R1\n';
-    }
-    else { // value is on stack starting with list length which we don't need
-      code += value + "Pop R0\n"; // get rid of length
-      code += "set R" + gsv_next + " 1\n"; //
-      for (var i = 0; i < list_elt_size; i++) {
-        code += "Pop R1\n"
-        code += 'SETO R' + list_head_addr + ' R' + save_offset + ' R1\n';
-        code += 'Add R' + save_offset + ' R' + gsv_next + ' R' + save_offset + '\n'; // calculate next offset
+    // special case where list_elt_size = 1
+    if (list_elt_size ==1) { 
+      var value = Blockly.Assembly.valueToCode(block, 'TO', Blockly.Assembly.ORDER_NONE) || 'null'; //new value is in R1
+      code += value + "LoadR1to R2\n"; // new value is in R2
+      var at = Blockly.Assembly.valueToCode(block, 'AT',Blockly.Assembly.ORDER_NONE) || '1';
+      console.log("AT is "+ at); // index of req item is now in R1
+      code += at + 'SETO R' + list_head_addr + ' R1 R2\n';
+    } else
+    {
+      var at = Blockly.Assembly.valueToCode(block, 'AT',Blockly.Assembly.ORDER_NONE) || '1';
+      console.log("AT is "+ at);// index of req item is now in R1, calculate pointer to [start of] item
+      code += at + "set R2 1\nSub R1 R2 R1\nset R2 " +  list_elt_size + "\nMul R1 R2 R1\n Set R2 1\n Add R1 R2 R2\n";
+      // R2 now has offset from head of list to req item
+      var save_offset = gsv_next; //*** ******check to make sure this is not hitting glv_next
+      if (save_offset > glv_next) {
+      throw 'out of register space (lists_setIndex)';
       }
+      gsv_next += 1;
+      code += "push R2\npop R" + save_offset + "\n";
+      var value = Blockly.Assembly.valueToCode(block, 'TO', Blockly.Assembly.ORDER_NONE) || 'null';
+      console.log("value = " + value); // value is in R1 or on stack
+      if (list_elt_size ==1) { // value is in R1
+        code += value + 'SETO R' + list_head_addr + ' R' + save_offset + ' R1\n';
+      }
+      else { // value is on stack starting with list length which we don't need
+        code += value + "Pop R0\n"; // get rid of length
+        code += "set R" + gsv_next + " 1\n"; //
+        for (var i = 0; i < list_elt_size; i++) {
+          code += "Pop R1\n"
+          code += 'SETO R' + list_head_addr + ' R' + save_offset + ' R1\n';
+          code += 'Add R' + save_offset + ' R' + gsv_next + ' R' + save_offset + '\n'; // calculate next offset
+        }
+      }
+      gsv_next -= 1;
     }
-  gsv_next -= 1;
-  code += "; ending lists_setIndex_nonMut\n";
-  return code;   
+    code += "; ending lists_setIndex_nonMut\n";
+    return code;
   } // end FROM_START
   else if (where == 'FROM_END') {
-    //first convert FROM_END to FROM_START
-    code += "set R1 " + list_num_items +"\nSet R2 1\nAdd R1 R2 R2\n"
-    var at = Blockly.Assembly.valueToCode(block, 'AT',Blockly.Assembly.ORDER_NONE) || '1';
-    console.log("AT is "+ at);
-    // index of req item is now in R1, calculate pointer to [start of] item
-    code += at + "SUB R2 R1 R1\n"; // R1 now holds index FROM_START, calculate pointer to [start of] item
-    code += "set R2 1\nSub R1 R2 R1\nset R2 " +  list_elt_size + "\nMul R1 R2 R1\n Set R2 1\n Add R1 R2 R2\n";
-    // R2 now has offset from head of list to req item
-    var save_offset = gsv_next; //*** ******check to make sure this is not hitting glv_next
-    if (save_offset > glv_next) {
-    throw 'out of register space (lists_setIndex)';
-    }
-    gsv_next += 1;
-    code += "push R2\npop R" + save_offset + "\n";
-    var value = Blockly.Assembly.valueToCode(block, 'TO', Blockly.Assembly.ORDER_NONE) || 'null';
-    console.log("value = " + value); // value is in R1 or on stack
-    if (list_elt_size ==1) { // value is in R1
-      code += value + 'SETO R' + list_head_addr + ' R' + save_offset + ' R1\n';
-    }
-    else { // value is on stack starting with list length which we don't need
-      code += value + "Pop R0\n"; // get rid of length
-      code += "set R" + gsv_next + " 1\n"; //
-      for (var i = 0; i < list_elt_size; i++) {
-        code += "Pop R1\n"
-        code += 'SETO R' + list_head_addr + ' R' + save_offset + ' R1\n';
-        code += 'Add R" + save_offset + " R' + gsv_next + ' R' + save_offset + '\n'; // calculate next offset
+    if (list_elt_size ==1) {
+      var adj_list_len = list_len + 1; // add 1 so using requested item# works out
+      var at = Blockly.Assembly.valueToCode(block, 'AT',Blockly.Assembly.ORDER_NONE) || '1';
+      console.log("AT is "+ at);
+      // index of req item is now in R1
+      code += at + 'LoadR1to R2\n';
+      code += "Set R1 " + adj_list_len + "\nSub R1 R2 R2\n"; // R2 now holds offset from list head (instead of tail)
+      var value = Blockly.Assembly.valueToCode(block, 'TO', Blockly.Assembly.ORDER_NONE) || 'null';
+      console.log("value = " + value); // value is in R1
+      code += value + 'SETO R' + list_head_addr + ' R2 R1\n'; 
+    } else {
+      //first convert FROM_END to FROM_START
+      code += "set R1 " + list_num_items +"\nSet R2 1\nAdd R1 R2 R2\n"
+      var at = Blockly.Assembly.valueToCode(block, 'AT',Blockly.Assembly.ORDER_NONE) || '1';
+      console.log("AT is "+ at);
+      // index of req item is now in R1, calculate pointer to [start of] item
+      code += at + "SUB R2 R1 R1\n"; // R1 now holds index FROM_START, calculate pointer to [start of] item
+      code += "set R2 1\nSub R1 R2 R1\nset R2 " +  list_elt_size + "\nMul R1 R2 R1\n Set R2 1\n Add R1 R2 R2\n";
+      // R2 now has offset from head of list to req item
+      var save_offset = gsv_next; //*** ******check to make sure this is not hitting glv_next
+      if (save_offset > glv_next) {
+      throw 'out of register space (lists_setIndex)';
       }
+      gsv_next += 1;
+      code += "push R2\npop R" + save_offset + "\n";
+      var value = Blockly.Assembly.valueToCode(block, 'TO', Blockly.Assembly.ORDER_NONE) || 'null';
+      console.log("value = " + value); // value is in R1 or on stack
+      // value is on stack starting with list length which we don't need
+        code += value + "Pop R0\n"; // get rid of length
+        code += "set R" + gsv_next + " 1\n"; //
+        for (var i = 0; i < list_elt_size; i++) {
+          code += "Pop R1\n"
+          code += 'SETO R' + list_head_addr + ' R' + save_offset + ' R1\n';
+          code += 'Add R" + save_offset + " R' + gsv_next + ' R' + save_offset + '\n'; // calculate next offset
+        }
+      gsv_next -= 1;
     }
-    gsv_next -= 1;
     code += "; ending lists_setIndex_nonMut\n";
     return code;  
   } //end FROM_END
