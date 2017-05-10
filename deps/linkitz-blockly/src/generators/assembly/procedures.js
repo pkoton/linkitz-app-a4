@@ -65,7 +65,7 @@ Blockly.Assembly['procedures_defreturn'] = function(block) {
   } else {
     var returnCode = 'syscall return R0\n'; // code iis blank or has no retun value, return R0
   }
-  var returnType = returnValue ? 'dynamic' : 'void'; // we don't use this ATM
+  // var returnType = returnValue ? 'dynamic' : 'void'; // we don't use this ATM
   var args = [];
   for (var x = 0; x < block.arguments_.length; x++) {
     args[x] = Blockly.Assembly.variableDB_.getName(block.arguments_[x],
