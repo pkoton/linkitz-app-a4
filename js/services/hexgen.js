@@ -59,7 +59,7 @@ function linkitzApp_hexgen_identify_Rreg(name){
     if(match==null){
         throw("could not find an Rreg in:"+name);
     }
-    return linkitzApp_hexgen_pad_words(match[1]);
+    return linkitzApp_hexgen_pad_words(linkitzApp_hexgen_byte_2_hex(parseInt(match[1])));
 }
 
 function linkitzApp_hexgen_generate_hex(assembly_code) {
@@ -91,7 +91,7 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
         //line is of the form "label:data"
             var label_and_data=line.split(":");
             labels[label_and_data[0].trim()] = address;
-            console.log("setting labels["+label_and_data[0].trim()+"]to:"+address);
+            //console.log("setting labels["+label_and_data[0].trim()+"]to:"+address);
             token_list = label_and_data[1].trim().split(/\s+/);
         } else {//line is of the form data
             token_list=line.trim().split(/\s+/);
@@ -101,15 +101,17 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
     Instruction Space
     00:NOP
     05:Syscall
-        00: Syscall exit
+        00: Exit
         01: Set_Reg_Event_Speed
         02: FlashHue
         03: Random
+        04: Return
     06:ArglessSyscall (Syscall)
         01: Get_motion_data
-        02: FlashRGB 
+        02: FlashRGB
+        04: Return 
+
     08:Set
-    09:Goto
     0A:Push
     0B:Pop
     0C:ABS
@@ -136,9 +138,8 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
     50:GETO
     51:SETO
 
-
-
-
+    60:GOTO
+    61:CALL
 
     BD:Reserved indicates error
 
@@ -297,7 +298,8 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
             if( token_list[1].match(/exit/i)||
                 token_list[1].match(/flashHue/i)||
                 token_list[1].match(/set_reg_event_speed/i)||
-                token_list[1].match(/random/i)){
+                token_list[1].match(/random/i)||
+                (token_list[1].match(/return/i)&&token_list[2].match(/R/i))){
 
                 //console.log("syscall should have one argument")
                 hex_line+=linkitzApp_hexgen_pad_words("05");
@@ -311,6 +313,8 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
                     hex_line+=linkitzApp_hexgen_pad_words("02");
                 } else if(token_list[1].match(/random/i)){
                     hex_line+=linkitzApp_hexgen_pad_words("03");
+                } else if(token_list[1].match(/return/i)){
+                    hex_line+=linkitzApp_hexgen_pad_words("04");
                 } else {
                     throw("Could not match token: \""+token_list[1]+"\" in: "+line);
 
@@ -322,7 +326,8 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
                 address+=6;
 
             } else if(token_list[1].match(/flashRGB/i)||
-                token_list[1].match(/get_motion_data/i)){
+                token_list[1].match(/get_motion_data/i)||
+                token_list[1].match(/return/i)){
             //flashRGB takes it's arguments from the top of the stack.
             //get_motion_data places arguments onto the stack 
             //it implicitly pops a list off of the stack.
@@ -332,6 +337,8 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
                     hex_line+=linkitzApp_hexgen_pad_words("01");
                 } else if(token_list[1].match(/get_motion_data/i)){
                     hex_line+=linkitzApp_hexgen_pad_words("02");
+                } else if(token_list[1].match(/return/i)){
+                    hex_line+=linkitzApp_hexgen_pad_words("04");
                 } else {
             		throw("Could not match token:"+token_list[1]+" in:"+line);
                 }
@@ -357,7 +364,7 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
             unlinkedCodeLines.push([address,hex_line,token_list]);
             address+=6;
         } else if(token_list[0].match(/goto/i)){
-            hex_line+=linkitzApp_hexgen_pad_words("09");
+            hex_line+=linkitzApp_hexgen_pad_words("60");
             hex_line+=linkitzApp_hexgen_pad_words("BD");
             hex_line+=linkitzApp_hexgen_pad_words("BD");
             unlinkedCodeLines.push([address,hex_line,token_list]);
@@ -391,6 +398,8 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
         } else {
             throw("Could not match token: \""+token_list[0]+"\" in: "+line);
         }
+        
+        if(address>0x3FF6){throw("Ran out of user code space processing line:"+line);}
     }
     console.log("DONE ASSEMBLING CODE...LINKING...");
     for(line_ptr=0;line_ptr<unlinkedCodeLines.length;line_ptr++){
@@ -398,20 +407,22 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
         var linkhex_line = unlinkedCodeLines[line_ptr][1];
         var tokens = unlinkedCodeLines[line_ptr][2]
         if(tokens[0].match(/goto/i)){
-            linkhex_line = linkitzApp_hexgen_pad_words("09");
-            console.log("matching label:"+tokens[1]);
+            linkhex_line = linkitzApp_hexgen_pad_words("60");
+            //console.log("matching label:"+tokens[1]);
             var targetAddr = labels[tokens[1]];
-            console.log("targetAddr:"+targetAddr);
+            //console.log("targetAddr:"+targetAddr);
             linkhex_line+=linkitzApp_hexgen_pad_words(linkitzApp_hexgen_byte_2_hex(0x80+Math.floor((targetAddr/2)/256)));
             linkhex_line+=linkitzApp_hexgen_pad_words(linkitzApp_hexgen_byte_2_hex(((targetAddr/2)%256)));
             hex_output+=linkitzApp_hexgen_make_hex_line(linkedaddr,linkhex_line);
         } else {
             hex_output+=linkitzApp_hexgen_make_hex_line(linkedaddr,linkhex_line);
         }
-        console.log("token list:"+tokens+" Places hex:"+linkhex_line+" At addr:"+linkedaddr);
+        //console.log("token list:"+tokens+" Places hex:"+linkhex_line+" At addr:"+linkedaddr);
         
     }
     hex_output+=":00000001FF\n";
+    console.log("DONE LINKING CODE. hexgen.js IS FINISHED");
+
 
 //        var output = assembly_code+";Start HEX Record\n"+hex_output;
 

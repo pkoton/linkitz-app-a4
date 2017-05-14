@@ -1,8 +1,11 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+import re
+
+DEBUG=True
 
 # This is our path to the firmware .hex file
-HEXFILE = "js/services/firmware.hex"
+HEXFILE = "js/services/LinkitzShipFirmware.production.hex"
 JSFILE  = "js/services/firmware.js"
 
 with open(HEXFILE, 'r') as hexfile:
@@ -21,7 +24,14 @@ linkitzApp.factory('LinkitzFirmware',
     var latestFirmwareEmbedded =
 """)
         for line in hexfile.readlines():
-            jsfile.write('        "'+line[:-1]+'\\n" +\n')
+            if(re.match(":[0-9A-Fa-f]{6}04",line,flags=re.IGNORECASE)):
+                if(DEBUG):
+                    print("discarding line '"+line+"'")
+            elif(re.match(":04000E00FCCFCFDB79",line,flags=re.IGNORECASE)):
+                if(DEBUG):
+                    print("discarding line '"+line+"'")
+            else:
+                jsfile.write('        "'+line[:-1]+'\\n" +\n')
 
         jsfile.write('''
         "";
