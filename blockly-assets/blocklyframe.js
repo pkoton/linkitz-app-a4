@@ -24,6 +24,7 @@ function receiveMessage(event) {
     var eventData = event.data;
     var handlerMethod = blocklyMessageHandlers[eventData.method];
     var arg = eventData.arg;
+    var exn = eventData.exceptn;
 
     if (handlerMethod) {
         handlerMethod(arg);
@@ -42,9 +43,15 @@ function onBlocklyLoaded() {
 
 function onBlocklyGenerate() {
     assembly_generator = true;
-    var code = Blockly.Assembly.workspaceToCode(Blockly.mainWorkspace);
+    var exn = null;
+    try {
+      var code = Blockly.Assembly.workspaceToCode(Blockly.mainWorkspace);
+    }
+    catch (ex) {
+      exn = ex;
+    }
 //    var code = "  On_motion_trigger:\n    Syscall Flash ([3, 255,0,0])\n\n  Syscall Return Null\n";
-    window.parent.postMessage({method: 'onBlocklyGenerate', arg: code}, '*');
+    window.parent.postMessage({method: 'onBlocklyGenerate', arg: code, exceptn: exn}, '*');
 }
 
 function injectLanguage() {

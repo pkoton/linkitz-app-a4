@@ -29,8 +29,13 @@ angular.module('linkitzApp').controller('EditorController', ['$scope', '$timeout
         $scope.editor.dirty = true;
     }
 
-    $scope.onBlocklyEditorGenerate = function onBlocklyEditorGenerate(code, blocklyElement) {
-        $scope.editor.deferredCode.resolve(code);
+    $scope.onBlocklyEditorGenerate = function onBlocklyEditorGenerate(code, blocklyElement, exceptn) {
+        if (exceptn) {
+            $scope.editor.deferredCode.reject(exceptn);
+        }
+        else {
+            $scope.editor.deferredCode.resolve(code);
+        }
     }
 
     var getFileContentType = function getFileContentType (extension) {
