@@ -43,12 +43,12 @@ angular.module('ui.blockly', [])
                         });
                     }
                 },
-                onBlocklyGenerate: function onBlocklyGenerate (arg) {
+                onBlocklyGenerate: function onBlocklyGenerate (arg, exceptn) {
                     var generatedCode = arg;
                     if (angular.isFunction(opts.onGenerate)) {
                         var callback = opts.onGenerate;
                         scope.$apply(function () {
-                            callback(generatedCode, elm[0]);
+                            callback(generatedCode, elm[0], exceptn);
                         });
                     }
                 }
@@ -58,9 +58,10 @@ angular.module('ui.blockly', [])
                 var eventData = event.data;
                 var handlerMethod = messageHandlers[eventData.method];
                 var arg = eventData.arg;
+                var exn = eventData.exceptn;
 
                 if (handlerMethod) {
-                    handlerMethod(arg);
+                    handlerMethod(arg, exn);
                 }
             }
             $window.addEventListener("message", receiveMessage, false);
