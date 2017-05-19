@@ -105,7 +105,6 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
         01: Set_Reg_Event_Speed
         02: FlashHue
         03: Random
-        04: Return
     06:ArglessSyscall (Syscall)
         01: Get_motion_data
         02: FlashRGB
@@ -298,8 +297,7 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
             if( token_list[1].match(/exit/i)||
                 token_list[1].match(/flashHue/i)||
                 token_list[1].match(/set_reg_event_speed/i)||
-                token_list[1].match(/random/i)||
-                (token_list[1].match(/return/i)&&token_list[2].match(/R/i))){
+                token_list[1].match(/random/i)){
 
                 //console.log("syscall should have one argument")
                 hex_line+=linkitzApp_hexgen_pad_words("05");
