@@ -52,10 +52,12 @@ Blockly.Assembly['procedures_defreturn'] = function(block) {
     console.log("Return block " + returnBlock + ", returnType = " + returnType);
     if (is_scalar(returnBlock) || (returnType == 'Number') || (returnType == 'Boolean') || (returnType == 'String')) {
       console.log("procedure return type should be AKO scalar, is " + returnType);
-      var returnCode = returnValue + 'syscall return R1\n'; // value in R1
+      // var returnCode = returnValue + 'syscall return R1\n'; // value in R1
+      var returnCode = returnValue + 'syscall return\n'; // value in R1
     } else if ((get_list_desc(returnBlock, [])[0] == 1) || (returnType == 'Array') || (returnType == 'Colour')) {
         console.log("procedure return type should be AKO list, is " + returnType);
-        var returnCode = returnValue + 'syscall Lreturn\n'; // value on stack
+        // var returnCode = returnValue + 'syscall Lreturn\n'; // value on stack
+        var returnCode = returnValue + 'syscall return\n'; // value on stack
       } 
       // else if (returnType == 'variables_get') {]
       else {
