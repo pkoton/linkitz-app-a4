@@ -32,6 +32,7 @@ linkitzApp.controller('LinkitzAppController', [
         });
 
     $scope.isConnected = false;
+    $scope.isAttached = false;
 
     $scope.hubs = {};
     $scope.lastHub = '00:00:00:00';
@@ -58,6 +59,10 @@ linkitzApp.controller('LinkitzAppController', [
 
     $scope.setConnected = function setConnected(connected) {
         $scope.isConnected = connected;
+    }
+    
+    $scope.setAttached = function setAttached(attached) {
+        $scope.isAttached = attached;
     }
 
     $scope.restoreState = function restoreState() {
@@ -111,15 +116,19 @@ linkitzApp.controller('LinkitzAppController', [
             $scope.activeProgram.$save();
         }
         else {
-            var saveBody = {
-                "userid": $scope.lastHub,
-                "codexml": $scope.editor.blocklyXML
-            }
-            var newProgram = new HubPrograms(saveBody);
-            newProgram.$save(function(response) {
-                LogService.appLogMsg("Saved program, stored as codeid: " + response.codeid + " .");
-                $scope.queryPrograms();
-            });
+	    if (!($scope.lastHub)) {
+		errorCatcher.handle("Save: No hubID specified", {});
+	    } else {
+		var saveBody = {
+		    "userid": $scope.lastHub,
+		    "codexml": $scope.editor.blocklyXML
+		}
+		var newProgram = new HubPrograms(saveBody);
+		newProgram.$save(function(response) {
+		    LogService.appLogMsg("Saved program, stored as codeid: " + response.codeid + " .");
+		    $scope.queryPrograms();
+		});
+	    }
         }
     }
 
@@ -147,7 +156,12 @@ linkitzApp.controller('LinkitzAppController', [
 		return LinkitzToy.readID();
 	    })
 	    .then(function (connectedID) {
+		console.log("connectedID " + connectedID); // this prints 4 comma-separated decimal numbers
 		$scope.setHubID(connectedID);
+		console.log("Connected to hub " + connectedID[0].toString(16) + ':' +
+                         connectedID[1].toString(16) + ':' +
+                         connectedID[2].toString(16) + ':' +
+                         connectedID[3].toString(16) );
 	    })
 	    .then(function () {
 		catch_msg = "Load code: Error programming Linkitz";
