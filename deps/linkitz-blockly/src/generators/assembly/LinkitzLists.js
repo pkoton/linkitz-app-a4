@@ -89,6 +89,8 @@ Blockly.Assembly['lists_length'] = function(block) {
   return [code, Blockly.Assembly.ORDER_NONE];
 };
 
+// the code below only works for named lists, does not work for anonymous lists because you cannot access them
+// using the lists_getIndex_nonMut block, as they have no list_name
 Blockly.Assembly['lists_getIndex_nonMut'] = function(block) {
   // Get element at index.
   console.log("in lists_getIndex_nonMut");
@@ -227,6 +229,8 @@ Blockly.Assembly['lists_getIndex_nonMut'] = function(block) {
   throw 'Unhandled combination (lists_getIndex).';
 };
 
+// the code below only works for named lists, does not work for anonymous lists because you cannot access them
+// using the lists_setIndex_nonMut block, as they have no list_name
 Blockly.Assembly['lists_setIndex_nonMut'] = function(block) {
   // Set element at index.
   var code = '; starting lists_setIndex_nonMut\n';
