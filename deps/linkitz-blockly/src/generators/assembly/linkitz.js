@@ -176,8 +176,8 @@ Blockly.Assembly['flash_leds'] = function(block) {
             code += "; ending flash_leds\n";
             return code;
             }
-            if (numlist_elt_sizeItems > 127) {
-            numlist_elt_sizeItems = 127; // 127 max
+            if (list_elt_size > 127) {
+            list_elt_size = 127; // 127 max
              }
             if ((gsv_next + list_elt_size) > glv_next) { // test if we have enough space for temp registers to hold all the list items
                 throw 'out of register space in flash_list';
