@@ -11,9 +11,9 @@
     <div class="col-xs-4">
       <p id="about-version-block"><b>Linkitz</b><br/>Version {{appVersion}}</p>
     </div>
-    <div class="col-xs-4">
-      <p id="about-version-block"><b>Connected Hub ID:</b><br/>{{(isConnected) ? lastHub : 'Not Connected'}}</p>
-    </div>
+    <!--<div class="col-xs-4">
+       <p id="about-version-block"><b>Attached Hub ID:</b><br/>{{(isAttached) ? attachedHub : 'No hub attached'}}</p>
+    </div>-->
     <div class="col-xs-2 text-center">
       <button type="button" class="btn" ng-class="{'btn-default': !devMode, 'btn-info': devMode}" ng-click="toggleDevMode()">Developer Mode</button>
     </div>
