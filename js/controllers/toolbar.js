@@ -19,6 +19,7 @@ function linkitzPing(){
 			   })
 			.then(function (querybytes) {
 			       $scope.setConnected(true);
+			       $scope.setAttached(true);
 			       return LinkitzToy.readID();
 			   })
 			.then(function (connectedID) {
@@ -33,7 +34,8 @@ function linkitzPing(){
 			$scope.setConnected(false);
 		    })
 		    .catch(function (reason) {
-			console.log("Ping: No hub detected")
+			console.log("Ping: No hub detected");
+			$scope.setAttached(false);
 		    });
 	}
     }
