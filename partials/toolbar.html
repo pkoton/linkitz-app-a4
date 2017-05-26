@@ -24,10 +24,16 @@
   <button id="saved-programs" type="button" class="btn btn-default btn-lg wide-450" uib-dropdown-toggle ng-disabled="disabled">
     Saved Programs <i class="fa fa-caret-down fa-lg"></i>
   </button>
+  
   <ul class="dropdown-menu wide-450" uib-dropdown-menu role="menu" aria-labelledby="saved-programs">
-    <li ng-repeat-start="hub in hubs" class="dropdown-header">Hub {{hub.hubId}}</li>
+    <li class="dropdown-header">Linkitz code</li>
+    <li role="menuitem" ng-repeat="program in LinkitzPrograms">
+      <a href="#" ng-click="loadEditor(program,true)"><i class="fa fa-square-o"></i>  {{ program.codename }}</a> 
+    </li>
+    <li class="divider"></li>
+    <li ng-repeat-start="hub in hubs" class="dropdown-header">User code</li>
     <li role="menuitem" ng-repeat="program in hub.hubPrograms">
-      <a href="#" ng-click="loadEditor(program)"><i class="fa fa-square-o"></i>Program {{ program.codeid }}</a> <!-- add scrolling in loadEditor -->
+      <a href="#" ng-click="loadEditor(program,false)"><i class="fa fa-square-o"></i>Program {{ program.codeid }}</a> <!-- add scrolling in loadEditor -->
     </li>
     <li ng-repeat-end class="divider"></li>
   </ul>
