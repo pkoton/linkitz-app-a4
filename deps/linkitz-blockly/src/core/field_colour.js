@@ -132,7 +132,8 @@ Blockly.FieldColour.prototype.getText = function() {
  * @type {!Array.<string>}
  */
 // Blockly.FieldColour.COLOURS = goog.ui.ColorPicker.SIMPLE_GRID_COLORS;
- Blockly.FieldColour.COLOURS = ['#E81A4B', '#FF7245',  '#ffe600',  '#009245', '#00989a',  '#1329c3', '#873299', '#DEDFE0', '#ff6aa2', '#ffa31d', '#fff267', '#33cc66', '#66d9ff','#0083CA','#9862e6','#FFFFFF'];
+// Blockly.FieldColour.COLOURS = ['#E81A4B', '#FF7245',  '#ffe600',  '#009245', '#00989a',  '#1329c3', '#873299', '#DEDFE0', '#ff6aa2', '#ffa31d', '#fff267', '#33cc66', '#66d9ff','#0083CA','#9862e6','#FFFFFF'];
+Blockly.FieldColour.COLOURS = ['#FF0000', '#FF7245',  '#ffe600',  '#00FF00', '#00989a',  '#1329c3', '#873299', '#DEDFE0', '#ff6aa2', '#ffa31d', '#fff267', '#33cc66', '#66d9ff','#0000ff','#9862e6','#FFFFFF'];
 
 /**
  * Number of columns in the palette.

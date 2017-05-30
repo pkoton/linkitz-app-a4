@@ -46,7 +46,7 @@ Blockly.Blocks['colour_picker'] = {
         {
           "type": "field_colour",
           "name": "COLOUR",
-          "colour": "#E81A4B"
+          "colour": "#E80000"
         }
       ],
       "output": "Colour",
