@@ -1,0 +1,17 @@
+<!-- this is sample code, work in progress -->
+
+<div class="alert alert-danger text-center" role="alert">
+  <button type="button" class="close" ng-click="$dismiss()" aria-hidden="true">&times;</button>
+  <h1><i class="fa fa-warning fa-3x text-center"></i></h1>
+  <hr>
+  <h4>This will erase all the blocks on your workspace.</h4>
+</div>
+<div class="modal-body">
+  Do you want to do this?
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-danger" ng-click="$dismiss()">Dismiss</button>
+  <button type="button" class="btn btn-danger" ng-click="modalOptions.close()">NO</button>
+  <button class="btn btn-primary"  ng-click="modalOptions.ok();">YES</button>
+</div>
