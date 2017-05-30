@@ -32,7 +32,7 @@ Blockly.Assembly['flash_leds'] = function(block) {
     var targetBlock = block.getInputTargetBlock('COLOR');
     console.log("1 in flash_leds: input is block type " + targetBlock.type);
     if (is_scalar(targetBlock)) { // ***** input is a scalar in R1
-      code += flash_arg + 'ABS R1 R1\nsyscall flashHue R1\n';
+      code += flash_arg + 'syscall flashHue R1\n';//Hue is a signed variable and needs a domain that varies from [-127|-128,127] or from [0,255] Drew doesn't care which but if it's restricted by taking an absolute value he will spend hours debugging LED code
     } // ***** input is a list on stack, first element is list length
      else {
       console.log("2 in flash_list: targetBlock.type " + targetBlock.type);
