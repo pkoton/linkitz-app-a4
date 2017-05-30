@@ -36,7 +36,10 @@ linkitzApp.controller('LinkitzAppController', [
 
     $scope.hubs = {};
     $scope.lastHub = '00:00:00:00';
-
+    $scope.attachedHub = '00:00:00:00';
+    
+    $scope.LinkitzPrograms = [];
+    
     $scope.hubID = null;
     $scope.activeProgram = null;
 
@@ -44,6 +47,8 @@ linkitzApp.controller('LinkitzAppController', [
     $scope.editor = {};
     $scope.editor.blocklyXML = emptyBlocklyXML;
     $scope.editor.dirty = false;
+    $scope.editor.noOverwrite = false; // this flag is set to true if editor contains a builtIn program
+
 
     $scope.setHubID = function setHubID(connectedHubId) {
         $scope.hubID = connectedHubId;
@@ -51,7 +56,8 @@ linkitzApp.controller('LinkitzAppController', [
                          connectedHubId[1].toString(16) + ':' +
                          connectedHubId[2].toString(16) + ':' +
                          connectedHubId[3].toString(16);
-        if (!$scope.hubs[$scope.lastHub]) {
+	$scope.attachedHub = $scope.lastHub;
+	if (!$scope.hubs[$scope.lastHub]) {
             $scope.hubs[$scope.lastHub] = {};
         }
         return $scope.saveState();
@@ -89,47 +95,59 @@ linkitzApp.controller('LinkitzAppController', [
     }
 
     $scope.queryPrograms = function queryPrograms() {
-        angular.forEach($scope.hubs, function(value, key) {
+	$scope.LinkitzPrograms = HubPrograms.query({'userid': 'builtIn'});
+	angular.forEach($scope.hubs, function(value, key) {
             value['hubId'] = key;
             value['hubPrograms'] = HubPrograms.query({'userid': key});
         });
     }
 
-    $scope.loadEditor = function loadEditor (program) {
+    $scope.loadEditor = function loadEditor (program,writeFlag) {
         var blocklyxml = program.codexml;
         $scope.activeProgram = program;
 //        LogService.appLogMsg("Loading Blockly XML:\n" + blocklyxml);
         $scope.editor.blocklyXML = blocklyxml;
         $scope.editor.dirty = false;
+	$scope.editor.noOverwrite = writeFlag;
     }
 
     $scope.clearEditor = function clearEditor () {
 //        LogService.appLogMsg("Re-initializing Blockly XML");
-        $scope.activeProgram = null;
-        $scope.editor.blocklyXML = emptyBlocklyXML;
-        $scope.editor.dirty = false;
+            $scope.activeProgram = null;
+	    $scope.editor.blocklyXML = emptyBlocklyXML;
+	    $scope.editor.dirty = false;
     }
 
     $scope.saveEditor = function saveEditor () {
-        if ($scope.activeProgram) {
-            $scope.activeProgram.codexml = $scope.editor.blocklyXML;
-            $scope.activeProgram.$save();
-        }
-        else {
-	    if (!($scope.lastHub)) {
-		errorCatcher.handle("Save: No hubID specified", {});
+	if (!($scope.attachedHub)) {
+	    errorCatcher.handle("Save: No hubID specified", {});
+	}
+	else if (($scope.editor.noOverwrite) || (!($scope.activeProgram))) { // if code is built-in or new,save as new
+	   // $scope.lastHub = $scope.attachedHub;
+	    var saveBody = {
+		"userid": $scope.attachedHub,
+		"codexml": $scope.editor.blocklyXML
+	    }
+	    if ($scope.editor.blocklyXML == '<xml xmlns="http://www.w3.org/1999/xhtml"></xml>') {
+		LogService.appLogMsg("Save: Empty workspace, did not save");
 	    } else {
-		var saveBody = {
-		    "userid": $scope.lastHub,
-		    "codexml": $scope.editor.blocklyXML
-		}
 		var newProgram = new HubPrograms(saveBody);
 		newProgram.$save(function(response) {
-		    LogService.appLogMsg("Saved program, stored as codeid: " + response.codeid + " .");
+		    LogService.appLogMsg("Saved program, stored as codeid: " + response.codeid + " for userid: " + response.userid + ".");
 		    $scope.queryPrograms();
 		});
 	    }
-        }
+	}
+	else if ($scope.activeProgram) { // if existing usercode, update it (write back under same codeID)
+	    $scope.activeProgram.codexml = $scope.editor.blocklyXML;
+	    $scope.activeProgram.$save(function(response) {
+		LogService.appLogMsg("Updated program codeid: " + response.codeid + " for userid: " + response.userid + ".");
+		$scope.queryPrograms();
+	    });
+	}
+	else {
+	    errorCatcher.handle("Save: Error saving program", {});
+	}
     }
 
     $scope.generateCode = function generateCode () {

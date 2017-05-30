@@ -12,3 +12,11 @@ linkitzApp.factory('HubPrograms', ['$resource', function($resource) {
         }
     );
 }]);
+
+linkitzApp.factory('LinkitzPrograms', ['$resource', function($resource) {
+    return $resource('https://polar-hamlet-45060.herokuapp.com/db/:userid/:codeid', {userid: "@userid", codeid: "@codeid"},
+        {   'get':    {method:'GET'},
+            'query':  {method:'GET', isArray:true}
+        }
+    );
+}]);
