@@ -57,7 +57,7 @@ linkitzApp.controller('LinkitzAppController', [
                          connectedHubId[2].toString(16) + ':' +
                          connectedHubId[3].toString(16);
 	$scope.attachedHub = $scope.lastHub;
-	if (!$scope.hubs[$scope.lastHub]) {
+		if (!$scope.hubs[$scope.lastHub]) {
             $scope.hubs[$scope.lastHub] = {};
         }
         return $scope.saveState();
@@ -70,7 +70,46 @@ linkitzApp.controller('LinkitzAppController', [
     $scope.setAttached = function setAttached(attached) {
         $scope.isAttached = attached;
     }
-
+    
+    function linkitzPing(){
+		if (!$scope.connectTransitioning){ //don't ping if we are already connected 
+		LinkitzToy.connect()
+			.then(function () {
+			    return LinkitzToy.verifyDevice();
+			   })
+			.then(function (querybytes) {
+			       $scope.setConnected(true);
+			       $scope.setAttached(true);
+			       return LinkitzToy.readID();
+			   })
+			.then(function (connectedID) {
+			    $scope.setHubID(connectedID);
+			    if ($scope.devMode == true) {
+			    console.log("Pinging hub " + connectedID[0].toString(16) + ':' +
+				 connectedID[1].toString(16) + ':' +
+				 connectedID[2].toString(16) + ':' +
+				 connectedID[3].toString(16) );
+			    } else
+			    {console.log("Ping: A hub is connected");
+			    }
+			   })
+			.then(LinkitzToy.disconnect)
+			.then(function () {
+			$scope.setConnected(false);
+			if (!$scope.savedDropdownOpen) { // don't refresh program list if dropdown is open (makes it flash)
+			    $scope.queryPrograms();
+			}
+		    })
+		    .catch(function (reason) {
+			console.log("Ping: No hub detected");
+			$scope.setAttached(false);
+		    });
+	}
+    }
+    
+    setInterval(function(){
+        linkitzPing()}, 5000)
+    
     $scope.restoreState = function restoreState() {
         return ChromeBrowser.loadLocalStorage("persistState")
             .then(function (persistState) {
@@ -123,7 +162,7 @@ linkitzApp.controller('LinkitzAppController', [
 	    errorCatcher.handle("Save: No hubID specified", {});
 	}
 	else if (($scope.editor.noOverwrite) || (!($scope.activeProgram))) { // if code is built-in or new,save as new
-	   // $scope.lastHub = $scope.attachedHub;
+	    $scope.lastHub = $scope.attachedHub;
 	    var saveBody = {
 		"userid": $scope.attachedHub,
 		"codexml": $scope.editor.blocklyXML
@@ -174,7 +213,7 @@ linkitzApp.controller('LinkitzAppController', [
 		return LinkitzToy.readID();
 	    })
 	    .then(function (connectedID) {
-		console.log("connectedID " + connectedID); // this prints 4 comma-separated decimal numbers
+		// console.log("connectedID " + connectedID); // this prints 4 comma-separated decimal numbers
 		$scope.setHubID(connectedID);
 		console.log("Connected to hub " + connectedID[0].toString(16) + ':' +
                          connectedID[1].toString(16) + ':' +
