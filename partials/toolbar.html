@@ -20,7 +20,9 @@
   </a>
 </div>
 
-<div class="navbar-text" is-open="savedDropdownOpen" uib-dropdown>
+
+  <!--<div class="navbar-text" is-open="savedDropdownOpen" uib-dropdown>-->
+ <div class="navbar-text" uib-dropdown is-open="status.isopen" on-toggle="toggled(open)">
   <button id="saved-programs" type="button" class="btn btn-default btn-lg wide-450" uib-dropdown-toggle ng-disabled="disabled">
     Saved Programs <i class="fa fa-caret-down fa-lg"></i>
   </button>

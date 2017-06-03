@@ -1,6 +1,8 @@
 // toolbar.js
 
-angular.module('linkitzApp').controller('ToolbarController', [
+var linkitzApp = angular.module('linkitzApp');
+
+linkitzApp.controller('ToolbarController', [
     '$scope',
     '$timeout',
     'LogService',
@@ -13,11 +15,12 @@ angular.module('linkitzApp').controller('ToolbarController', [
 
 
 
-    $scope.savedDropdownOpen = false;
-    $scope.savedProgramList = null;
+	$scope.savedDropdownOpen = false;
 
-    $scope.updateSavedProgramList = function () {
-    }
+	$scope.savedProgramList = null;
+
+	$scope.updateSavedProgramList = function () {
+	}
 
 
 }]);

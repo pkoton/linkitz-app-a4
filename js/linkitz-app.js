@@ -30,6 +30,19 @@ linkitzApp.controller('LinkitzAppController', [
         .then(function (info) {
             $scope.platformInfo = info;
         });
+	
+	
+	$scope.status = {
+	    isopen: false
+	};
+
+	$scope.toggled = function(open) {
+	    if (open) {
+		$scope.savedDropdownOpen = true;
+	    } else {
+		$scope.savedDropdownOpen = false;
+	    }
+	};
 
     $scope.isConnected = false;
     $scope.isAttached = false;
@@ -172,7 +185,10 @@ linkitzApp.controller('LinkitzAppController', [
 	    } else {
 		var newProgram = new HubPrograms(saveBody);
 		newProgram.$save(function(response) {
-		    LogService.appLogMsg("Saved program, stored as codeid: " + response.codeid + " for userid: " + response.userid + ".");
+		    LogService.appLogMsg("Saved program, stored as codeid: " + response.codeid);
+		    if ($scope.devMode) {
+			LogService.appLogMsg(" for userid: " + response.userid + "."); // show userID in dev mode
+		    }
 		    $scope.queryPrograms();
 		});
 	    }
@@ -180,7 +196,10 @@ linkitzApp.controller('LinkitzAppController', [
 	else if ($scope.activeProgram) { // if existing usercode, update it (write back under same codeID)
 	    $scope.activeProgram.codexml = $scope.editor.blocklyXML;
 	    $scope.activeProgram.$save(function(response) {
-		LogService.appLogMsg("Updated program codeid: " + response.codeid + " for userid: " + response.userid + ".");
+		LogService.appLogMsg("Updated program codeid: " + response.codeid);
+		    if ($scope.devMode) {
+			LogService.appLogMsg(" for userid: " + response.userid + "."); // show userID in dev mode
+		    }
 		$scope.queryPrograms();
 	    });
 	}
