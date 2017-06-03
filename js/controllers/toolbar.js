@@ -21,6 +21,27 @@ linkitzApp.controller('ToolbarController', [
 
 	$scope.updateSavedProgramList = function () {
 	}
+	
+	
 
-
+	//$scope.isSelected = false;
+	
+	//$scope.getSelected = function(num) {
+	//	if ($scope.activeProgram) {
+	//		if (num == $scope.activeProgram.codeid) {
+	//		return true;
+	//		}
+	//	}
+	//}
+	
+	$scope.getSelected = function(num) {
+		//console.log("in getSelected, $scope.newProg = " + $scope.newProg);
+		if (($scope.activeProgram) && (num == $scope.activeProgram.codeid)) {
+			return true;
+			}
+		if (num == $scope.newProg){
+			return true;
+			}
+		
+	}
 }]);

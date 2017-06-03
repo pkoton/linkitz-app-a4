@@ -52,6 +52,7 @@ linkitzApp.controller('LinkitzAppController', [
     $scope.attachedHub = '00:00:00:00';
     
     $scope.LinkitzPrograms = [];
+    $scope.newProg = -1;
     
     $scope.hubID = null;
     $scope.activeProgram = null;
@@ -161,6 +162,7 @@ linkitzApp.controller('LinkitzAppController', [
         $scope.editor.blocklyXML = blocklyxml;
         $scope.editor.dirty = false;
 	$scope.editor.noOverwrite = writeFlag;
+	$scope.newProg = -1;
     }
 
     $scope.clearEditor = function clearEditor () {
@@ -168,6 +170,7 @@ linkitzApp.controller('LinkitzAppController', [
             $scope.activeProgram = null;
 	    $scope.editor.blocklyXML = emptyBlocklyXML;
 	    $scope.editor.dirty = false;
+	    $scope.newProg = -1;
     }
 
     $scope.saveEditor = function saveEditor () {
@@ -189,7 +192,9 @@ linkitzApp.controller('LinkitzAppController', [
 		    if ($scope.devMode) {
 			LogService.appLogMsg(" for userid: " + response.userid + "."); // show userID in dev mode
 		    }
+		    $scope.newProg = response.codeid;
 		    $scope.queryPrograms();
+		    console.log("in saveEditor, $scope.newProg = " + $scope.newProg);
 		});
 	    }
 	}
