@@ -49,7 +49,7 @@ linkitzApp.controller('LinkitzAppController', [
 
     $scope.hubs = {};
     $scope.lastHub = '00:00:00:00';
-    $scope.attachedHub = '00:00:00:00';
+    $scope.attachedHub = null;
     
     $scope.LinkitzPrograms = [];
     $scope.newProg = -1;
