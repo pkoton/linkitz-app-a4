@@ -194,7 +194,6 @@ linkitzApp.controller('LinkitzAppController', [
 		    }
 		    $scope.newProg = response.codeid;
 		    $scope.queryPrograms();
-		    console.log("in saveEditor, $scope.newProg = " + $scope.newProg);
 		});
 	    }
 	}
