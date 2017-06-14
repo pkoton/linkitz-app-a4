@@ -265,7 +265,7 @@ Blockly.Assembly.scrub_ = function(block, code) {
     // Collect comment for this block.
     var comment = block.getCommentText();
     if (comment) {
-      commentCode += Blockly.Assembly.prefixLines(comment, '// ') + '\n';
+      commentCode += Blockly.Assembly.prefixLines(comment, ';// ') + '\n';
     }
     // Collect comments for all value arguments.
     // Don't collect comments for nested statements.
