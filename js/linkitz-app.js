@@ -320,7 +320,11 @@ linkitzApp.controller('LinkitzAppController', [
 	    })
 	    .then(LinkitzToy.signFlash) 
 	    .then(function signSuccess() {
-		LogService.appLogMsg("Signed.");
+		LogService.appLogMsg("Signed. Resetting...");
+	    })
+	    .then(LinkitzToy.resetDevice) 
+	    .then(function resetSuccess() {
+		LogService.appLogMsg("Resetting.");
 	    })
 	    .then(function () {
 		catch_msg = "Load code: Error disconnecting from Linkitz";
