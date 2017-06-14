@@ -316,7 +316,7 @@ linkitzApp.controller('LinkitzAppController', [
 	    .then(HexGenerator.processAssembly)
 	    .then(LinkitzToy.programDevice) // in linkitztoy.js line 252 (aliased linkitzProgramDevice)
 	    .then(function programSuccess() {
-		LogService.appLogMsg("Programming Successful. Signing...");
+		LogService.appLogMsg("Programming Successful. Signing...(according to toggleConnect)");
 	    })
 	    .then(LinkitzToy.signFlash) 
 	    .then(function signSuccess() {
@@ -366,7 +366,7 @@ linkitzApp.controller('LinkitzAppController', [
         .then(HexGenerator.processAssembly)
         .then(LinkitzToy.programDevice) // def in linkitztoy.js line 252 (aliased linkitzProgramDevice)
         .then(function programSuccess() {
-            LogService.appLogMsg("Programming Successful. Signing...");
+            LogService.appLogMsg("Programming Successful. Signing...(according to tryBuild)");
         })
         .then(LinkitzToy.signFlash) 
         .then(function signSuccess() {
