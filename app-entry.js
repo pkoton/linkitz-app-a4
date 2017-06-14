@@ -4,6 +4,8 @@ chrome.app.runtime.onLaunched.addListener(function() {
 
 var commHandler = function() {
     var connectedId = 0;
+    var localID;
+    var isLocal;
     chrome.app.window.create(
       'app-main.html', {
         bounds: {

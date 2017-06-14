@@ -25,14 +25,14 @@
   </button>
   
   <ul class="dropdown-menu wide-450" uib-dropdown-menu role="menu" aria-labelledby="saved-programs">
-    <li class="dropdown-header">Linkitz code</li>
+    <li class="dropdown-header">Linkitz Code</li>
     <li role="menuitem" ng-repeat="program in LinkitzPrograms">
       <a href="#" ng-click="loadEditor(program,true)"> {{ program.codename }}</a> 
     </li>
     <li class="divider"></li>
-    <li ng-repeat-start="hub in hubs" class="dropdown-header">User code</li>
-    <li role="menuitem" ng-repeat="program in hub.hubPrograms">
-      <a href="#" ng-click="loadEditor(program,false)"><i class='fa' ng-class="{'fa-arrow-right' : getSelected(program.codeid)}"></i> Program {{ program.codeid }}</a>
+   <li ng-repeat-start="hub in hubs" class="dropdown-header"><span ng-show = "useLocalLabel(hub.hubId)">Local Code </span><span ng-show = "!useLocalLabel(hub.hubId)">User Code </span><span ng-show="devMode"> for hub {{hub.hubId}}</span></li>
+   <li role="menuitem" ng-repeat="program in hub.hubPrograms">
+      <a href="#" ng-click="loadEditor(program,false)"><i class='fa' ng-class="{'fa-arrow-right' : getSelected(program.userid,program.codeid)}"></i> Program {{ program.codeid }}</a>
     </li>
     <li ng-repeat-end class="divider"></li>
   </ul>
