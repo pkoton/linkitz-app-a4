@@ -117,6 +117,8 @@ var global_list_variables = new Object();
 // an unknown list for a variable l has a [sublist_desc] which is a list describing a nested list structure
 var unknown_lists = new Object();
 
+var unused_vars = new Object();
+
 // block_to_list_desc links a block.id with the structure of the value the block returns
 // [] for scalar, [a1,...,an] for lists.
 // this is so we can use the space allocation knowledge that was developed in the memory allocation phase

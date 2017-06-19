@@ -104,13 +104,15 @@ Blockly.Generator.prototype.workspaceToCode = function(workspace) {
       undef_vars = [];
       undef_vars_next = 0;
       ifCount = 0;
+      unused_vars = new Object();
       
       // console.log("calling resolve var refs");
       if (resolve_var_refs(workspace,[]) == 0) {
-          alert("unresolved variables issue");
+          console.log("unresolved variables issue");
       }
       else {
         // console.log("out of resolve var refs");
+        var resolve_var_refs_complete = true;
         console.log("GSV = " + global_scalar_variables);
         console.log("GLV = " + JSON.stringify(global_list_variables));
         // console.log("blockid_return_value_desc = " + JSON.stringify(blockid_return_value_desc)); 

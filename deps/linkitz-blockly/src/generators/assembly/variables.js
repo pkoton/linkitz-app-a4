@@ -58,8 +58,12 @@ goog.require('Blockly.Assembly');
       return [code, Blockly.Assembly.ORDER_NONE];
     }
     else {
-  add_varname_to_undef_vars_list(varName);
-  } 
+      if (resolve_var_refs_complete == true) {
+        throw 'trying to use variable whose value is not set';
+      } else {
+        add_varname_to_undef_vars_list(varName); // this is to handle forward references when running
+      }
+    } 
 }
 
 Blockly.Assembly['variables_set'] = function(block) {
@@ -109,7 +113,11 @@ if (!targetBlock) {
       }
         else {
           console.log("in variables_set, " + varName + " not found");
-          var code = varName  + ' UNDEFINED\n';
+            if (unused_vars[varName] == 'set') { // the variable is set without being used (otherwise it would be "both")
+              code = ''; // so we don't care about it, don't generate code
+            } else {
+            throw 'trying to set an undefined variable';
+            }
           return code;
         }
   }
@@ -144,6 +152,9 @@ if (!targetBlock) {
       console.log("for loop i = " + i);
       var current_block = blocks[i];
       console.log("in loop1, current_block is (" + i + ") " + current_block);
+      if (current_block.type == 'variables_get') {
+        add_varname_to_unused_vars(varName, "get");
+      } else 
   // ****************  looking for procedure definitions
       if (current_block.type == 'procedures_defreturn') { //********** returns scalar or list?
         var procName = Blockly.Assembly.variableDB_.getName(current_block.getFieldValue('NAME'),Blockly.Procedures.NAME_TYPE);              
@@ -209,6 +220,7 @@ if (!targetBlock) {
              
       else if (current_block.type == 'variables_set') { //********** set to scalar or list?
           var varName = Blockly.Assembly.variableDB_.getName(current_block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+          add_varname_to_unused_vars(varName, "set"); // need to find a matching "variables_get(varName)"
           console.log("in loop2 trying to variables_set " + varName);
           var targetBlock = current_block.getInputTargetBlock('VALUE');
           if (targetBlock) {
@@ -269,15 +281,15 @@ if (!targetBlock) {
                       blockid_return_value_desc[targetBlock.id] = [3];
                       break;
                     
-                    // ********* "HARD" LISTS *********
-                    
-                    case 'lists_create_n': // ************* a list of n scalars OR lists **********
-                      // this just adds varName to unknown vars list and unknown_lists because space req is not fully specified
+                    case 'lists_create_n': // ************* a list of length n (could be n scalars OR lists that add up to n) **********
                       console.log("in loop2 found list by case lists_create_n");
                       var numItems = parseInt(targetBlock.getFieldValue('NUM_ITEMS'));
-                      add_listvar_to_unknown_lists(varName, [numItems]); // add list var to unknown_lists
-                      add_varname_to_undef_vars_list(varName);
+                      addNewListVar(varName,numItems,[numItems]);
+                      blockid_return_value_desc[targetBlock.id] = [numItems];
                       break;
+                    
+                    
+                    // ********* "HARD" LISTS *********
                     
                     case 'lists_create_with': // ************* COULD BE scalars OR lists **********
                       console.log("in loop2 found list by case lists_create_with");
@@ -415,7 +427,7 @@ if (!targetBlock) {
             // There is a sublist_desc here in the form [a1, a2, ..., an] and we are adding MORE list info to it      
               console.log("another list");
               switch (set_to_value_type) {
-              // ********* "EASY" value types where LIST is a known list of scalars, we're done *********
+              // ********* "EASY" value types where LIST is a known length, we're done *********
                 case 'colour_picker':
                 case 'get_motion_data':
                   console.log("in loop4 lists_setIndex_nonMut - found list by case colour_picker or get motion");
@@ -424,16 +436,18 @@ if (!targetBlock) {
                   addNewListVar(list_name,total_len,list_desc);
                   blockid_to_list_desc(targetBlock, list_desc);
                   break;
-              
-                // ********* "HARD" LISTS *********
                 
-                case 'lists_create_n': // list item is being assigned to another list of length n, no other info **********
+                case 'lists_create_n': // list item is being assigned to another list of length n **********
                   console.log("in loop4 lists_setIndex_nonMut - found list by case lists_create_n");
                   var numItems = parseInt(set_to_value.getFieldValue('NUM_ITEMS'));
                   list_desc.push(numItems); // add another value onto list_desc
-                  unknown_lists[list_name] = list_desc;
+                  var total_len = list_length_from_sublist_desc(list_desc);
+                  addNewListVar(list_name,total_len,list_desc);
+                  blockid_to_list_desc(targetBlock, list_desc);
                   break;
               
+                // ********* "HARD" LISTS *********
+                
                 case 'lists_create_with': // list item is being assigned to another list, scalars OR lists **********
                   console.log("in loop4 lists_setIndex_nonMut - found list by case lists_create_with");
                   var temp = get_list_desc(set_to_value,[]); // returns [-1/0/1, desc]
@@ -532,9 +546,19 @@ if (!targetBlock) {
       // we win!
       return 1;
     } else if (sim_arrays(undef_vars, undef_vars_prev)) {
-      // bad news, we have a loop situation
-      console.log("can't resolve variable references");
-      throw 'can\'t resolve variable references';
+      // bad news, we either have unresolved vars or a loop situation
+      console.log("can't resolve all variable references");
+      for (var k = 0; k < undef_vars.length; k++) {
+        console.log("undef_vars[" + k + "] = " + undef_vars[k] + " " + unused_vars[undef_vars[k]]);
+        if (unused_vars[undef_vars[k]] == 'set') { // the variable is set without being used (otherwise it would be "both")
+          continue;
+        } else {
+          throw 'can\'t resolve variable references';
+        }
+      }
+      // throw 'can\'t resolve variable references';
+      // trying to let this go in case unresolved var is never used
+      return 1;
     } else {
       // go through all variables_set blocks again to try to resolve more references.
       // run the procedure thing
@@ -688,6 +712,19 @@ function addNewScalarVar(varName) {
          blockid_return_value_desc[block.id] = [3];
          return [full_spec,res];
          break;
+       case 'lists_create_n': // list length is known
+        var numItems = parseInt(block.getFieldValue('NUM_ITEMS'));
+        if (numItems == 0) {
+          numItems = 1; // can't have a list of length 0, in future should use number field with limits
+        }
+        else if (numItems > 127) {
+          numItems = 127;
+          } // 127 max
+        res.push(numItems); 
+        full_spec = 1;
+         blockid_return_value_desc[block.id] = [numItems];
+         return [full_spec,res];
+         break;
        
        case "variables_get": // could be a scalar or a list
          var varName = Blockly.Assembly.variableDB_.getName(block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
@@ -732,18 +769,6 @@ function addNewScalarVar(varName) {
              return [full_spec,res];
            }
          break;
-       case 'lists_create_n': // this is a case where we can't go further to determine structure
-       // UNLESS ITS IN blockid_to_list_desc
-             var numItems = parseInt(block.getFieldValue('NUM_ITEMS'));
-             if (numItems == 0) {
-               numItems = 1; // can't have a list of length 0, in future should use number field with limits
-             }
-             else if (numItems > 127) {
-               numItems = 127;
-               } // 127 max
-             res.push(numItems); 
-             return [full_spec,res];
-         break;
        case 'lists_create_with':
          var itemNum1 = block.itemCount_;
          console.log(itemNum1);
@@ -785,7 +810,7 @@ function addNewScalarVar(varName) {
  
  
 function sim_arrays(a,b){ // returns TRUE if arrays contain the same elements, indifferent to order, assume no dup elt.
-  console.log("undef_vars " + a + ", undef_vars_prev " + b);
+  console.log("undef_vars= " + a + ", undef_vars_prev= " + b);
   var i;
   if (a.length !== b.length) {
     return false;
@@ -847,6 +872,19 @@ function del_varname_from_undef_vars_list(varName) {
       undef_vars.splice(i4, 1);
     }
 }
+
+function add_varname_to_unused_vars(varname,type) {
+  if (!unused_vars[varname]) {
+    unused_vars[varname] = type;
+  } else
+  if ((unused_vars[varname] == "set") && (type == "get")) {
+    unused_vars[varname] = "both";
+  } else
+  if ((unused_vars[varname] == "get") && (type == "set")) {
+    unused_vars[varname] = "both";
+  }
+  console.log("unused_vars = " + JSON.stringify(unused_vars));
+}    
 
 
 // *** might be some useful error-checking code in the following that should be incorporated in get_list_desc etc 
