@@ -82,6 +82,46 @@ body {
   }
 }
 
+.btn-clear {
+    background: #e81a4b;
+    color: #ffffff;
+    border-radius: 4px;
+}
+.btn-clear:hover, .btn-clear:focus, .btn-clear:active, .btn-clear.active, .open > .dropdown-toggle.btn-clear {
+    background: #ed486f;
+}
+.btn-clear:active, .btn-clear.active {
+    background: #d31542;
+    box-shadow: none;
+}
+
+.btn-saveprogram {
+    background: #0BD7E0;
+    color: #ffffff;
+    border-radius: 4px;
+}
+.btn-saveprogram:hover, .btn-saveprogram:focus {
+    background: #11eaf3;
+}
+.btn-saveprogram:active, .btn-saveprogram.active {
+    background: #089197;
+    box-shadow: none;
+}
+
+btn-saved {
+    background: #FFCE00;
+    color: #ffffff;
+    border: 2px solid #FFCE00;
+    border-radius: 4px;
+}
+.btn-saved:hover, .btn-saveprogram:focus, .btn-saveprogram:active, .btn-saveprogram.active, .open > .dropdown-toggle.btn-saveprogram {
+    background: #ffdd4d;
+}
+.btn-saved:active, .btn-saveprogram.active {
+    background: #e6b900;
+    box-shadow: none;
+}
+
 /* main content layout styles */
 
 #app-content {

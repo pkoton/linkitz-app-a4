@@ -11,16 +11,16 @@
 <!-- fa = Font Awesome icons font -->
 
 <div class="navbar-text">
-  <a class="btn btn-default" href="#" ng-click="clearEditor()" tooltip-placement="bottom" uib-tooltip="Clear All Blocks">
-    <i class="fa fa-file-o fa-3x"></i>
+  <a class="btn btn-clear" href="#" ng-click="clearEditor()" tooltip-placement="bottom" uib-tooltip="Erase All Blocks">
+    <i class="fa fa-file-o fa-3x" style="color:#FFFFFF;"></i>
   </a>
   &nbsp;
-  <a class="btn btn-default" href="#" ng-click="saveEditor()" tooltip-placement="bottom" uib-tooltip="Save Program">
-    <i class="fa fa-save fa-3x"></i> 
+  <a class="btn btn-saveprogram" href="#" ng-click="saveEditor()" tooltip-placement="bottom" uib-tooltip="Save This Program">
+    <i class="fa fa-bookmark-o fa-3x" style="color:#FFFFFF;"></i> 
   </a>
 </div>
  <div class="navbar-text" uib-dropdown is-open="status.isopen" on-toggle="toggled(open)">
-  <button id="saved-programs" type="button" class="btn btn-default btn-lg wide-450" uib-dropdown-toggle ng-disabled="disabled">
+  <button  type="button" class="btn btn-saved btn-lg wide-450" style="background: #FFCE00; color: #ffffff;" uib-dropdown-toggle ng-disabled="disabled">
     Saved Programs <i class="fa fa-caret-down fa-lg"></i>
   </button>
   
