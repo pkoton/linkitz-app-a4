@@ -101,24 +101,24 @@ body {
     border-radius: 4px;
 }
 .btn-saveprogram:hover, .btn-saveprogram:focus {
-    background: #11eaf3;
+    background: #44eef6;
 }
 .btn-saveprogram:active, .btn-saveprogram.active {
-    background: #089197;
+    background: #09a8af;
     box-shadow: none;
 }
 
 btn-saved {
-    background: #FFCE00;
+    background: #873299;
     color: #ffffff;
-    border: 2px solid #FFCE00;
+    border: 2px solid #873299;
     border-radius: 4px;
 }
-.btn-saved:hover, .btn-saveprogram:focus, .btn-saveprogram:active, .btn-saveprogram.active, .open > .dropdown-toggle.btn-saveprogram {
-    background: #ffdd4d;
+.btn-saved:hover, .btn-saved:focus, .btn-saved:active, .btn-saved.active, .open > .dropdown-toggle.btn-saved {
+    background: #b251c6;
 }
-.btn-saved:active, .btn-saveprogram.active {
-    background: #e6b900;
+.btn-saved:active, .btn-saved.active {
+    background: #652573;
     box-shadow: none;
 }
 
