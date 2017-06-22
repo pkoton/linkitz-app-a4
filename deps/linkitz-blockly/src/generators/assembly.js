@@ -195,7 +195,7 @@ Blockly.Assembly.init = function(workspace) {
  * @return {string} Completed code.
  */
 Blockly.Assembly.finish = function(code) {
-  // Indent every line.
+  code =  opimize_assembly(code);
   
   //if (code) {
   //  global_scalar_variables_pp = global_scalar_variables.join(',');
@@ -237,9 +237,9 @@ Blockly.Assembly.scrubNakedValue = function(line) {
 };
 
 /**
- * Encode a string as a properly escaped Dart string, complete with quotes.
+ * Encode a string as a properly escaped string, complete with quotes.
  * @param {string} string Text to encode.
- * @return {string} Dart string.
+ * @return {string} Assembly string.
  * @private
  */
 Blockly.Assembly.quote_ = function(string) {
@@ -252,12 +252,12 @@ Blockly.Assembly.quote_ = function(string) {
 };
 
 /**
- * Common tasks for generating Dart from blocks.
+ * Common tasks for generating Assembly from blocks.
  * Handles comments for the specified block and any connected value blocks.
  * Calls any statements following this block.
  * @param {!Blockly.Block} block The current block.
- * @param {string} code The Dart code created for this block.
- * @return {string} Dart code with comments and subsequent blocks added.
+ * @param {string} code The Assembly code created for this block.
+ * @return {string} Assembly code with comments and subsequent blocks added.
  * @private
  */
 Blockly.Assembly.scrub_ = function(block, code) {
@@ -288,3 +288,92 @@ Blockly.Assembly.scrub_ = function(block, code) {
   var nextCode = Blockly.Assembly.blockToCode(nextBlock);
   return commentCode + code + nextCode;
 };
+
+function opimize_assembly(assembly_code) {
+    var assembly_lines = assembly_code.toLowerCase().split("\n");
+    var line_ptr;
+    var at_end = false;
+    for(line_ptr=0;line_ptr<assembly_lines.length;line_ptr++){
+        //Parse a line and the next line
+        var line = assembly_lines[line_ptr];
+        var token_list = tokenize(line);
+    	//console.log("token_list is:"+token_list);
+        if(token_list.length==0||token_list[0]==""){
+            //console.log("skipping empty line")
+            continue;
+        }
+	var lookahead = line_ptr+1;
+	var line_next = assembly_lines[lookahead];
+	console.log("1 next line is: " + line_next);
+	var token_list_next = tokenize(line_next);
+	while (token_list_next.length==0||token_list_next[0]==""){
+            console.log("skipping empty line: " + line_next);
+            lookahead++;
+            console.log("assembly_lines.length: "+assembly_lines.length + " lookahead: " + lookahead );
+	    if (lookahead >= assembly_lines.length) {
+              at_end = true;
+              break;
+            }
+            else {
+            console.log("passed break");
+	    line_next = assembly_lines[lookahead];
+            console.log("2 next line is: " + line_next);
+	    token_list_next = tokenize(line_next);
+            console.log("3 tokenize next line is: " + token_list_next);
+            }
+        }
+        if (at_end) {
+          console.log("at end");
+          break;
+        }
+	console.log("3 next line is: " + line_next);
+        if ((token_list[0].match(/pop/i)) && ((token_list_next[0].match(/push/i)))){
+            var popreg = token_list[1]; //register to be popped
+            var pushreg = token_list_next[1]; //register to be pushed
+            if (popreg == pushreg) { // pop then push the same register is a no-op
+                assembly_lines[line_ptr] = '';
+                assembly_lines[lookahead] = '';
+            }
+            else continue;
+        }
+        else if ((token_list[0].match(/push/i)) && (token_list_next[0].match(/pop/i))){
+            var pushreg = token_list[1]; //register to be pushed
+            var popreg = token_list_next[1]; //register to be popped
+            if (pushreg == popreg) { // push then pop to same register is a no-op
+                assembly_lines[line_ptr] = '';
+                assembly_lines[lookahead] = '';
+            }
+            else if (pushreg == 'r1'){
+                assembly_lines[line_ptr] = 'LoadR1to ' + popreg;
+                assembly_lines[lookahead] = '';
+            }
+            else if (popreg == 'r1') {
+                assembly_lines[line_ptr] = 'LoadR1from ' + pushreg;
+                assembly_lines[lookahead] = '';
+            }
+            else continue;
+        } else {
+            continue;
+        }
+    }
+    console.log("DONE OPTIMIZING ASSEMBLY CODE...");
+    return assembly_lines.join('\n');
+}
+
+function tokenize(line) {
+    var token_list;
+    if(line.match(/^\s*;/)){
+        	//line is a comment
+        	token_list = [];
+        } else if(line.match(/.+:.*/)){
+        //line is of the form "label:data"
+            var label_and_data=line.split(":");
+            //labels[label_and_data[0].trim()] = address;
+            //console.log("setting labels["+label_and_data[0].trim()+"]to:"+address);
+            token_list = label_and_data[1].trim().split(/\s+/);
+        } else {//line is of the form data
+            token_list=line.trim().split(/\s+/);
+        }
+    //console.log("token_list is: " + token_list);
+    return token_list;
+}
