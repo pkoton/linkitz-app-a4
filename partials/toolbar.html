@@ -3,7 +3,7 @@
 <!-- branding -->
 <div class="navbar-header">
   <a class="" href="#">
-    <img class="media-object" height="50" src="images/Corp logo.png">
+    <img class="media-object" height="50" src="images/Linkitz logo.png">
   </a>
 </div>
 
@@ -12,15 +12,15 @@
 
 <div class="navbar-text">
   <a class="btn btn-clear" href="#" ng-click="clearEditor()" tooltip-placement="bottom" uib-tooltip="Erase All Blocks">
-    <i class="fa fa-file-o fa-3x" style="color:#FFFFFF;"></i>
+    <i class="fa fa-file-o fa-2x" style="color:#FFFFFF;"></i>
   </a>
   &nbsp;
   <a class="btn btn-saveprogram" href="#" ng-click="saveEditor()" tooltip-placement="bottom" uib-tooltip="Save This Program">
-    <i class="fa fa-bookmark-o fa-3x" style="color:#FFFFFF;"></i> 
+    <i class="fa fa-bookmark-o fa-2x" style="color:#FFFFFF;"></i> 
   </a>
 </div>
  <div class="navbar-text" uib-dropdown is-open="status.isopen" on-toggle="toggled(open)">
-  <button  type="button" class="btn btn-saved btn-lg wide-450" style="background: #FFCE00; color: #ffffff;" uib-dropdown-toggle ng-disabled="disabled">
+  <button  type="button" class="btn btn-saved btn-lg wide-450" style="background: #873299; color: #ffffff;" uib-dropdown-toggle ng-disabled="disabled">
     Saved Programs <i class="fa fa-caret-down fa-lg"></i>
   </button>
   
@@ -39,15 +39,15 @@
 </div>
 
 <div class="navbar-text">
-  <a class="btn btn-default" href="#" ng-click="toggleConnect()" tooltip-placement="bottom" uib-tooltip="Load Program to Linkitz">
-      <i class="fa fa-3x" ng-class="connectTransitioning ? 'fa-spinner fa-spin': 'fa-share-square-o'"></i>
+  <a class="btn btn-default" href="#" ng-click="toggleConnect()" tooltip-placement="bottom" uib-tooltip="Load Program to Linkitz" style="background: #FFCE00; color: #ffffff;">
+      <i class="fa fa-2x" ng-class="connectTransitioning ? 'fa-spinner fa-spin': 'fa-share-square-o'"></i>
   </a>
 </div>
 
 <!-- right side of toolbar, markup in RTL order -->
 
 <div class="navbar-text btn-group navbar-right">
-  <a class="btn btn-default" href="#" ng-click="modals.about.open()" tooltip-placement="bottom" uib-tooltip="About"><i class="fa fa-info-circle fa-3x"></i></a>
+  <a class="btn btn-default" href="#" ng-click="modals.about.open()" tooltip-placement="bottom" uib-tooltip="About"><i class="fa fa-info-circle fa-2x"></i></a>
 </div>
 
 <!-- got rid of connect button, folded its functions into link button
