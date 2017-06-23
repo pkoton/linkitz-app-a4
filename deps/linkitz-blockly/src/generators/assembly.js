@@ -317,16 +317,14 @@ function opimize_assembly(assembly_code) {
             else {
             console.log("passed break");
 	    line_next = assembly_lines[lookahead];
-            console.log("2 next line is: " + line_next);
 	    token_list_next = tokenize(line_next);
-            console.log("3 tokenize next line is: " + token_list_next);
             }
         }
         if (at_end) {
           console.log("at end");
           break;
         }
-	console.log("3 next line is: " + line_next);
+	console.log("2 next line is: " + line_next);
         if ((token_list[0].match(/pop/i)) && ((token_list_next[0].match(/push/i)))){
             var popreg = token_list[1]; //register to be popped
             var pushreg = token_list_next[1]; //register to be pushed
