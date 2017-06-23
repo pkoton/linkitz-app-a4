@@ -47,165 +47,6 @@ Blockly.Assembly['math_number'] = function(block) {
   return [code, Blockly.Assembly.ORDER_NONE];
 };
 
-
-// this code does not work
-//Blockly.Assembly['math_arithmetic'] = function(block) {
-//  // Basic arithmetic operators, and power.
-//  var code = '; starting math_arithmetic\n';
-//  var OPERATORS = {
-//    'ADD': ['ADD', Blockly.Assembly.ORDER_NONE],
-//    'MINUS': ['SUB', Blockly.Assembly.ORDER_NONE],
-//    'MULTIPLY': ['MUL', Blockly.Assembly.ORDER_NONE],
-//    'DIVIDE': ['DIV', Blockly.Assembly.ORDER_NONE]
-//  };
-//  var tuple = OPERATORS[block.getFieldValue('OP')];
-//  var operator = tuple[0];
-//  var order = tuple[1];
-//  // var defaultArgument = ((operator == 'ADD')||(operator == 'MINUS')) ? 'R0' : '1';
-//  var arg1usesR1, arg2usesR1, ret_arg1, ret_arg2 = 0;
-//  var arg1 = block.getInputTargetBlock('A');
-//  var arg2 = block.getInputTargetBlock('B');
-//  if ((!arg1) || (!arg2)){ // missing arg
-//    // console.log("x0");
-//    return ['LoadR1from R0\n',Blockly.Assembly.ORDER_NONE]; // no-op
-//  }
-//  // huge special case to save user code space
-//  if (arg1.type == 'math_number'){
-//    // console.log("x1");
-//    var number_arg1 = parseFloat(arg1.getFieldValue('NUM'));
-//    // console.log("number_arg = " + number_arg1);
-//    if (number_arg1 == 0) {
-//      // console.log("x2");
-//      if (operator == 'ADD') { // additive identity
-//        // console.log("x3");
-//        ret_arg2 = 1;
-//      } else
-//      // if (operator == 'DIV') {
-//      //  can't do because denominator might be zero, which makes it underfined
-//      // }  
-//      if (operator == 'MUL') { // mult by zero = 0
-//        code += "Set R1 0\n"
-//        code += '; ending math_arithmetic\n';
-//        return [code,Blockly.Assembly.ORDER_NONE];
-//      }
-//    } else
-//    if ((number_arg1 == 1) && (operator == 'MUL')) { 
-//      ret_arg2 = 1;
-//    }
-//  }
-//  if (arg2.type == 'math_number'){
-//    // console.log("x01");
-//    var number_arg2 = parseFloat(arg2.getFieldValue('NUM'));
-//    if (number_arg2 == 0) {
-//      // console.log("x02");
-//      if ((operator == 'ADD') || (operator == 'SUB')){ // additive identity
-//        // console.log("x03");
-//        ret_arg1 = 1;
-//      } else
-//      if (operator == 'DIV') {
-//        throw 'Divide by zero error in math_arithmetic block';
-//      }  else
-//      if (operator == 'MUL') { // mult by zero = 0
-//        code += "Set R1 0\n"
-//        code += '; ending math_arithmetic\n';
-//        return [code,Blockly.Assembly.ORDER_NONE];
-//      }
-//    } else
-//    if ((number_arg2 == 1) && ((operator == 'MUL') || (operator == 'DIV'))) { 
-//      ret_arg1 = 1;
-//    }
-//  }
-//  if (!ret_arg2) { // we actually have to calculate arg1
-//    // console.log("x4");
-//    if (is_scalar(arg1) || (get_list_desc (arg1, [])[1].length == 0)) { // and arg1 is scalar
-//        // if arg2 is in GSV just use that register
-//        if (arg1.type == 'variables_get') {
-//          // console.log("here0");
-//          var varName1 = Blockly.Assembly.variableDB_.getName(arg1.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
-//          var in_GSV1 = global_scalar_variables.indexOf(varName1); // if in global_scalar_variable
-//            if (in_GSV1 >= 0) {
-//              var argument1 = "R" + in_GSV1; // Rsrc1 is in R+in_GSV
-//            }
-//        }
-//        else {
-//          // console.log("here1");
-//          var argument1 = Blockly.Assembly.valueToCode(block, 'A', order); // Rsrc1 is in R1
-//          // console.log("argument1 = " +argument1);
-//          arg1usesR1 = 1;
-//        }
-//    }
-//    else { //it's not scalar
-//      throw 'input1 to math_arithmetic block can\'t be list';
-//    }
-//  }
-//  if (!ret_arg1) { // we actually have to calculate arg2
-//    // console.log("x5");
-//    if (is_scalar(arg2) || (get_list_desc (arg2, [])[1].length == 0)) { // and arg2 is scalar
-//      if (arg2.type == 'variables_get') {
-//        // console.log("here2");
-//        var varName2 = Blockly.Assembly.variableDB_.getName(arg1.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
-//        var in_GSV2 = global_scalar_variables.indexOf(varName2); // if in global_scalar_variable
-//          if (in_GSV2 >= 0) {
-//            var argument2 = "R" + in_GSV2; // Rsrc2 is R + in_GSV
-//          }
-//      } else {
-//          // console.log("here2a");
-//          var argument2 = Blockly.Assembly.valueToCode(block, 'B', order); // Rsrc2 is in R1
-//          // console.log("argument2 = " +argument2);
-//          arg2usesR1=1;
-//      }
-//    }
-//      else { //it's not scalar
-//      throw 'input2 to math_arithmetic block can\'t be list';
-//      }
-//  }
-//  if ((ret_arg1) && (ret_arg2)) { // we've got 2 numbers already figured out
-//    // console.log("x0x");
-//    var temp;
-//    switch (operator) {
-//      case('ADD'):
-//        temp = number_arg1 + number_arg2;
-//        code += "Set R1 " + temp + "\n"; 
-//        break;
-//      case('SUB'):
-//        temp = number_arg1 - number_arg2;
-//        code += "Set R1 " + temp + "\n"; 
-//        break;
-//      case('MUL'):
-//        temp = number_arg1 * number_arg2;
-//        code += "Set R1 " + temp + "\n"; 
-//        break;
-//      case('DIV'):
-//        temp = number_arg1 / number_arg2;
-//        code += "Set R1 " + temp + "\n"; 
-//        break;
-//    }
-//  } else if ((arg1usesR1==1) && (arg2usesR1==1)) {
-//    // console.log("here3");
-//    code += argument2 + 'LoadR1to R2 \n' + argument1 + '\n' + operator + ' R1 R2 R1\n'; //  note: Rsrc1 is in R1
-//    
-//  } else if (arg1usesR1==1) {
-//    if (ret_arg1) {
-//      code += argument1 + '\n'; // don't need 2nd arg, answer is in R1
-//      code += '; ending math_arithmetic\n';
-//      return [code,Blockly.Assembly.ORDER_NONE];
-//    }
-//    code += argument1 + operator + ' R1 R' +  in_GSV2 + ' R1\n'; // Rsrc1 is in R1
-//  } else if (arg2usesR1==1) {
-//    if (ret_arg2) {
-//      code += argument2 + '\n'; // don't need 2nd arg, answer is in R1
-//      code += '; ending math_arithmetic\n';
-//      return [code,Blockly.Assembly.ORDER_NONE];
-//    }
-//    code += argument2 + operator + ' R' +  in_GSV1 + ' R1 R1\n'; // note: Rscr2 is in R1
-//  } else {
-//    code +=operator + ' R' +  in_GSV1 + ' R' +  in_GSV2 + ' R1\n'; // => oper Rsrc1 Rsrc2 R1
-//  }
-//  code += '; ending math_arithmetic\n';
-//  return [code,Blockly.Assembly.ORDER_NONE];
-//};
-
-// original working code
 Blockly.Assembly['math_arithmetic'] = function(block) {
   // Basic arithmetic operators, and power.
   var code = '; starting math_arithmetic\n';
@@ -226,7 +67,7 @@ Blockly.Assembly['math_arithmetic'] = function(block) {
   if ((!arg1) && (!arg2)){
     return ['',Blockly.Assembly.ORDER_NONE]; // no-op
   }
-  // huge special case to save user code space
+  // begin special case to save user code space by using additive and multiplicative identity
   if (arg1.type == 'math_number'){
     // console.log("x1");
     var number_arg1 = parseFloat(arg1.getFieldValue('NUM'));
@@ -290,11 +131,7 @@ Blockly.Assembly['math_arithmetic'] = function(block) {
       return [code,Blockly.Assembly.ORDER_NONE];
     }
   } 
-  
-  
-  
-  
-  // the following code works
+  // end of special case
   if (!arg1) {
     var argument1 = 'set R1 '+ defaultArgument + '\n'; // treat as identity
     arg1usesR1 = 1;
@@ -331,7 +168,7 @@ Blockly.Assembly['math_arithmetic'] = function(block) {
     if (is_scalar(arg2) || (get_list_desc (arg2, [])[1].length == 0)) { // and arg2 is scalar
     if (arg2.type == 'variables_get') {
       console.log("here2");
-      var varName2 = Blockly.Assembly.variableDB_.getName(arg1.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+      var varName2 = Blockly.Assembly.variableDB_.getName(arg2.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
       var in_GSV2 = global_scalar_variables.indexOf(varName2); // if in global_scalar_variable
         if (in_GSV2 >= 0) {
           var argument2 = "R" + in_GSV2; // Rsrc2 is R + in_GSV
