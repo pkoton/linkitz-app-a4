@@ -75,7 +75,7 @@ Blockly.Blocks['controls_repeat'] = {
         {
           "type": "field_input",
           "name": "TIMES",
-          "text": "10"
+          "text": "5"
         }
       ],
       "previousStatement": null,

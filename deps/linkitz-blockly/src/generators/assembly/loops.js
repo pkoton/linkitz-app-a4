@@ -28,36 +28,69 @@ goog.provide('Blockly.Assembly.loops');
 
 goog.require('Blockly.Assembly');
 
+// not used
+//Blockly.Assembly['controls_repeat_ext'] = function(block) {
+//  // Repeat n times.
+//  if (block.getField('TIMES')) {
+//    // Internal number.
+//    var repeats = String(Number(block.getFieldValue('TIMES')));
+//  } else {
+//    // External number.
+//    var repeats = Blockly.Assembly.valueToCode(block, 'TIMES',
+//        Blockly.Assembly.ORDER_NONE) || '0';
+//  }
+//  var branch = Blockly.Assembly.statementToCode(block, 'DO');
+//  branch = Blockly.Assembly.addLoopTrap(branch, block.id);
+//  var code = '';
+//  var loopVar = Blockly.Assembly.variableDB_.getDistinctName(
+//      'count', Blockly.Variables.NAME_TYPE);
+//  var endVar = repeats;
+//  if (!repeats.match(/^\w+$/) && !Blockly.isNumber(repeats)) {
+//    var endVar = Blockly.Assembly.variableDB_.getDistinctName(
+//        'repeat_end', Blockly.Variables.NAME_TYPE);
+//    code += 'var ' + endVar + ' = ' + repeats + ';\n';
+//  }
+//  code += 'for (int ' + loopVar + ' = 0; ' +
+//      loopVar + ' < ' + endVar + '; ' +
+//      loopVar + '++) {\n' +
+//      branch + '}\n';
+//  return code;
+//};
 
-Blockly.Assembly['controls_repeat_ext'] = function(block) {
-  // Repeat n times.
-  if (block.getField('TIMES')) {
+Blockly.Assembly['controls_repeat'] = function(block) {
+  // Repeat loop.
+  var code = "; starting controls_repeat\n";
+  var this_count = ifCount++;
+  var minus1 = gsv_next; // used to decrement repeats 
+    if (minus1 > glv_next) {
+    throw 'out of register space in controls_repeat';
+    }
+    gsv_next++;
+    var temp = gsv_next; // Rtemp holds counter
+    if (temp > glv_next) {
+    throw 'out of register space in controls_repeat';
+    }
+    gsv_next++;
+    if (block.getField('TIMES')) {
     // Internal number.
     var repeats = String(Number(block.getFieldValue('TIMES')));
-  } else {
-    // External number.
-    var repeats = Blockly.Assembly.valueToCode(block, 'TIMES',
-        Blockly.Assembly.ORDER_NONE) || '0';
-  }
+    code += 'set R1 ' + repeats + '\n';
+  } 
+  code += 'set R' + minus1 + ' -1\n';
+  code += 'REPEAT_label_' + this_count + ': BTR1SNZ \n; skip next instruction if R1 is non-zero\n'; 
+  code += 'GOTO end_REPEAT_label_' + this_count + '\n';
+  code += 'LoadR1to R' + temp + '\n';
   var branch = Blockly.Assembly.statementToCode(block, 'DO');
-  branch = Blockly.Assembly.addLoopTrap(branch, block.id);
-  var code = '';
-  var loopVar = Blockly.Assembly.variableDB_.getDistinctName(
-      'count', Blockly.Variables.NAME_TYPE);
-  var endVar = repeats;
-  if (!repeats.match(/^\w+$/) && !Blockly.isNumber(repeats)) {
-    var endVar = Blockly.Assembly.variableDB_.getDistinctName(
-        'repeat_end', Blockly.Variables.NAME_TYPE);
-    code += 'var ' + endVar + ' = ' + repeats + ';\n';
-  }
-  code += 'for (int ' + loopVar + ' = 0; ' +
-      loopVar + ' < ' + endVar + '; ' +
-      loopVar + '++) {\n' +
-      branch + '}\n';
+  console.log("DO statement is *" + branch + "*\n");
+  code += branch + '\n';
+  code += 'LoadR1from R' + temp + '\n';
+  code += 'SUB R1 R' + minus1 + ' R1\n';
+  code += '\nGOTO ' + 'REPEAT_label_' + this_count + '\n end_REPEAT_label_' + this_count + ':\n';
+  code += "; ending controls_repeat\n";
+  gsv_next = gsv_next - 2; // release registers back to free space
   return code;
 };
 
-Blockly.Assembly['controls_repeat'] = Blockly.Assembly['controls_repeat_ext'];
 
 Blockly.Assembly['controls_whileUntil'] = function(block) {
   // Do while/until loop.
