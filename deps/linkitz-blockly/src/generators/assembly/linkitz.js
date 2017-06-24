@@ -19,7 +19,45 @@
 
 Blockly.Assembly['flash_leds'] = function(block) {
   var code = "; starting flash_leds\n";
-  var flash_arg = Blockly.Assembly.valueToCode(block, 'COLOR', Blockly.Assembly.ORDER_NONE) ;
+  var flash_input = block.getInputTargetBlock('COLOR');
+  if (flash_input.type == 'variables_get') {
+        var varName = Blockly.Assembly.variableDB_.getName(flash_input.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+        var in_GSV1 = global_scalar_variables.indexOf(varName); // if in global_scalar_variable
+          if (in_GSV1 >= 0) {
+            code += "ABS R" + in_GSV1 + " R" + in_GSV1 + "\n";
+            code += "syscall flashHue R" + in_GSV1 + "\n"; // arg is in R+in_GSV
+            return code;
+          }
+          else if (varName in global_list_variables) { // it's a list
+            // leaves values onto stack
+            var headaddr = global_list_variables[varName][0];
+            var llen = global_list_variables[varName][1];
+            numItems = llen - 1; 
+            //console.log("7 in flash lists_create_with: llen =  " + llen + ", numItems = " + numItems);
+            if (numItems == 0) {
+              code += 'Push R0\nsyscall flashRGB\n';  // treat as flash null
+              code += "; ending flash_leds\n";
+              return code;
+            }
+            if (numItems > 127) {
+            numItems = 127; // 127 max
+             }
+            var topOfList = headaddr + llen - 1;
+            console.log("headaddr " + headaddr + " llen " + llen + " topOfList " + topOfList);
+            for (var i = 0; i < numItems; i++) { //push abs(values) on stack using R1 as intermediate
+              var temp = topOfList - i;
+              code += "ABS R" + temp + " R" + temp + "\n";
+              code += "push R" + temp + "\n";
+            }
+            code += 'Set R1 ' + numItems + '\npush R1\n' + 'syscall flashRGB\n';
+            return code;
+            }
+          else {
+            console.log('in flash_leds: variable not defined');
+            throw "FAIL1: undefined variable in flash_leds";       
+          }
+      }
+  var flash_arg = Blockly.Assembly.valueToCode(block, 'COLOR', Blockly.Assembly.ORDER_NONE) || 'None';
   console.log("in flash_leds: input is *" + flash_arg +'*');
   if (flash_arg == 'None' || flash_arg =='') {
     // *****  input is blank or null
@@ -89,39 +127,39 @@ Blockly.Assembly['flash_leds'] = function(block) {
         break;
       
       // ***** Input could be either a scalar or a list
-      case 'variables_get':
-        var varName = targetBlock.getFieldValue('VAR');
-        console.log("6 in flash_leds: variables_get varName is " +varName);
-        if (global_scalar_variables.indexOf(varName) >= 0) { // it's a scalar variable
-          // code += flash_arg + 'syscall flashHue R1\n'; 
-          code += flash_arg + 'ABS R1 R1\nsyscall flashHue R1\n'; // value is in R1
-          } else if (varName in global_list_variables) { // it's a list
-            // leaves values onto stack
-            var headaddr = global_list_variables[varName][0];
-            var llen = global_list_variables[varName][1];
-            numItems = llen - 1; // only have to put list items on stack, not the list length element
-            console.log("7 in flash lists_create_with: llen =  " + llen + ", numItems = " + numItems);
-            if (numItems == 0) {
-              code += 'Push R0\nsyscall flashRGB\n';  // treat as flash null
-              code += "; ending flash_leds\n";
-              return code;
-            }
-            if (numItems > 127) {
-            numItems = 127; // 127 max
-             }
-            var topOfList = headaddr + llen - 1;
-            console.log("headaddr " + headaddr + " llen " + llen + " topOfList " + topOfList);
-            for (var i = 0; i < numItems; i++) { //push abs(values) on stack using R1 as intermediate
-              var temp = topOfList - i;
-              code += 'loadR1from R' + temp  + '\n' + 'ABS R1 R1\npush R1\n';
-            }
-            code += 'Set R1 ' + numItems + '\npush R1\n' + 'syscall flashRGB\n';
-            }
-              else {
-                console.log('in flash_leds: variable not defined');
-                code += "FAIL1: undefined variable in flash_leds\n";       
-                }
-        break;
+      //case 'variables_get':
+      //  var varName = targetBlock.getFieldValue('VAR');
+      //  console.log("6 in flash_leds: variables_get varName is " +varName);
+      //  if (global_scalar_variables.indexOf(varName) >= 0) { // it's a scalar variable
+      //    // code += flash_arg + 'syscall flashHue R1\n'; 
+      //    code += flash_arg + 'ABS R1 R1\nsyscall flashHue R1\n'; // value is in R1
+      //    } else if (varName in global_list_variables) { // it's a list
+      //      // leaves values onto stack
+      //      var headaddr = global_list_variables[varName][0];
+      //      var llen = global_list_variables[varName][1];
+      //      numItems = llen - 1; 
+      //      console.log("7 in flash lists_create_with: llen =  " + llen + ", numItems = " + numItems);
+      //      if (numItems == 0) {
+      //        code += 'Push R0\nsyscall flashRGB\n';  // treat as flash null
+      //        code += "; ending flash_leds\n";
+      //        return code;
+      //      }
+      //      if (numItems > 127) {
+      //      numItems = 127; // 127 max
+      //       }
+      //      var topOfList = headaddr + llen - 1;
+      //      console.log("headaddr " + headaddr + " llen " + llen + " topOfList " + topOfList);
+      //      for (var i = 0; i < numItems; i++) { //push abs(values) on stack using R1 as intermediate
+      //        var temp = topOfList - i;
+      //        code += 'loadR1from R' + temp  + '\n' + 'ABS R1 R1\npush R1\n';
+      //      }
+      //      code += 'Set R1 ' + numItems + '\npush R1\n' + 'syscall flashRGB\n';
+      //      }
+      //      else {
+      //        console.log('in flash_leds: variable not defined');
+      //        code += "FAIL1: undefined variable in flash_leds\n";       
+      //      }
+      //  break;
       case 'procedures_callreturn':
         var procName = Blockly.Assembly.variableDB_.getName(targetBlock.getFieldValue('NAME'),Blockly.Procedures.NAME_TYPE);
         console.log("in flash_leds: procedures_callreturn  on " + procName);
@@ -214,7 +252,7 @@ Blockly.Assembly['led_attached'] = function(block) {
   var code = "; starting led_attached\n";
   var found = global_scalar_variables.indexOf('led_attached');
   if (found >= 0) { // it better be!
-    code += 'Push R' + found + '\nPop R1\nset R2 '+ mask + '\nband3 R1 R2 R1\n'; // only look at the lower bits
+    code += 'set R2 '+ mask + '\nband3 R' + found +  ' R2 R1\n'; // only look at the lower bits
     // the value in R1, if 0 then no led attached, else 2 4 8 tells you where
     } else {
       code += 'Set R1 0\n'; // if you can't find led_attached in GSV, treat as no led attached
@@ -227,7 +265,7 @@ Blockly.Assembly['usb_attached'] = function(block) {
   var code = "; starting usb_attached\n";
   var found = global_scalar_variables.indexOf('usb_attached');
   if (found >= 0) { // it better be!
-    code += 'Push R' + found + '\nPop R1\nset R2 '+ mask + '\nband3 R1 R2 R1\n'; // only look at the lower bits
+    code += 'set R2 '+ mask + '\nband3 R' + found +  ' R2 R1\n'; // only look at the lower bits
     // the value in R1, if 0 then no usb attached, else 2 4 8 tells you where
     } else {
       code += 'Set R1 0\n'; // if you can't find usb_attached in GSV, treat as no usb attached
@@ -265,7 +303,7 @@ Blockly.Assembly['motion_attached'] = function(block) {
   var code = "; starting motion_attached\n";
   var found = global_scalar_variables.indexOf('motion_attached');
   if (found >= 0) { // it better be!
-    code += 'Push R' + found + '\nPop R1\nset R2 '+ mask + '\nband3 R1 R2 R1\n'; // only look at the lower bits
+    code += 'set R2 '+ mask + '\nband3 R' + found +  ' R2 R1\n'; // only look at the lower bits
     // the value in R1, if 0 then no motion attached, else 2 4 8 tells you where
     } else {
       code += 'Set R1 0\n'; // if you can't find motion_attached in GSV, treat as no motion attached
