@@ -113,7 +113,7 @@ if (!targetBlock) {
       }
         else {
           console.log("in variables_set, " + varName + " not found");
-            if (unused_vars[varName] == 'set') { // the variable is set without being used (otherwise it would be "both")
+            if (variable_usage[varName] == 'set') { // the variable is set without being used (otherwise it would be "both")
               code = ''; // so we don't care about it, don't generate code
             } else {
             throw 'trying to set an undefined variable';
@@ -142,19 +142,23 @@ if (!targetBlock) {
  // or var1 = var2 = var1 when there is a loop of assignments
  
  function resolve_var_refs(workspace, undef_vars_init){
-  var undef_vars_prev = undef_vars_init; // save to check for loops later
-  console.log("undef_vars_prev " + undef_vars_prev);
+  undef_vars_prev = undef_vars_init.slice(0); // make a copy of previous list of undef vars to check for loops
+  // console.log("at start, undef_vars_prev " + undef_vars_prev);
   var blocks = workspace.getAllBlocks();
   var i2 = 0; // index into undefined_vars
   console.log("In resolve var refs, reviewing " + blocks.length + " blocks");
   // Iterate through every procedure defreturn block.
     for (var i = 0; i < blocks.length; i++) {
       console.log("for loop i = " + i);
+      // console.log("undef_vars_prev " + undef_vars_prev);
       var current_block = blocks[i];
       console.log("in loop1, current_block is (" + i + ") " + current_block);
-      if (current_block.type == 'variables_get') {
-        add_varname_to_unused_vars(varName, "get");
-      } else 
+      if ((current_block.type == 'variables_get') || (current_block.type == 'lists_getIndex_nonMut')) {
+        add_varname_to_variable_usage(Blockly.Assembly.variableDB_.getName(current_block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE), "get");
+      } else
+      if (current_block.type == 'lists_setIndex_nonMut') {
+        add_varname_to_variable_usage(Blockly.Assembly.variableDB_.getName(current_block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE), "set");
+      }
   // ****************  looking for procedure definitions
       if (current_block.type == 'procedures_defreturn') { //********** returns scalar or list?
         var procName = Blockly.Assembly.variableDB_.getName(current_block.getFieldValue('NAME'),Blockly.Procedures.NAME_TYPE);              
@@ -220,7 +224,7 @@ if (!targetBlock) {
              
       else if (current_block.type == 'variables_set') { //********** set to scalar or list?
           var varName = Blockly.Assembly.variableDB_.getName(current_block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
-          add_varname_to_unused_vars(varName, "set"); // need to find a matching "variables_get(varName)"
+          add_varname_to_variable_usage(varName, "set"); // need to find a matching "variables_get(varName)"
           console.log("in loop2 trying to variables_set " + varName);
           var targetBlock = current_block.getInputTargetBlock('VALUE');
           if (targetBlock) {
@@ -228,23 +232,21 @@ if (!targetBlock) {
             console.log("in resolve_var_refs:\nTarget Block is " + targetBlock  + ", which is of type " + inputType);
           }
           if (global_scalar_variables.indexOf(varName) >=0) { // have to make sure it is being set to a scalar again
-            console.log("in loop2 found scalar in GSV");
+            console.log("in loop2 " + varName + " is in GSV");
             var check = get_list_desc(current_block.getInputTargetBlock('VALUE'),[]);
-            console.log(check);
+            // console.log(check);
             if ((check[0] == 1) && (check[1].length > 0)) {
                 console.log("in loop2 variables_set, scalar var being reassigned to list");
                 throw 'scalar var reassigned to list';
-              }
-            continue;
+              } else continue;
             } else if (varName in global_list_variables) { 
-              console.log("in loop2 found list in GLV");
+              console.log("in loop2 " + varName + " is in GLV");
               if (is_scalar(current_block.getInputTargetBlock('VALUE'))) {
                 console.log("in loop2 variables_set, list var being reassigned to scalar");
                 throw 'list var reassigned to scalar';
-              }
-              continue;
+              } else continue;
             } else { // NEW VARIABLE, add it to the correct variables list
-              console.log("in loop2 new var " + varName);
+              console.log("in loop2 " + varName + " is a new var" );
               var targetBlock = current_block.getInputTargetBlock('VALUE');
               console.log("in loop2 targetBlock " + targetBlock);
               if (targetBlock) {
@@ -267,8 +269,8 @@ if (!targetBlock) {
                   //case "get_battery_level":
                   //case "get_ambient_light":
                     console.log("in loop2 found scalar by case");
-                    addNewScalarVar(varName);
-                }
+                    addNewScalarVar(varName, undef_vars_prev);
+                    }
                   // ********* LISTS *********
                   else {
                     switch (inputType) {
@@ -319,14 +321,14 @@ if (!targetBlock) {
                         if (global_scalar_variables.indexOf(RHSvar) >= 0) { // RHSvar is defined as scalar
                           console.log("in loop2 found scalar RHS");
                           addNewScalarVar(varName);
-                        } else if (RHSvar in global_list_variables) { //RHSvar is defined as a list
+                          } else if (RHSvar in global_list_variables) { //RHSvar is defined as a list
                           console.log("in loop2 found list RHS");
                           addNewListVar(varName, (global_list_variables[RHSvar][1] - 1), global_list_variables[RHSvar][2]);
                           blockid_to_list_desc(targetBlock,global_list_variables[RHSvar][2]);
                         } else
                         { // varName is not defined yet
-                          add_varname_to_undef_vars_list(varName);  
-                        }
+                          add_varname_to_undef_vars_list(varName);
+                          }
                       break;
                     
                     case "lists_getIndex_nonMut": // variable is assigned to a list item, could be scalar or list
@@ -541,16 +543,16 @@ if (!targetBlock) {
         continue;
       }
     } // end for
-    console.log("undef_vars.length = " + undef_vars.length); // maybe also have to check unknown_lists.length = 0???
+    console.log("undef_vars.length = " + undef_vars.length + ", undef_vars_prev.length = " + undef_vars_prev.length); // maybe also have to check unknown_lists.length = 0???
     if (undef_vars.length == 0) {
       // we win!
       return 1;
     } else if (sim_arrays(undef_vars, undef_vars_prev)) {
       // bad news, we either have unresolved vars or a loop situation
-      console.log("can't resolve all variable references");
+      console.log("can't resolve all variable references: " + undef_vars);
       for (var k = 0; k < undef_vars.length; k++) {
-        console.log("undef_vars[" + k + "] = " + undef_vars[k] + " " + unused_vars[undef_vars[k]]);
-        if (unused_vars[undef_vars[k]] == 'set') { // the variable is set without being used (otherwise it would be "both")
+        console.log("undef_vars[" + k + "] = " + undef_vars[k] + " " + variable_usage[undef_vars[k]]);
+        if (variable_usage[undef_vars[k]] == 'set') { // the variable is set without being used (otherwise it would be "both")
           continue;
         } else {
           throw 'can\'t resolve variable references';
@@ -867,23 +869,22 @@ function add_varname_to_undef_vars_list(varName) {
 
 function del_varname_from_undef_vars_list(varName) {
   var i4 = undef_vars.indexOf(varName);
-    console.log
-    if (i4 != -1) {
+    if (i4 > -1) {
       undef_vars.splice(i4, 1);
     }
 }
 
-function add_varname_to_unused_vars(varname,type) {
-  if (!unused_vars[varname]) {
-    unused_vars[varname] = type;
+function add_varname_to_variable_usage(varname,type) {
+  if (!variable_usage[varname]) {
+    variable_usage[varname] = type;
   } else
-  if ((unused_vars[varname] == "set") && (type == "get")) {
-    unused_vars[varname] = "both";
+  if ((variable_usage[varname] == "set") && (type == "get")) {
+    variable_usage[varname] = "both";
   } else
-  if ((unused_vars[varname] == "get") && (type == "set")) {
-    unused_vars[varname] = "both";
+  if ((variable_usage[varname] == "get") && (type == "set")) {
+    variable_usage[varname] = "both";
   }
-  console.log("unused_vars = " + JSON.stringify(unused_vars));
+  console.log("variable_usage = " + JSON.stringify(variable_usage));
 }    
 
 

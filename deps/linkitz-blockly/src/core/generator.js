@@ -102,12 +102,13 @@ Blockly.Generator.prototype.workspaceToCode = function(workspace) {
       proc_types = new Object();
       pnext = 0;
       undef_vars = [];
+      undef_vars_prev = [];
       undef_vars_next = 0;
       ifCount = 0;
-      unused_vars = new Object();
+      variable_usage = new Object();
       
       // console.log("calling resolve var refs");
-      if (resolve_var_refs(workspace,[]) == 0) {
+      if (resolve_var_refs(workspace,undef_vars) == 0) {
           console.log("unresolved variables issue");
       }
       else {

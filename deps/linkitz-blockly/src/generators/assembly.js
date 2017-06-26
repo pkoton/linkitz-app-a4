@@ -117,7 +117,7 @@ var global_list_variables = new Object();
 // an unknown list for a variable l has a [sublist_desc] which is a list describing a nested list structure
 var unknown_lists = new Object();
 
-var unused_vars = new Object();
+var variable_usage = new Object();
 
 // block_to_list_desc links a block.id with the structure of the value the block returns
 // [] for scalar, [a1,...,an] for lists.
@@ -159,6 +159,7 @@ var mask = 14; // 00001110 corresponding to ports 1,2,3 for checking if a specif
 // once value is set, variable name is moved to correct global variable list (scalar or list)
 var undef_vars = [];
 var undef_vars_next = 0;
+var undef_vars_prev = [];
 
 var ifCount = 0; //global var for generating unique labels for conditionals
 
@@ -195,7 +196,7 @@ Blockly.Assembly.init = function(workspace) {
  * @return {string} Completed code.
  */
 Blockly.Assembly.finish = function(code) {
-  code =  opimize_assembly(code);
+  //code =  opimize_assembly(code);
   
   //if (code) {
   //  global_scalar_variables_pp = global_scalar_variables.join(',');
