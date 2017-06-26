@@ -555,7 +555,8 @@ if (!targetBlock) {
         if (variable_usage[undef_vars[k]] == 'set') { // the variable is set without being used (otherwise it would be "both")
           continue;
         } else {
-          throw 'can\'t resolve variable references';
+          var err_str = "can\'t resolve variable references: " + undef_vars;
+          throw err_str;
         }
       }
       // throw 'can\'t resolve variable references';
