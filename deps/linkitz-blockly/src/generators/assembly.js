@@ -196,7 +196,7 @@ Blockly.Assembly.init = function(workspace) {
  * @return {string} Completed code.
  */
 Blockly.Assembly.finish = function(code) {
-  //code =  opimize_assembly(code);
+  code =  opimize_assembly(code);
   
   //if (code) {
   //  global_scalar_variables_pp = global_scalar_variables.join(',');
@@ -326,7 +326,7 @@ function opimize_assembly(assembly_code) {
           break;
         }
 	console.log("2 next line is: " + line_next);
-        if ((token_list[0].match(/pop/i)) && ((token_list_next[0].match(/push/i)))){
+        if ((token_list[0].match(/^pop$/i)) && ((token_list_next[0].match(/^push$/i)))){
             var popreg = token_list[1]; //register to be popped
             var pushreg = token_list_next[1]; //register to be pushed
             if (popreg == pushreg) { // pop then push the same register is a no-op
@@ -335,7 +335,7 @@ function opimize_assembly(assembly_code) {
             }
             else continue;
         }
-        else if ((token_list[0].match(/push/i)) && (token_list_next[0].match(/pop/i))){
+        else if ((token_list[0].match(/^push$/i)) && (token_list_next[0].match(/^pop$/i))){
             var pushreg = token_list[1]; //register to be pushed
             var popreg = token_list_next[1]; //register to be popped
             if (pushreg == popreg) { // push then pop to same register is a no-op
