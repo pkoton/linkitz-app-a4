@@ -132,8 +132,7 @@ Blockly.Generator.prototype.workspaceToCode = function(workspace) {
     // console.log("passed assembly check");
     
     for (var x = 0, block; block = blocks[x]; x++) {
-      var blocktype = block.type;
-      // alert('top block of type ' + blocktype);
+      blocktype = block.type;
       if (blocktype == 'on_initialization' || blocktype == 'on_regular_event' ||
           blocktype == 'on_motion_trigger' || blocktype == 'procedures_defreturn' || blocktype == 'procedures_defnoreturn') {
         var line = this.blockToCode(block);

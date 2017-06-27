@@ -96,7 +96,7 @@ if (!targetBlock) {
       }
       else if (varName in global_list_variables) { // setting a list, values and length are on the stack
         argument0 = Blockly.Assembly.valueToCode(block, 'VALUE', Blockly.Assembly.ORDER_NONE); // used to be ORDER_NONE
-        console.log("in variables_set (2): global_list_variables[varName] is " + global_list_variables[varName] + " global_list_variables[varName][0] is " + global_list_variables[varName][0]);
+        console.log("in variables_set (2): global_list_variables[varName] is " + global_list_variables[varName] + " global_list_variables[varName][0] is " + global_list_variables[varName][0] + " list_len = " + global_list_variables[varName][1]);
         found = global_list_variables[varName][0]; //headaddr
         var list_len = global_list_variables[varName][1];
         if ('POPL' in ISA) {
@@ -158,7 +158,13 @@ if (!targetBlock) {
       } else
       if (current_block.type == 'lists_setIndex_nonMut') {
         add_varname_to_variable_usage(Blockly.Assembly.variableDB_.getName(current_block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE), "set");
-      }
+      } else
+      if ((current_block.type == 'procedures_callreturn') || (current_block.type == 'procedures_callnoreturn')) {
+        add_varname_to_variable_usage(Blockly.Assembly.variableDB_.getName(current_block.getFieldValue('NAME'),Blockly.Procedures.NAME_TYPE), "get");
+      } else
+      if (current_block.type == 'procedures_defnoreturn') {
+        add_varname_to_variable_usage(Blockly.Assembly.variableDB_.getName(current_block.getFieldValue('NAME'),Blockly.Procedures.NAME_TYPE), "set");
+      } else
   // ****************  looking for procedure definitions
       if (current_block.type == 'procedures_defreturn') { //********** returns scalar or list?
         var procName = Blockly.Assembly.variableDB_.getName(current_block.getFieldValue('NAME'),Blockly.Procedures.NAME_TYPE);              
@@ -167,6 +173,7 @@ if (!targetBlock) {
           continue; // move to next block
         } else
         {
+          add_varname_to_variable_usage(Blockly.Assembly.variableDB_.getName(current_block.getFieldValue('NAME'),Blockly.Procedures.NAME_TYPE), "set"); // add procName to variable_usage list as "set"
           var returnBlock = current_block.getInputTargetBlock('RETURN');
           if (returnBlock) {
             var ldata; // placeholder for list data if it is a list

@@ -20,7 +20,7 @@
 Blockly.Assembly['flash_leds'] = function(block) {
   var code = "; starting flash_leds\n";
   var flash_input = block.getInputTargetBlock('COLOR');
-  if (flash_input.type == 'variables_get') {
+  if (flash_input && (flash_input.type == 'variables_get')) {
         var varName = Blockly.Assembly.variableDB_.getName(flash_input.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
         var in_GSV1 = global_scalar_variables.indexOf(varName); // if in global_scalar_variable
           if (in_GSV1 >= 0) {

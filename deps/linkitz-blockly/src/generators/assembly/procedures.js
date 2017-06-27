@@ -59,13 +59,14 @@ Blockly.Assembly['procedures_defreturn'] = function(block) {
         // var returnCode = returnValue + 'syscall Lreturn\n'; // value on stack
         var returnCode = returnValue + 'syscall return\n'; // value on stack
       } 
-      // else if (returnType == 'variables_get') {]
+      // else if (returnType == 'variables_get') {}
       else {
         console.log("procedure return type failed");
-        returnValue = Blockly.Assembly.INDENT + 'syscall return R0\n';  // no returned value, just return R0
+        //returnValue = Blockly.Assembly.INDENT + 'syscall return R0\n';  // we couldn't figure it out, just return R0
+        var returnCode = 'syscall return R0\n';
       }
   } else {
-    var returnCode = 'syscall return R0\n'; // code iis blank or has no retun value, return R0
+    var returnCode = 'syscall return R0\n'; // code is blank or has no return value, return R0
   }
   // var returnType = returnValue ? 'dynamic' : 'void'; // we don't use this ATM
   var args = [];
