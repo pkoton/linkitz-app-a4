@@ -278,7 +278,7 @@ Blockly.Assembly.scrub_ = function(block, code) {
         if (childBlock) {
           var comment = Blockly.Assembly.allNestedComments(childBlock);
           if (comment) {
-            commentCode += Blockly.Assembly.prefixLines(comment, '// ');
+            commentCode += Blockly.Assembly.prefixLines(comment, ';// ');
           }
         }
       }

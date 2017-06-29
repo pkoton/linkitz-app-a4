@@ -24,7 +24,9 @@ Blockly.Assembly['flash_leds'] = function(block) {
         var varName = Blockly.Assembly.variableDB_.getName(flash_input.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
         var in_GSV1 = global_scalar_variables.indexOf(varName); // if in global_scalar_variable
           if (in_GSV1 >= 0) {
-            code += "ABS R" + in_GSV1 + " R" + in_GSV1 + "\n";
+            //Hue is a scalar that varies from -127 to 127. Don't take the absolute value, that will make Drew really sad and make Linkitz not work
+            //code += "ABS R" + in_GSV1 + " R" + in_GSV1 + "\n";
+            //Drew is pretty sure this is the second time he's had to turn this off.
             code += "syscall flashHue R" + in_GSV1 + "\n"; // arg is in R+in_GSV
             return code;
           }
