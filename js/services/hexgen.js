@@ -341,16 +341,7 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
                 }
                 unlinkedCodeLines.push([address,hex_line,token_list]);
                 address+=4;
-            } else if(token_list[1].match(/fcall/i)){
-                //ugh this is a garbage case based on a bad assumption about where this thing would go.
-                hex_line+=linkitzApp_hexgen_pad_words("61");
-                hex_line+=linkitzApp_hexgen_pad_words("BD");
-                hex_line+=linkitzApp_hexgen_pad_words("BD");
-                unlinkedCodeLines.push([address,hex_line,token_list]);
-                address+=6;
-
-            }
-            else {
+            } else {
                 console.log("ERROR: No rule to process syscall:"+token_list[1]);
             }
         } else if(token_list[0].match(/set/i)){
@@ -415,23 +406,11 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
         if(tokens[0].match(/goto/i)){
             linkhex_line = linkitzApp_hexgen_pad_words("60");
             
-            //console.log("matching label:"+tokens[1]);
+            console.log("matching label:"+tokens[1]);
             
             var targetAddr = labels[tokens[1]];
             
-            //console.log("targetAddr:"+targetAddr);
-            
-            linkhex_line+=linkitzApp_hexgen_pad_words(linkitzApp_hexgen_byte_2_hex(0x80+Math.floor((targetAddr/2)/256)));
-            linkhex_line+=linkitzApp_hexgen_pad_words(linkitzApp_hexgen_byte_2_hex(((targetAddr/2)%256)));
-            hex_output+=linkitzApp_hexgen_make_hex_line(linkedaddr,linkhex_line);
-        } else if(tokens[0].match(/syscall/i)&&tokens[1].match(/fcall/i)){
-            linkhex_line = linkitzApp_hexgen_pad_words("61");
-            
-            //console.log("matching label:"+tokens[1]);
-            
-            var targetAddr = labels[tokens[2]];
-            
-            //console.log("targetAddr:"+targetAddr);
+            console.log("targetAddr:"+targetAddr);
             
             linkhex_line+=linkitzApp_hexgen_pad_words(linkitzApp_hexgen_byte_2_hex(0x80+Math.floor((targetAddr/2)/256)));
             linkhex_line+=linkitzApp_hexgen_pad_words(linkitzApp_hexgen_byte_2_hex(((targetAddr/2)%256)));
@@ -440,7 +419,7 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
             hex_output+=linkitzApp_hexgen_make_hex_line(linkedaddr,linkhex_line);
         }
         
-        //console.log("token list:"+tokens+" Places hex:"+linkhex_line+" At addr:"+linkedaddr);
+        console.log("token list:"+tokens+" Places hex:"+linkhex_line+" At addr:"+linkedaddr);
         
     }
     hex_output+=":00000001FF\n";
