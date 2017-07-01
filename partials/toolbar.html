@@ -21,7 +21,7 @@
 </div>
  <div class="navbar-text" uib-dropdown is-open="status.isopen" on-toggle="toggled(open)">
   <button  type="button" class="btn btn-saved btn-lg wide-450" style="background: #873299; color: #ffffff;" uib-dropdown-toggle ng-disabled="disabled">
-    Saved Programs <i class="fa fa-caret-down fa-lg"></i>
+    Saved Programs <i class='fa pull-right fa-lg'  ng-class="{'fa-close' : toggle(open)}"></i>
   </button>
   
   <ul class="dropdown-menu wide-450" uib-dropdown-menu role="menu" aria-labelledby="saved-programs">
