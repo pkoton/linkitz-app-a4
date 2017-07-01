@@ -631,15 +631,15 @@ function addNewScalarVar(varName) {
     throw 'out of register space in addNewScalarVar';
   }
   global_scalar_variables[gsv_next] = varName;
-  console.log("in resolve_var_refs: GSV pointer now is " + gsv_next);
+  console.log("in resolve_var_refs: " + varName + " stored in GSV[" + gsv_next + "]");
   gsv_next++; // point to next empty space
+  console.log("gsv_next now = " + gsv_next);
   // ****** clean up ******
   // Find and remove varName from undef_vars list
   del_varname_from_undef_vars_list(varName);
   console.log("undef_vars now " + undef_vars);
   delete unknown_lists[varName];
   console.log("unknown_lists now  " + JSON.stringify(unknown_lists));
-    
   }
   
   // these are blocks that we know return a scalar variable
