@@ -13,9 +13,7 @@
 // - a number which is treated as hue and calls flashHue
 // - a list
 // - a variable
-// If no input, treats as Hue = 0 and calls flashHue
-// UPDATE: May 17, 2017. Convert inputs to flash to positive numbers using ABS. This is a temporary fix.
-// also only implemented for some inputs.
+// If no input, treats as Hue = 0 and calls flashHue R0
 
 Blockly.Assembly['flash_leds'] = function(block) {
   var code = "; starting flash_leds\n";
@@ -25,7 +23,6 @@ Blockly.Assembly['flash_leds'] = function(block) {
         var in_GSV1 = global_scalar_variables.indexOf(varName); // if in global_scalar_variable
           if (in_GSV1 >= 0) {
             //Hue is a scalar that varies from -127 to 127. Don't take the absolute value, that will make Drew really sad and make Linkitz not work
-            //code += "ABS R" + in_GSV1 + " R" + in_GSV1 + "\n";
             //Drew is pretty sure this is the second time he's had to turn this off.
             code += "syscall flashHue R" + in_GSV1 + "\n"; // arg is in R+in_GSV
             return code;
@@ -37,18 +34,14 @@ Blockly.Assembly['flash_leds'] = function(block) {
             numItems = llen - 1; 
             //console.log("7 in flash lists_create_with: llen =  " + llen + ", numItems = " + numItems);
             if (numItems == 0) {
-              code += 'Push R0\nsyscall flashRGB\n';  // treat as flash null
+              code += "push R0\nsyscall flashRGB\n";  // treat as flash null
               code += "; ending flash_leds\n";
               return code;
             }
-            if (numItems > 127) {
-            numItems = 127; // 127 max
-             }
             var topOfList = headaddr + llen - 1;
             console.log("headaddr " + headaddr + " llen " + llen + " topOfList " + topOfList);
-            for (var i = 0; i < numItems; i++) { //push abs(values) on stack using R1 as intermediate
+            for (var i = 0; i < numItems; i++) { 
               var temp = topOfList - i;
-              code += "ABS R" + temp + " R" + temp + "\n";
               code += "push R" + temp + "\n";
             }
             code += 'Set R1 ' + numItems + '\npush R1\n' + 'syscall flashRGB\n';
@@ -64,7 +57,7 @@ Blockly.Assembly['flash_leds'] = function(block) {
   if (flash_arg == 'None' || flash_arg =='') {
     // *****  input is blank or null
     //alert('input is null');
-    code += 'Push R0\nsyscall flashRGB\n';
+    code += "push R0\nsyscall flashRGB\n";
     code += "; ending flash_leds\n";
     return code;
   }
@@ -83,119 +76,42 @@ Blockly.Assembly['flash_leds'] = function(block) {
       case 'colour_picker':
       case 'get_motion_data':
         console.log("3 in flash_list: targetBlock.type " + targetBlock.type);
-        if ((gsv_next + 3) > glv_next) { // test if we have enough space for temp registers to hold all the list items
-            // Registers needed = 3 for color list or motion_data list
-          throw 'out of register space in flash_list';
-        }
-        code += flash_arg + "pop R1\n"; // length is in R1, 3 list items on stack
-        var next_stack_item = gsv_next;
-        gsv_next++;
-        for (var i = 0; i < 3; i++) {
-          code += "pop R" + next_stack_item + "\nABS R" + next_stack_item + " R" + next_stack_item + "\n";
-          next_stack_item +=1;
-          gsv_next++;
-        }
-        for (var i = 3; i >0; i--) {
-          next_stack_item -=1;
-          code += "push R" + next_stack_item + "\n";
-          gsv_next--;
-        }
-        gsv_next--;
-        code += "push R1\nsyscall flashRGB\n";
+        code += flash_arg + "syscall flashRGB\n";
         break;
       
       case 'lists_create_n':
          console.log("4 in flash_list: targetBlock.type " + targetBlock.type);
-      // lists_create_n block creates a list of all 0s so it wil appear not to flash.
-        code += 'Push R0\nsyscall flashRGB\n';  // treat as flash null
+      // lists_create_n block creates a list of all 0s 
+        code += flash_arg + 'syscall flashRGB\n';  
         break;
     
-      case 'lists_create_with': // these are not ABS-ed because the list is anonymous. too hard right now. Fix later.
+      case 'lists_create_with': 
         console.log("5 in flash_list: targetBlock.type " + targetBlock.type);
         var numItems = targetBlock.itemCount_; // wrong, this is just top level item number
         console.log("in flash lists_create_with: numItems = " + numItems)
         if (numItems == 0) {
-          code += 'Push R0\nsyscall flashRGB\n';  // treat as flash null
+          code += 'push R0\nsyscall flashRGB\n';  // treat as flash null
           code += "; ending flash_leds\n";
           return code;
-        }
-        if (numItems > 127) {
-        numItems = 127; // 127 max
-         }
-        if ((gsv_next + numItems) > glv_next) { // test if we have enough space for temp registers to hold all the list items
-            throw 'out of register space in flash_list';
         }
         code += flash_arg + "syscall flashRGB\n";
         break;
       
       // ***** Input could be either a scalar or a list
-      //case 'variables_get':
-      //  var varName = targetBlock.getFieldValue('VAR');
-      //  console.log("6 in flash_leds: variables_get varName is " +varName);
-      //  if (global_scalar_variables.indexOf(varName) >= 0) { // it's a scalar variable
-      //    // code += flash_arg + 'syscall flashHue R1\n'; 
-      //    code += flash_arg + 'ABS R1 R1\nsyscall flashHue R1\n'; // value is in R1
-      //    } else if (varName in global_list_variables) { // it's a list
-      //      // leaves values onto stack
-      //      var headaddr = global_list_variables[varName][0];
-      //      var llen = global_list_variables[varName][1];
-      //      numItems = llen - 1; 
-      //      console.log("7 in flash lists_create_with: llen =  " + llen + ", numItems = " + numItems);
-      //      if (numItems == 0) {
-      //        code += 'Push R0\nsyscall flashRGB\n';  // treat as flash null
-      //        code += "; ending flash_leds\n";
-      //        return code;
-      //      }
-      //      if (numItems > 127) {
-      //      numItems = 127; // 127 max
-      //       }
-      //      var topOfList = headaddr + llen - 1;
-      //      console.log("headaddr " + headaddr + " llen " + llen + " topOfList " + topOfList);
-      //      for (var i = 0; i < numItems; i++) { //push abs(values) on stack using R1 as intermediate
-      //        var temp = topOfList - i;
-      //        code += 'loadR1from R' + temp  + '\n' + 'ABS R1 R1\npush R1\n';
-      //      }
-      //      code += 'Set R1 ' + numItems + '\npush R1\n' + 'syscall flashRGB\n';
-      //      }
-      //      else {
-      //        console.log('in flash_leds: variable not defined');
-      //        code += "FAIL1: undefined variable in flash_leds\n";       
-      //      }
-      //  break;
       case 'procedures_callreturn':
         var procName = Blockly.Assembly.variableDB_.getName(targetBlock.getFieldValue('NAME'),Blockly.Procedures.NAME_TYPE);
         console.log("in flash_leds: procedures_callreturn  on " + procName);
         // look up if proc retuns scalar or list
         if (proc_types[procName][0] == 0) { //returns a scalar, value is in R1
-          code += flash_arg + 'ABS R1 R1\nsyscall flashHue R1\n';
+          code += flash_arg + 'syscall flashHue R1\n';
         } else if (proc_types[procName][0] >= 1) { // returns a list, list length + values on stack
           var numItems = list_length_from_sublist_desc(proc_types[procName][1]);
           if (numItems == 0) {
-          code += 'Push R0\nsyscall flashRGB\n';  // treat as flash null
+          code += flash_arg + 'push R0\nsyscall flashRGB\n';  // treat as flash zero
           code += "; ending flash_leds\n";
           return code;
           }
-          if (numItems > 127) {
-          numItems = 127; // 127 max
-           }
-          if ((gsv_next + numItems) > glv_next) { // test if we have enough space for temp registers to hold all the list items
-              throw 'out of register space in flash_list';
-          }
-          code += flash_arg + "pop R1\n"; // length is in R1, list items on stack
-          var next_stack_item = gsv_next;
-          gsv_next++;
-          for (var i = 0; i < numItems; i++) {
-            code += "pop R" + next_stack_item + "\nABS R" + next_stack_item + " R" + next_stack_item + "\n";
-            next_stack_item +=1;
-            gsv_next++;
-          }
-          for (var i = numItems; i >0; i--) {
-            next_stack_item -=1;
-            code += "push R" + next_stack_item + "\n";
-            gsv_next--;
-          }
-          gsv_next--;
-          code += "push R1\nsyscall flashRGB\n";
+          code += flash_arg + "syscall flashRGB\n";
         } else {
             console.log('in flash_leds: procedure return value not defined');
             code += "FAIL2: undefined procedure return value in flash_leds\n";       
@@ -204,7 +120,7 @@ Blockly.Assembly['flash_leds'] = function(block) {
       case 'lists_getIndex_nonMut':
         var list_name2 = Blockly.Assembly.variableDB_.getName(targetBlock.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
         if (global_list_variables[list_name2][2].length == 1) { // its a scalar, value in R1
-          code += flash_arg + 'ABS R1 R1\nsyscall flashHue R1\n';
+          code += flash_arg + 'syscall flashHue R1\n';
           }
           else // it's a list, value on stack
           {
@@ -212,31 +128,12 @@ Blockly.Assembly['flash_leds'] = function(block) {
             temp.shift(); // remove first item; temp now describes the structure of each list item
             var list_elt_size = list_length_from_sublist_desc(temp);
             if (list_elt_size == 0) {
-            code += 'Push R0\nsyscall flashRGB\n';  // treat as flash null
+            code += 'push R0\nsyscall flashRGB\n';  // treat as flash zero
             code += "; ending flash_leds\n";
             return code;
+            } else {
+            code += flash_arg + "syscall flashRGB\n";
             }
-            if (list_elt_size > 127) {
-            list_elt_size = 127; // 127 max
-             }
-            if ((gsv_next + list_elt_size) > glv_next) { // test if we have enough space for temp registers to hold all the list items
-                throw 'out of register space in flash_list';
-            }
-            code += flash_arg + "pop R1\n"; // length is in R1, list items on stack
-            var next_stack_item = gsv_next;
-            gsv_next++;
-            for (var i = 0; i < list_elt_size; i++) {
-              code += "pop R" + next_stack_item + "\nABS R" + next_stack_item + " R" + next_stack_item + "\n";
-              next_stack_item +=1;
-              gsv_next++;
-            }
-            for (var i = list_elt_size; i >0; i--) {
-              next_stack_item -=1;
-              code += "push R" + next_stack_item + "\n";
-              gsv_next--;
-            }
-            gsv_next--;
-            code += "push R1\nsyscall flashRGB\n";
           } // list element is another list
         break;
       default: // we don't know what it is
