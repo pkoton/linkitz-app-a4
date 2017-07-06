@@ -298,7 +298,7 @@ Blockly.Assembly['math_on_list'] = function(block) { // if list elements are the
     if (minus1 > glv_next) {
     throw 'out of register space in math_on_list';
     }
-    gsv_next += 1;
+    gsv_next++;
     var list = Blockly.Assembly.valueToCode(block, 'LIST', Blockly.Assembly.ORDER_NONE) || '[]'; 
     console.log("in math_on_list: valueToCode LIST is " + list); // input list is on stack, length is TOS
     switch (func) {
@@ -308,7 +308,7 @@ Blockly.Assembly['math_on_list'] = function(block) { // if list elements are the
         if (next_stack_item > glv_next) {
           throw 'out of register space in math_on_list';
         }
-        gsv_next += 1;
+        gsv_next++;
         code += list + "pop R1\n"; // length is in R1
         code += "pop R2\n"; // R2 will accumulate sum, initial value is first list item
         code += "set R" + minus1 + " -1\n";
@@ -380,7 +380,7 @@ Blockly.Assembly['math_on_list'] = function(block) { // if list elements are the
       code += "push R2\npop R" + max + "\n"; // R2 is new Rmax
       code += "skip_label_"  + ifCount + ":\n push R" + save + "\npop R1\n"; // restore counter
       code += "GOTO max_label_" + ifCount + "\n";
-      code += "endmax_label_" + ifCount + ":\n LoadR1from R"+ max + "\npop R1\n"; // result of max is now in R1
+      code += "endmax_label_" + ifCount + ":\n LoadR1from R"+ max + "\n"; // result of max is now in R1
       gsv_next -= 2; // release max and save registers
     break;
       case 'AVERAGE': // calculate AVERAGE, leave in R1
