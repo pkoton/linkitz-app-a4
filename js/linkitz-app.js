@@ -291,6 +291,10 @@ linkitzApp.controller('LinkitzAppController', [
 
 	$scope.toggleConnect = function toggleConnect()
 	{
+	    if ($scope.editor.blocklyXML == '<xml xmlns="http://www.w3.org/1999/xhtml"></xml>') {
+		    LogService.appLogMsg("Upload: Empty workspace, nothing to load");
+		    return;
+	    }
 	    $scope.connectTransitioning = true;
 	    var catch_msg = "Load code: Error connecting to Linkitz";
 	    LinkitzToy.connect()
