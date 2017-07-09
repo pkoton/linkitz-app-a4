@@ -102,9 +102,9 @@ linkitzApp.controller('LinkitzAppController', [
 			    $scope.setHubID(connectedID);
 			    if ($scope.devMode == true) {
 				console.log("Pinging hub " + connectedID[0].toString(16) + ':' +
-				     connectedID[1].toString(16) + ':' +
-				     connectedID[2].toString(16) + ':' +
-				     connectedID[3].toString(16) );
+				     						 connectedID[1].toString(16) + ':' +
+				     						 connectedID[2].toString(16) + ':' +
+				     						 connectedID[3].toString(16) );
 			    } else
 			    {console.log("Ping: A hub is connected");
 			    }

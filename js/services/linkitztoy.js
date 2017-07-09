@@ -229,16 +229,20 @@ linkitzApp.factory('LinkitzToy',
     function linkitzReadID() {
         var deferred = $q.defer();
 
-        var address = 0x3ff8;
-        var bufferLength = 8;
-        var idBuffer = new Uint16Array(4);
+        var address = 0x11C0;
+        var bufferLength = 32;
+        var idBuffer = new Uint8Array(32);
 
         linkitz.getData(address, bufferLength,
             function successCallback(rxBuffer) {
-                idBuffer[0] = (rxBuffer[0] << 8) + (rxBuffer[1] & 0x3f);
-                idBuffer[1] = (rxBuffer[2] << 8) + (rxBuffer[3] & 0x3f);
-                idBuffer[2] = (rxBuffer[4] << 8) + (rxBuffer[5] & 0x3f);
-                idBuffer[3] = (rxBuffer[6] << 8) + (rxBuffer[7] & 0x3f);
+                for(i=0;i<64;i+=2){
+                    idBuffer[i/2] = rxBuffer[i];
+                }
+                //idBuffer[0] =(rxBuffer[0] << 8) + (rxBuffer[1] & 0x3f);
+                //idBuffer[1] = (rxBuffer[2] << 8) + (rxBuffer[3] & 0x3f);
+                //idBuffer[2] = (rxBuffer[4] << 8) + (rxBuffer[5] & 0x3f);
+                //idBuffer[3] = (rxBuffer[6] << 8) + (rxBuffer[7] & 0x3f);
+                
                 $rootScope.$evalAsync(function () {
                     deferred.resolve(idBuffer);
                 });
