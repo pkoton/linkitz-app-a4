@@ -244,30 +244,34 @@ linkitzApp.factory('LinkitzToy',
                 });
             },
             function timeoutCallback() {
-                deferred.reject("Timeout programming device.");
+                deferred.reject("Timeout reading device ID.");
             },
             function errorCallback() {
-                deferred.reject("Error programming device.");
+                deferred.reject("Error reading device ID.");
             }
         );
 
         return deferred.promise;
-    }
+    }       
 
-    function linkitzProgramDevice(programHex) {
+    function linkitzProgramDevice(IDHex,programHex) {
         var deferred = $q.defer();
 
         var programPromise = $q.all([
+            LinkitzHubID.parseHex(IDHex),
             LinkitzFirmware.getLatestFirmware().then(IntelHex.parseHex),        // firmware hex
             IntelHex.parseHex(programHex)                                       // user program hex
         ])
             .then(function(parsedRecords) {
                 return linkitzEraseDevice()                                     // erase flash
                     .then(function () {
-                        return linkitzProgramDeviceFromHex(parsedRecords[0]);   // program firmware
+                        return linkitzProgramDeviceFromHex(parsedRecords[0]);
                     })
                     .then(function () {
-                        return linkitzProgramDeviceFromHex(parsedRecords[1]);   // program user program
+                        return linkitzProgramDeviceFromHex(parsedRecords[1]);   // program firmware
+                    })
+                    .then(function () {
+                        return linkitzProgramDeviceFromHex(parsedRecords[2]);   // program user program
                     });
             })
             .then(function () {
