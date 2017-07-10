@@ -1,8 +1,7 @@
 
 'use strict';
 
-// this is pseudo-assembly language generator using the Dart framework
-// Currently all it does it print out the name of the block 
+// this is an assembly language generator based on the blockly Dart generator
 
 // **************************************************************************************************
 // LED  LED  LED  LED  LED  LED  LED  LED  LED  LED  LED  LED  LED  LED  LED  LED  LED  LED
