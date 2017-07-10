@@ -230,7 +230,7 @@ linkitzApp.factory('LinkitzToy',
         var deferred = $q.defer();
 
         var address = 0x11C0;
-        var bufferLength = 32;
+        var bufferLength = 64;
         var idBuffer = new Uint8Array(32);
 
         linkitz.getData(address, bufferLength,
