@@ -320,3 +320,16 @@ Blockly.FieldTextInput.nonnegativeIntegerValidator = function(text) {
   }
   return n;
 };
+
+/**
+ * Ensure that only a counting number may be entered.
+ * @param {string} text The user's text.
+ * @return {?string} A string representing a valid int, or null if invalid.
+ */
+Blockly.FieldTextInput.countingNumberValidator = function(text) {
+  var n = Blockly.FieldTextInput.nonnegativeIntegerValidator(text);
+  if (n) {
+    n = String(Math.max(1, Math.floor(n)));
+  }
+  return n;
+};

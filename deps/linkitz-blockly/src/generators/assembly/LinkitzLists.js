@@ -402,7 +402,7 @@ Blockly.Assembly['lists_create_n'] = function(block) {
     console.log("don't have block.id");
     var numItems = parseInt(block.getFieldValue('NUM_ITEMS')); 
     if (numItems == 0) {
-      numItems = 1; // can't have a list of length 0, in future should alert user
+      numItems = 1; // this should never happen due to countingNumberValidator on block
     }
       else if (numItems > 127) {
         numItems = 127; // 127 max
