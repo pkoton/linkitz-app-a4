@@ -302,7 +302,7 @@ linkitzApp.controller('LinkitzAppController', [
 		return LinkitzToy.verifyDevice();
 	    })
 	    .then(function (querybytes) {
-		$scope.setConnected(true);
+        $scope.setConnected(true);
 		return LinkitzToy.readID();
 	    })
 	    .then(function (connectedID) {
@@ -338,7 +338,7 @@ linkitzApp.controller('LinkitzAppController', [
 		$scope.connectTransitioning = false;
 		errorCatcher.handle(catch_msg, reason);
 	    });	
-	}
+	};
 
     
     function tryConnect() {
