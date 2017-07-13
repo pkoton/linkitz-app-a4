@@ -84,6 +84,9 @@ Blockly.Blocks['lists_create_with'] = {
    */
   mutationToDom: function() {
     var container = document.createElement('mutation');
+    if (this.itemCount_ == 0) {
+      this.itemCount_ = 1;
+    }
     container.setAttribute('items', this.itemCount_);
     return container;
   },
@@ -94,6 +97,9 @@ Blockly.Blocks['lists_create_with'] = {
    */
   domToMutation: function(xmlElement) {
     this.itemCount_ = parseInt(xmlElement.getAttribute('items'), 10);
+    if (this.itemCount_ == 0) {
+      this.itemCount_ = 1;
+    }
     this.updateShape_();
   },
   /**
@@ -106,6 +112,9 @@ Blockly.Blocks['lists_create_with'] = {
     var containerBlock = workspace.newBlock('lists_create_with_container');
     containerBlock.initSvg();
     var connection = containerBlock.getInput('STACK').connection;
+    if (this.itemCount_ == 0) {
+      this.itemCount_ = 1;
+    }
     for (var i = 0; i < this.itemCount_; i++) {
       var itemBlock = workspace.newBlock('lists_create_with_item');
       itemBlock.initSvg();
@@ -170,10 +179,13 @@ Blockly.Blocks['lists_create_with'] = {
       }
     }
     // Rebuild block.
+    //if (this.itemCount_ == 0) {
+    //  this.appendDummyInput('EMPTY')
+    //     .appendField(Blockly.Msg.LISTS_CREATE_EMPTY_TITLE);
+    //} else {
     if (this.itemCount_ == 0) {
-      this.appendDummyInput('EMPTY')
-          .appendField(Blockly.Msg.LISTS_CREATE_EMPTY_TITLE);
-    } else {
+      this.itemCount_ = 1;
+    }
       for (var i = 0; i < this.itemCount_; i++) {
         var input = this.appendValueInput('ADD' + i);
         if (i == 0) {
@@ -182,7 +194,7 @@ Blockly.Blocks['lists_create_with'] = {
       }
     }
   }
-};
+
 
 Blockly.Blocks['lists_create_with_container'] = {
   /**

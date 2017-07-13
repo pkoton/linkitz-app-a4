@@ -86,13 +86,8 @@ Blockly.Assembly['flash_leds'] = function(block) {
     
       case 'lists_create_with': 
         console.log("5 in flash_list: targetBlock.type " + targetBlock.type);
-        var numItems = targetBlock.itemCount_; // wrong, this is just top level item number
-        console.log("in flash lists_create_with: numItems = " + numItems)
-        if (numItems == 0) {
-          code += 'push R0\nsyscall flashRGB\n';  // treat as flash null
-          code += "; ending flash_leds\n";
-          return code;
-        }
+        var numItems = targetBlock.itemCount_; // this is just top level item number
+        console.log("in flash lists_create_with: numItems = " + numItems);
         code += flash_arg + "syscall flashRGB\n";
         break;
       
