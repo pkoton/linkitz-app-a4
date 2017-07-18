@@ -151,7 +151,7 @@ Blockly.Assembly['lists_getIndex_nonMut'] = function(block) {
         var at2 = Blockly.Assembly.valueToCode(block, 'AT',Blockly.Assembly.ORDER_NONE) || '1';
         console.log("AT2 is "+ at2);
         code += at2; // result in R1
-        if (list_elt_size == 1) {   // SPECIAL CASE FOR list_elt_size = 1 
+          if (list_elt_size == 1) {   // SPECIAL CASE FOR list_elt_size = 1 
           code += 'GETO R' + list_head_addr + ' R1 R1\n';
           }
         else {
@@ -181,12 +181,13 @@ Blockly.Assembly['lists_getIndex_nonMut'] = function(block) {
           code += 'Add R1 R2 R1\n'; // calculate next offset
           }
           code += 'set R1 ' + list_elt_size +"\npush R1\n";
+          gsv_next -= 1;
+        
         }
         //code += 'GOTO END' + bounds_label + '\n';
         //code += 'BOUNDS_ERR' + bounds_label + ':\n';
         //// code for handling bounds error goes here
         //code += 'END' + bounds_label + ':\n';
-         gsv_next -= 1;
          return [code, Blockly.Assembly.ORDER_NONE];
     } // end FROM_START
      else if (where == 'FROM_END') {
