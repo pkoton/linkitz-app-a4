@@ -196,7 +196,7 @@ Blockly.Assembly.init = function(workspace) {
  * @return {string} Completed code.
  */
 Blockly.Assembly.finish = function(code) {
-  code =  opimize_assembly(code);
+  code =  optimize_assembly(code);
   
   //if (code) {
   //  global_scalar_variables_pp = global_scalar_variables.join(',');
@@ -290,7 +290,7 @@ Blockly.Assembly.scrub_ = function(block, code) {
   return commentCode + code + nextCode;
 };
 
-function opimize_assembly(assembly_code) {
+function optimize_assembly(assembly_code) {
     var assembly_lines = assembly_code.toLowerCase().split("\n");
     var line_ptr;
     var at_end = false;
@@ -305,18 +305,18 @@ function opimize_assembly(assembly_code) {
         }
 	var lookahead = line_ptr+1;
 	var line_next = assembly_lines[lookahead];
-	console.log("1 next line is: " + line_next);
+	// console.log("1 next line is: " + line_next);
 	var token_list_next = tokenize(line_next);
 	while (token_list_next.length==0||token_list_next[0]==""){
             console.log("skipping empty line: " + line_next);
             lookahead++;
-            console.log("assembly_lines.length: "+assembly_lines.length + " lookahead: " + lookahead );
+            // console.log("assembly_lines.length: "+assembly_lines.length + " lookahead: " + lookahead );
 	    if (lookahead >= assembly_lines.length) {
               at_end = true;
               break;
             }
             else {
-            console.log("passed break");
+            // console.log("passed break");
 	    line_next = assembly_lines[lookahead];
 	    token_list_next = tokenize(line_next);
             }
@@ -325,17 +325,18 @@ function opimize_assembly(assembly_code) {
           console.log("at end");
           break;
         }
-	console.log("2 next line is: " + line_next);
-        if ((token_list[0].match(/^pop$/i)) && ((token_list_next[0].match(/^push$/i)))){
-            var popreg = token_list[1]; //register to be popped
-            var pushreg = token_list_next[1]; //register to be pushed
-            if (popreg == pushreg) { // pop then push the same register is a no-op
-                assembly_lines[line_ptr] = '';
-                assembly_lines[lookahead] = '';
-            }
-            else continue;
-        }
-        else if ((token_list[0].match(/^push$/i)) && (token_list_next[0].match(/^pop$/i))){
+	// console.log("2 next line is: " + line_next);
+        //if ((token_list[0].match(/^set$/i)) && ((token_list_next[0].match(/^push$/i)))){
+        //    var setreg = token_list[1]; //register to be popped
+        //    var pushreg = token_list_next[1]; //register to be pushed
+        //    if ((setreg == pushreg) && ((token_list[2] == R0) || (token_list[2] == 0))){ // set a reg ro 0 then push the  register 
+        //        assembly_lines[line_ptr] = '';
+        //        assembly_lines[lookahead] = '';
+        //    }
+        //    else continue;
+        //}
+        // else
+        if ((token_list[0].match(/^push$/i)) && (token_list_next[0].match(/^pop$/i))){
             var pushreg = token_list[1]; //register to be pushed
             var popreg = token_list_next[1]; //register to be popped
             if (pushreg == popreg) { // push then pop to same register is a no-op
