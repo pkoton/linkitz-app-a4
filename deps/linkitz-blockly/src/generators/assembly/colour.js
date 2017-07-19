@@ -89,11 +89,27 @@ Blockly.Assembly['colour_picker'] = function(block) {
   var code = "; starting colour_picker\n";
   var value_color = block.getFieldValue('COLOUR'); // getFieldValue('COLOUR') returns the color as a hex string no quotes
   var colorRGB = hexToRGB (value_color);
-    code += // want to push so stack is in this order top{3,R,G,B,...}
-      'Set R1 ' + lkzify(colorRGB[2]) + '\nPush R1\n' +  // B
-      'Set R1 ' + lkzify(colorRGB[1]) + '\nPush R1\n' +  //G
-      'Set R1 ' + lkzify(colorRGB[0]) + '\nPush R1\n' + // R
-      'Set R1 3' + '\nPush R1\n'; // add length of color list =3
+  var Rcode, Gcode, Bcode;
+  var R = lkzify(colorRGB[0]);
+  if (R == 0) {
+        Rcode = 'Push R0\n';}
+        else {
+            Rcode = 'Set R1 ' + R + '\nPush R1\n'; // 
+        }
+  var G = lkzify(colorRGB[1]);
+  if (G == 0) {
+        Gcode = 'Push R0\n';}
+        else {
+            Gcode = 'Set R1 ' + G + '\nPush R1\n'; // 
+        }
+  var B = lkzify(colorRGB[2]);
+  if (B == 0) {
+        Bcode = 'Push R0\n';}
+        else {
+            Bcode = 'Set R1 ' + B + '\nPush R1\n'; // 
+        }
+    // push so stack is in this order top{3,R,G,B,...}
+    code += Bcode + Gcode + Rcode + 'Set R1 3' + '\nPush R1\n'; // add length of color list =3
   code += "; ending colour_picker\n";
   return [code, Blockly.Assembly.ORDER_NONE];
 };
