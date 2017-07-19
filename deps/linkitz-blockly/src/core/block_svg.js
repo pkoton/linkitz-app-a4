@@ -627,18 +627,18 @@ Blockly.BlockSvg.prototype.showContextMenu_ = function(e) {
       }
     }
 
-    if (this.workspace.options.disable) {
-      // Option to disable/enable block.
-      var disableOption = {
-        text: this.disabled ?
-            Blockly.Msg.ENABLE_BLOCK : Blockly.Msg.DISABLE_BLOCK,
-        enabled: !this.getInheritedDisabled(),
-        callback: function() {
-          block.setDisabled(!block.disabled);
-        }
-      };
-      menuOptions.push(disableOption);
-    }
+    //if (this.workspace.options.disable) {
+    //  // Option to disable/enable block.
+    //  var disableOption = {
+    //    text: this.disabled ?
+    //        Blockly.Msg.ENABLE_BLOCK : Blockly.Msg.DISABLE_BLOCK,
+    //    enabled: !this.getInheritedDisabled(),
+    //    callback: function() {
+    //      block.setDisabled(!block.disabled);
+    //    }
+    //  };
+    //  menuOptions.push(disableOption);
+    //}
 
     // Option to delete this block.
     // Count the number of blocks that are nested in this block.
