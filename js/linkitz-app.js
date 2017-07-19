@@ -48,7 +48,7 @@ linkitzApp.controller('LinkitzAppController', [
     $scope.isAttached = false;
 
     $scope.hubs = {};
-    $scope.lastHub = '00:00:00:00';
+    $scope.lastHub = '0000:0000:0000:0000';
     $scope.attachedHub = null;
     
     $scope.LinkitzPrograms = [];
@@ -66,11 +66,14 @@ linkitzApp.controller('LinkitzAppController', [
 
 
     $scope.setHubID = function setHubID(connectedHubId) {
-        //$scope.hubID = connectedHubId;
-        $scope.lastHub = connectedHubId[0].toString(16) + ':' +
-                         connectedHubId[1].toString(16) + ':' +
-                         connectedHubId[2].toString(16) + ':' +
-                         connectedHubId[3].toString(16);
+        //$scope.lastHub = connectedHubId[0].toString(16) + ':' +
+        //                 connectedHubId[1].toString(16) + ':' +
+        //                 connectedHubId[2].toString(16) + ':' +
+        //                 connectedHubId[3].toString(16);
+        $scope.lastHub = padhex(connectedHubId[0]) + ':' +
+                        padhex(connectedHubId[1]) + ':' +
+				     	padhex(connectedHubId[2]) + ':' +
+				     	padhex(connectedHubId[3]);
 	$scope.attachedHub = $scope.lastHub;
 	if (!$scope.hubs[$scope.lastHub]) {
             $scope.hubs[$scope.lastHub] = {};
@@ -100,25 +103,27 @@ linkitzApp.controller('LinkitzAppController', [
 			   })
 			.then(function (connectedID) {
 			    $scope.setHubID(connectedID);
+                //console.log("Pinging hub " + connectedID);
 			    if ($scope.devMode == true) {
-				console.log("Pinging hub " + connectedID[0].toString(16) + ':' +
-				     						 connectedID[1].toString(16) + ':' +
-				     						 connectedID[2].toString(16) + ':' +
-				     						 connectedID[3].toString(16) );
+				console.log("Pinging hub " + padhex(connectedID[0]) + ':' +
+				     						 padhex(connectedID[1]) + ':' +
+				     						 padhex(connectedID[2]) + ':' +
+				     						 padhex(connectedID[3]) );
 			    } else
 			    {console.log("Ping: A hub is connected");
 			    }
 			   })
 			.then(LinkitzToy.disconnect)
 			.then(function () {
-			$scope.setConnected(false);
-			if (!$scope.savedDropdownOpen) { // don't refresh program list if dropdown is open (makes it flash)
-			    $scope.queryPrograms();
-			}
-		    })
+                $scope.setConnected(false);
+                if (!$scope.savedDropdownOpen) { // don't refresh program list if dropdown is open (makes it flash)
+                    //$scope.queryPrograms();
+                    $scope.queryProgramsNoThrottle();
+                }
+                })
 		    .catch(function (reason) {
-			console.log("Ping: No hub detected");
-			$scope.setAttached(false);
+                console.log("Ping: No hub detected");
+                $scope.setAttached(false);
 		    });
 	}
     }
@@ -126,16 +131,24 @@ linkitzApp.controller('LinkitzAppController', [
     setInterval(function(){
         linkitzPing()}, 5000)
     
+    function padhex(d) {
+        var h = (+d).toString(16);
+        return (h.length < 2? '0' : '') + h;
+    }
+    
     $scope.restoreState = function restoreState() {
+        // console.log("in restore state");
         return ChromeBrowser.loadLocalStorage("persistState")
             .then(function (persistState) {
                 if (persistState) {
                     $scope.lastHub = persistState.lastHub;
-		    $scope.localID = persistState.localID;
+                    $scope.localID = persistState.localID;
                     angular.forEach(persistState.hubs, function(value, key) {
                         $scope.hubs[key] = {};
                     });
                 }
+                // NEW: call queryPrograms for hubs to restore savedPrograms dropdown
+                $scope.queryPrograms();
             });
     }
 
@@ -148,7 +161,7 @@ linkitzApp.controller('LinkitzAppController', [
         angular.forEach($scope.hubs, function(value, key) {
             persistState.hubs[key] = key;
         });
-	//console.log("in saveState, hubs is " + JSON.stringify($scope.hubs));
+        //console.log("in saveState, hubs is " + JSON.stringify($scope.hubs));
         return ChromeBrowser.saveLocalStorage("persistState", persistState);
     }
 
@@ -158,10 +171,27 @@ linkitzApp.controller('LinkitzAppController', [
 	angular.forEach($scope.hubs, function(value, key) {
             //console.log(key);
 	    value['hubId'] = key;
-            value['hubPrograms'] = HubPrograms.query({'userid': key});
+        value['hubPrograms'] = HubPrograms.query({'userid': key});
         });
 	//console.log("after queryPrograms loop, hubs is " + JSON.stringify($scope.hubs));
     }
+    
+  $scope.queryProgramsNoThrottle = function queryProgramsNoThrottle() {
+	var size = Object.keys($scope.hubs).length;
+    // $scope.LinkitzPrograms = HubPrograms.query({'userid': 'builtIn'}); // only check this on startup, it is unlikely to change during a user session
+    //console.log("# of hubs = " + size);
+    var rand = Math.floor((Math.random() * size + 1)); // use rand to pick one hub to query
+    //console.log("rand = " + rand);
+    var i = 1;
+	angular.forEach($scope.hubs, function(value, key) {
+        if (i == rand) {
+            value['hubId'] = key;
+            value['hubPrograms'] = HubPrograms.query({'userid': key});
+            //console.log("querying  " + key);
+        };
+        i += 1;
+        });
+    }  
 
     $scope.loadEditor = function loadEditor (program,writeFlag) {
         var blocklyxml = program.codexml;
