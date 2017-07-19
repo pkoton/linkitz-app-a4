@@ -140,7 +140,7 @@ Blockly.Assembly['math_arithmetic'] = function(block) {
     if (is_scalar(arg1) || (get_list_desc (arg1, [])[1].length == 0)) { // and arg1 is scalar
       // if arg2 is in GSV just us that register
       if (arg1.type == 'variables_get') {
-        console.log("here0");
+        // console.log("here0");
         var varName1 = Blockly.Assembly.variableDB_.getName(arg1.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
         var in_GSV1 = global_scalar_variables.indexOf(varName1); // if in global_scalar_variable
           if (in_GSV1 >= 0) {
@@ -150,9 +150,9 @@ Blockly.Assembly['math_arithmetic'] = function(block) {
             }
       }
         else {
-          console.log("here1");
+          // console.log("here1");
           var argument1 = Blockly.Assembly.valueToCode(block, 'A', order); // Rsrc1 is in R1
-          console.log("argument1 = " +argument1);
+          // console.log("argument1 = " +argument1);
           arg1usesR1 = 1;
         }
     }
@@ -167,7 +167,7 @@ Blockly.Assembly['math_arithmetic'] = function(block) {
   {
     if (is_scalar(arg2) || (get_list_desc (arg2, [])[1].length == 0)) { // and arg2 is scalar
     if (arg2.type == 'variables_get') {
-      console.log("here2");
+      // console.log("here2");
       var varName2 = Blockly.Assembly.variableDB_.getName(arg2.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
       var in_GSV2 = global_scalar_variables.indexOf(varName2); // if in global_scalar_variable
         if (in_GSV2 >= 0) {
@@ -175,9 +175,9 @@ Blockly.Assembly['math_arithmetic'] = function(block) {
         }
     }
         else {
-          console.log("here2a");
+          // console.log("here2a");
           var argument2 = Blockly.Assembly.valueToCode(block, 'B', order); // Rsrc2 is in R1
-          console.log("argument2 = " +argument2);
+          // console.log("argument2 = " +argument2);
           arg2usesR1=1;
         }
     } else { //it's not scalar
@@ -185,7 +185,7 @@ Blockly.Assembly['math_arithmetic'] = function(block) {
       }
   }
   if ((arg1usesR1==1) && (arg2usesR1==1)) {
-    console.log("here3");
+    // console.log("here3");
     code += argument1 + 'push R1 \n' + argument2 + 'pop R2 \n' + operator + ' R2 R1 R1\n'; //  note: Rsrc1 is in R2
     code += '; ending math_arithmetic\n';
     return [code,Blockly.Assembly.ORDER_NONE];
@@ -265,7 +265,7 @@ Blockly.Assembly['math_magnitude'] = function(block) {
     return [code, Blockly.Assembly.ORDER_NONE];
   }
 //it's a list
-  console.log("in math_magnitude of list");
+  // console.log("in math_magnitude of list");
   var list = Blockly.Assembly.valueToCode(block, 'LIST', Blockly.Assembly.ORDER_NONE); // list on stack, length is TOS
   code += list + "syscall MAGR1\n"; // finds its argument on stack, leaves result in R1
   code += '; ending math_magnitude\n';
@@ -278,20 +278,20 @@ Blockly.Assembly['math_on_list'] = function(block) { // if list elements are the
   var targetBlock = block.getInputTargetBlock('LIST');
   // handle null input - return 0
   if (!targetBlock) {
-    console.log("here: math_on_list 1");
+    // console.log("here: math_on_list 1");
     code += 'set R1 R0\n';
   }
   else
   // handle scalar input. Just return the scalar (makes sense for all our math list operations)
   if (is_scalar(targetBlock)){
     var val = Blockly.Assembly.valueToCode(block, 'LIST', Blockly.Assembly.ORDER_NONE);
-    console.log("in math_on_list: input is a scalar, value is " + val);
+    // console.log("in math_on_list: input is a scalar, value is " + val);
     code += val + "\n"; 
   }
   else {
   var func = block.getFieldValue('OP');
   var inputType = targetBlock.type;
-  console.log("in math_on_list: targetBlock.type " + inputType);
+  // console.log("in math_on_list: targetBlock.type " + inputType);
   ifCount++;
   
     var minus1 = gsv_next; // used to decrement list index - everyone uses this
@@ -300,10 +300,10 @@ Blockly.Assembly['math_on_list'] = function(block) { // if list elements are the
     }
     gsv_next++;
     var list = Blockly.Assembly.valueToCode(block, 'LIST', Blockly.Assembly.ORDER_NONE) || '[]'; 
-    console.log("in math_on_list: valueToCode LIST is " + list); // input list is on stack, length is TOS
+    // console.log("in math_on_list: valueToCode LIST is " + list); // input list is on stack, length is TOS
     switch (func) {
       case 'SUM':
-        console.log("in math_on_list: SUM");
+        // console.log("in math_on_list: SUM");
         var next_stack_item = gsv_next; //*** ******check to make sure this is not hitting glv_next
         if (next_stack_item > glv_next) {
           throw 'out of register space in math_on_list';
@@ -324,7 +324,7 @@ Blockly.Assembly['math_on_list'] = function(block) { // if list elements are the
     case 'MIN': // get min element, leave in R1
       // because R1 is a "special register" due to BTR1SNZ, it has to be used for double duty
       // 1. to hold result of compare; 2. to hold interation counter
-      console.log("in math_on_list: MIN");
+      // console.log("in math_on_list: MIN");
       var min = gsv_next; //*** ******check to make sure this is not hitting glv_next
       if (min > glv_next) {
           throw 'out of register space in math_on_list';
@@ -355,7 +355,7 @@ Blockly.Assembly['math_on_list'] = function(block) { // if list elements are the
     case 'MAX': // get max element, leave in R1
       // because R1 is a "special register" due to BTR1SNZ, it has to be used for double duty
       // 1. to hold result of compare; 2. to hold interation counter
-      console.log("in math_on_list: MAX");
+      // console.log("in math_on_list: MAX");
       var max = gsv_next; //*** ******check to make sure this is not hitting glv_next
       if (max > glv_next) {
           throw 'out of register space in math_on_list';
@@ -394,7 +394,7 @@ Blockly.Assembly['math_on_list'] = function(block) { // if list elements are the
           throw 'out of register space in math_on_list';
         }
         gsv_next++;
-        console.log("in math_on_list: AVERAGE");
+        // console.log("in math_on_list: AVERAGE");
         code += list + "pop R1\n"; // length is in R1
         code += "loadR1to R"+ sav +"\n"; //list length is used twice, sav saves it for denominator
         code += "pop R2\n"; // R2 will accumulate sum

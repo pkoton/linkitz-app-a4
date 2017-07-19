@@ -73,15 +73,16 @@ Blockly.Assembly['controls_repeat'] = function(block) {
     gsv_next++;
     if (block.getField('TIMES')) {
     // Internal number.
-    var repeats = String(Number(block.getFieldValue('TIMES')));
+    //var repeats = String(Number(block.getFieldValue('TIMES')));
+    var repeats = block.getFieldValue('TIMES');
     code += 'set R1 ' + repeats + '\n';
   } 
-  code += 'set R' + minus1 + ' -1\n';
+  code += 'set R' + minus1 + ' 1\n';
   code += 'REPEAT_label_' + this_count + ': BTR1SNZ \n; skip next instruction if R1 is non-zero\n'; 
   code += 'GOTO end_REPEAT_label_' + this_count + '\n';
   code += 'LoadR1to R' + temp + '\n';
   var branch = Blockly.Assembly.statementToCode(block, 'DO');
-  console.log("DO statement is *" + branch + "*\n");
+  // console.log("DO statement is *" + branch + "*\n");
   code += branch + '\n';
   code += 'LoadR1from R' + temp + '\n';
   code += 'SUB R1 R' + minus1 + ' R1\n';

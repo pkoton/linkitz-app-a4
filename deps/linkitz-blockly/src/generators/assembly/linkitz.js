@@ -38,7 +38,7 @@ Blockly.Assembly['flash_leds'] = function(block) {
               return code;
             }
             var topOfList = headaddr + llen - 1;
-            console.log("headaddr " + headaddr + " llen " + llen + " topOfList " + topOfList);
+            // console.log("headaddr " + headaddr + " llen " + llen + " topOfList " + topOfList);
             for (var i = 0; i < numItems; i++) { 
               var temp = topOfList - i;
               code += "push R" + temp + "\n";
@@ -52,7 +52,7 @@ Blockly.Assembly['flash_leds'] = function(block) {
           }
       }
   var flash_arg = Blockly.Assembly.valueToCode(block, 'COLOR', Blockly.Assembly.ORDER_NONE) || 'None';
-  console.log("in flash_leds: input is *" + flash_arg +'*');
+  // console.log("in flash_leds: input is *" + flash_arg +'*');
   if (flash_arg == 'None' || flash_arg =='') {
     // *****  input is blank or null
     //alert('input is null');
@@ -62,39 +62,39 @@ Blockly.Assembly['flash_leds'] = function(block) {
   }
   else {
     var targetBlock = block.getInputTargetBlock('COLOR');
-    console.log("1 in flash_leds: input is block type " + targetBlock.type);
+    // console.log("1 in flash_leds: input is block type " + targetBlock.type);
     if (is_scalar(targetBlock)) { // ***** input is a scalar in R1
       code += flash_arg + 'syscall flashHue R1\n';//Hue is a signed variable and needs a domain that varies from [-127|-128,127] or from [0,255] Drew doesn't care which but if it's restricted by taking an absolute value he will spend hours debugging LED code
     } // ***** input is a list on stack, first element is list length
      else {
-      console.log("2 in flash_list: targetBlock.type " + targetBlock.type);
+      // console.log("2 in flash_list: targetBlock.type " + targetBlock.type);
      switch (targetBlock.type) { 
       // we could previously treat these all list cases together because
       // we did not need to know list length at assembly generation time
       // now have to treat them individually in order to calculate space required
       case 'colour_picker':
       case 'get_motion_data':
-        console.log("3 in flash_list: targetBlock.type " + targetBlock.type);
+        // console.log("3 in flash_list: targetBlock.type " + targetBlock.type);
         code += flash_arg + "syscall flashRGB\n";
         break;
       
       case 'lists_create_n':
-         console.log("4 in flash_list: targetBlock.type " + targetBlock.type);
+         // console.log("4 in flash_list: targetBlock.type " + targetBlock.type);
       // lists_create_n block creates a list of all 0s 
         code += flash_arg + 'syscall flashRGB\n';  
         break;
     
       case 'lists_create_with': 
-        console.log("5 in flash_list: targetBlock.type " + targetBlock.type);
+        // console.log("5 in flash_list: targetBlock.type " + targetBlock.type);
         var numItems = targetBlock.itemCount_; // this is just top level item number
-        console.log("in flash lists_create_with: numItems = " + numItems);
+        // console.log("in flash lists_create_with: numItems = " + numItems);
         code += flash_arg + "syscall flashRGB\n";
         break;
       
       // ***** Input could be either a scalar or a list
       case 'procedures_callreturn':
         var procName = Blockly.Assembly.variableDB_.getName(targetBlock.getFieldValue('NAME'),Blockly.Procedures.NAME_TYPE);
-        console.log("in flash_leds: procedures_callreturn  on " + procName);
+        // console.log("in flash_leds: procedures_callreturn  on " + procName);
         // look up if proc retuns scalar or list
         if (proc_types[procName][0] == 0) { //returns a scalar, value is in R1
           code += flash_arg + 'syscall flashHue R1\n';
@@ -415,14 +415,14 @@ Blockly.Assembly['set_regular_event_speed'] = function(block) {
   var code = "; starting get_ambient_light\n";
   var argument0 = block.getInputTargetBlock('PERIOD');
   if (!argument0) {
-    console.log("here RES1");
+    // console.log("here RES1");
     code += 'Syscall SET_REG_EVENT_SPEED R0\n';
     code += "; ending set_regular_event_speed\n";
     return code;
     }
     else {
       if (is_scalar(argument0) || (get_list_desc (argument0, [])[1].length == 0)) { // and arg1 is scalar
-      console.log("here RES2");
+      // console.log("here RES2");
       var argument0 = Blockly.Assembly.valueToCode(block, 'PERIOD', Blockly.Assembly.ORDER_NONE);
       var splitArg = argument0.split(" ",3); // separate the result into 3 words
       var argNum = parseInt(splitArg[2]); // check the number
@@ -435,7 +435,7 @@ Blockly.Assembly['set_regular_event_speed'] = function(block) {
         }
       }
       else { //it's not scalar
-        console.log("here RES3");
+        // console.log("here RES3");
         throw 'inputs to SET_REG_EVENT_SPEED block can\'t be lists';
       }
       code += argument0 + 'Syscall SET_REG_EVENT_SPEED R1\n'; //finds it's argument in R1
@@ -533,7 +533,7 @@ Blockly.Assembly['controls_while'] = function(block) {
   code += 'BTR1SNZ \n; skip next instruction if R1 is non-zero\n'; 
   code += 'GOTO endWHILE_label_' + this_count + '\n';
   var branch = Blockly.Assembly.statementToCode(block, 'DO');
-  console.log("DO statement is *" + branch + "*\n");
+  // console.log("DO statement is *" + branch + "*\n");
   if (branch) {
   branch = Blockly.Assembly.addLoopTrap(branch, block.id) || Blockly.Assembly.PASS;
   }

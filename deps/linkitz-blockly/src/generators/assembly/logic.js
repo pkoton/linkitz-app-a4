@@ -33,28 +33,28 @@ Blockly.Assembly['controls_if'] = function(block) {
   var code = '; starting controls_if\n';
   var n = 0;
   var this_if = ifCount++; // ifCount is global for generating unique labels across multiple conditional statements
-  console.log("1: this_if = " + this_if);
+  // console.log("1: this_if = " + this_if);
   var elseCount = block.elseCount_;
   var elseifcount = block.elseifCount_;
-  console.log("in controls_if n="+n+", this_if="+this_if+", elseCount="+elseCount+", elseifcount="+elseifcount);
+  // console.log("in controls_if n="+n+", this_if="+this_if+", elseCount="+elseCount+", elseifcount="+elseifcount);
   var argument = Blockly.Assembly.valueToCode(block, 'IF' + n, Blockly.Assembly.ORDER_NONE) || 'Set R1 0\n';      //argument is in R1
   code += argument;
   var branch = Blockly.Assembly.statementToCode(block, 'DO' + n); // branch = statements to be executed if argument is true/non-zero
       if ((elseCount == 0) && (elseifcount == 0)) { // this is simple if-then
-        console.log("2: this_if = " + this_if);
+        // console.log("2: this_if = " + this_if);
         code += 'BTR1SNZ \n; skip next instruction if R1 is non-zero\n'; 
         code += 'GOTO endif_label_' + this_if + '\n'; // test value in R1, skip the instuction 'GOTO else_label' if non-zero
-        console.log("3: this_if = " + this_if);
+        // console.log("3: this_if = " + this_if);
         code += branch + 'GOTO endif_label_' + this_if + '\n';   // do the then clause and go to end
       }
       else if ((elseCount > 0 ) && (elseifcount == 0)) { // this is a simple if-then-else
-        console.log("4: this_if = " + this_if);
+        // console.log("4: this_if = " + this_if);
         code += 'BTR1SNZ \n; skip next instruction if R1 is non-zero\n'; 
         code += ' GOTO else_label_' + this_if + '\n'; // test value in R1, skip the instuction 'GOTO else_label' if non-zero
-        console.log("5: this_if = " + this_if);
+        // console.log("5: this_if = " + this_if);
         code += branch + 'GOTO endif_label_' + this_if + '\n';
       } else {                                           // there are nested if statements with out without an else
-          console.log("6: this_if = " + this_if);
+          // console.log("6: this_if = " + this_if);
           code += 'BTR1SNZ \n; skip next instruction if R1 is non-zero\n'; 
           code += ' GOTO elseif_label_' + this_if + '_1\n'; // test value in R1, skip the instuction 'GOTO else_label' if non-zero
           code += branch + 'GOTO endif_label_' + this_if + '\n';
@@ -62,29 +62,29 @@ Blockly.Assembly['controls_if'] = function(block) {
           for (n = 1; n <= elseifcount; n++) {
             argument = Blockly.Assembly.valueToCode(block, 'IF' + n, Blockly.Assembly.ORDER_NONE) || 'Set R1 0\n';
             branch = Blockly.Assembly.statementToCode(block, 'DO' + n);
-            console.log("7: this_if = " + this_if);
+            // console.log("7: this_if = " + this_if);
             code += 'elseif_label_' + this_if + '_' + n + ':\n' + argument +  'BTR1SNZ \n; skip next instruction if R1 is non-zero\n'; 
             var z = n + 1;
             if (z  > elseifcount) { 
               if (elseCount > 0) {
-                console.log("8: this_if = " + this_if);
+                // console.log("8: this_if = " + this_if);
                 code += 'GOTO else_label_' + this_if + '\n' + branch + 'GOTO endif_label_' + this_if + '\n'; }
                 else {
-                  console.log("9: this_if = " + this_if);
+                  // console.log("9: this_if = " + this_if);
                   code += 'GOTO endif_label_' + this_if + '\n' + branch + 'GOTO endif_label_' + this_if + '\n';
                   }
               } else {
-                 console.log("10: this_if = " + this_if);
+                 // console.log("10: this_if = " + this_if);
                  code += 'GOTO elseif_label_' + this_if + '_' + z +'\n' + branch+ 'GOTO endif_label_' + this_if + '\n';
             }
           }
       }
   if (elseCount > 0) {
     branch = Blockly.Assembly.statementToCode(block, 'ELSE') || ' ';
-    console.log("1: this_if = " + this_if);
+    // console.log("1: this_if = " + this_if);
     code += ' else_label_' + this_if + ':\n' + branch + 'GOTO endif_label_' + this_if + '\n'
   }
-  console.log("12: this_if = " + this_if);
+  // console.log("12: this_if = " + this_if);
   code  += '; ending controls_if\n';
   return code + 'endif_label_' + this_if + ':\n';
 };
@@ -132,7 +132,7 @@ Blockly.Assembly['logic_operation'] = function(block) {
     var order = Blockly.Assembly.ORDER_NONE;
     var arg0 = block.getInputTargetBlock('A');
     var arg1 = block.getInputTargetBlock('B');
-    console.log("in logic_operation");
+    // console.log("in logic_operation");
     if (!arg0 || !arg1) { // return false if missing either or both arguments - args are NOT ON STACK OR IN R1 YET
     code += "set R1 R0\n";
       return [code, order];
@@ -162,22 +162,22 @@ Blockly.Assembly['logic_operation'] = function(block) {
     return [code, order];
   };
   
-Blockly.Assembly['logic_negate'] = function(block) {
-  // Negation.
-  var order = Blockly.Assembly.ORDER_NONE;
-  var argument0 = Blockly.Assembly.valueToCode(block, 'BOOL', order) || 'true';
-  var code = '!' + argument0;
-  return [code, order];
-};
-
-Blockly.Assembly['logic_boolean'] = function(block) {
-  // Boolean values true and false.
-  var code = (block.getFieldValue('BOOL') == 'TRUE') ? 'true' : 'false';
-  return [code, Blockly.Assembly.ORDER_NONE];
-};
-
-Blockly.Assembly['logic_null'] = function(block) {
-  // Null data type.
-  return ['null', Blockly.Assembly.ORDER_NONE];
-};
+//Blockly.Assembly['logic_negate'] = function(block) {
+//  // Negation.
+//  var order = Blockly.Assembly.ORDER_NONE;
+//  var argument0 = Blockly.Assembly.valueToCode(block, 'BOOL', order) || 'true';
+//  var code = '!' + argument0;
+//  return [code, order];
+//};
+//
+//Blockly.Assembly['logic_boolean'] = function(block) {
+//  // Boolean values true and false.
+//  var code = (block.getFieldValue('BOOL') == 'TRUE') ? 'true' : 'false';
+//  return [code, Blockly.Assembly.ORDER_NONE];
+//};
+//
+//Blockly.Assembly['logic_null'] = function(block) {
+//  // Null data type.
+//  return ['null', Blockly.Assembly.ORDER_NONE];
+//};
 
