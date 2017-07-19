@@ -15,7 +15,7 @@ linkitzApp.controller('ToolbarController', [
 
 
 
-	$scope.savedDropdownOpen = false;
+	//$scope.savedDropdownOpen = false;
 
 	$scope.savedProgramList = null;
 
