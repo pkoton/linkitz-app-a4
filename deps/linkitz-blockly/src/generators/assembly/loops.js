@@ -88,6 +88,7 @@ Blockly.Assembly['controls_repeat'] = function(block) {
   code += '\nGOTO ' + 'REPEAT_label_' + this_count + '\n end_REPEAT_label_' + this_count + ':\n';
   code += "; ending controls_repeat\n";
   gsv_next = gsv_next - 2; // release registers back to free space
+  if(gsv_next!=minus1){throw("gsv_next was decremented to: "+gsv_next+" when seeking to repeat code n times")}
   return code;
 };
 

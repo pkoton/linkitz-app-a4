@@ -413,6 +413,7 @@ Blockly.Assembly['math_on_list'] = function(block) { // if list elements are the
     }
   }
   gsv_next--; // release the minus1 register
+  if(gsv_next!=minus1){throw("gsv_next was decremented to: "+gsv_next+" when seeking to do math on a list")}
   code += '; ending math_on_list\n';
   return [code, Blockly.Assembly.ORDER_NONE];
 };

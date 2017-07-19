@@ -182,6 +182,7 @@ Blockly.Assembly['lists_getIndex_nonMut'] = function(block) {
           }
           code += 'set R1 ' + list_elt_size +"\npush R1\n";
           gsv_next -= 1;
+          if(gsv_next!=save_temp){throw("gsv_next was decremented to: "+gsv_next+" when seeking to get from a list with element greater than one")}
         
         }
         //code += 'GOTO END' + bounds_label + '\n';
@@ -211,20 +212,24 @@ Blockly.Assembly['lists_getIndex_nonMut'] = function(block) {
           code += "set R2 " + list_elt_size + "\n";
           code += "MUL R2 R1 R1\n"; //((list_num_items - (at2 - 1)) * list_elt_size) in R1
           // R1 now holds the starting offset ( the last element of the requested item)
-           var save_temp = gsv_next; //*** ******check to make sure this is not hitting glv_next
-            if (save_temp > glv_next) {
-              throw 'out of register space (lists_getIndex)';
-            }
-            gsv_next += 1;
-            code += "set R2 -1\n";
-           for (var i = 0; i < list_elt_size; i++) {
+          var save_temp = gsv_next; //*** ******check to make sure this is not hitting glv_next
+          if (save_temp > glv_next) {
+            throw 'out of register space (lists_getIndex)';
+          }
+          gsv_next += 1;
+          code += "set R2 -1\n";
+          for (var i = 0; i < list_elt_size; i++) {
             code += 'GETO R' + list_head_addr + ' R1 R' + save_temp + '\n';
             code += 'Push R'+ save_temp + '\n';
             code += 'Add R1 R2 R1\n'; // calculate next offset
-            }
-            code += 'set R1 ' + list_elt_size +"\npush R1\n";
           }
-         gsv_next -= 1; 
+          code += 'set R1 ' + list_elt_size +"\npush R1\n";
+          gsv_next -= 1; 
+          if(gsv_next!=save_temp){throw("gsv_next was decremented to: "+gsv_next+" when seeking to get from a list with element greater than one")}
+
+        }
+         
+         
         return [code, Blockly.Assembly.ORDER_NONE];
     } //end FROM_END 
   throw 'Unhandled combination (lists_getIndex).';
@@ -332,6 +337,7 @@ Blockly.Assembly['lists_setIndex_nonMut'] = function(block) {
         }
       }
       gsv_next -= 1;
+      if(gsv_next!=save_offset){throw("gsv_next was decremented to: "+gsv_next+" when seeking to set to a list with elt size greater than one")}
     }
     code += "; ending lists_setIndex_nonMut\n";
     return code;
@@ -373,6 +379,7 @@ Blockly.Assembly['lists_setIndex_nonMut'] = function(block) {
           code += 'Add R" + save_offset + " R' + gsv_next + ' R' + save_offset + '\n'; // calculate next offset
         }
       gsv_next -= 1;
+      if(gsv_next!=save_offset){throw("gsv_next was decremented to: "+gsv_next+" when seeking to set a list with element greater than one")}
     }
     code += "; ending lists_setIndex_nonMut\n";
     return code;  
