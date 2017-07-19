@@ -7,3 +7,4 @@ manifest-build/
 deps/linkitz-blockly/src/*compressed.js
 deps/linkitz-blockly/src/msg/js/*.js
 deps/linkitz-blockly/src/blocks_compressed.js
+*.komodoproject
