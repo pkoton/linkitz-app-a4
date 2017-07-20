@@ -113,7 +113,7 @@ Blockly.Assembly['math_arithmetic'] = function(block) {
             code += "LoadR1from R" + in_GSV2 +"\n"; // Rsrc2 is R + in_GSV, put it in R1
             return [code,Blockly.Assembly.ORDER_NONE];
           } else {
-              throw("Error 1 in math_arithmetic");
+              throw("Error 1 in math_arithmetic: Undefined variable.");
               }
         }
         else {
@@ -146,7 +146,7 @@ Blockly.Assembly['math_arithmetic'] = function(block) {
           if (in_GSV1 >= 0) {
             var argument1 = "R" + in_GSV1; // Rsrc1 is in R+in_GSV
           } else {
-              throw("Error 2 in math_arithmetic");
+              throw("Error 2 in math_arithmetic: Undefined variable.");
             }
       }
         else {
@@ -157,7 +157,7 @@ Blockly.Assembly['math_arithmetic'] = function(block) {
         }
     }
     else { //it's not scalar
-    throw 'input1 to math_arithmetic block can\'t be a list';
+    throw 'Error 3 in math_arithmetic: input1 to math_arithmetic block can\'t be a list';
     }
   }
   if (!arg2) { //blank input
@@ -181,7 +181,7 @@ Blockly.Assembly['math_arithmetic'] = function(block) {
           arg2usesR1=1;
         }
     } else { //it's not scalar
-      throw 'input2 to math_arithmetic block can\'t be a list';
+      throw 'Error 4 in math_arithmetic: input2 to math_arithmetic block can\'t be a list';
       }
   }
   if ((arg1usesR1==1) && (arg2usesR1==1)) {
