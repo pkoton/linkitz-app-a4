@@ -116,7 +116,8 @@ if (!targetBlock) {
             if (variable_usage[varName] == 'set') { // the variable is set without being used (otherwise it would be "both")
               code = ''; // so we don't care about it, don't generate code
             } else {
-            throw 'trying to set an undefined variable';
+            var errStr =  'trying to set ' +  + varName ' to an undefined variable ';
+            throw errStr;
             }
           return code;
         }
@@ -550,24 +551,29 @@ if (!targetBlock) {
         continue;
       }
     } // end for
-    // console.log("undef_vars.length = " + undef_vars.length + ", undef_vars_prev.length = " + undef_vars_prev.length); // maybe also have to check unknown_lists.length = 0???
-    if (undef_vars.length == 0) {
+     // console.log("undef_vars.length = " + undef_vars.length + ", undef_vars_prev.length = " + undef_vars_prev.length + ", variable_usage " + JSON.stringify(variable_usage)); 
+    if ((undef_vars.length == 0) && (Object.keys(unknown_lists).length == 0)) { 
       // we win!
       return 1;
-    } else if (sim_arrays(undef_vars, undef_vars_prev)) {
+    }
+    else if (Object.keys(unknown_lists).length > 0) {
+      var err_str = "can\'t resolve variable references: list not fully specified";
+      throw err_str;
+    }
+    else if (sim_arrays(undef_vars, undef_vars_prev)) { // need a check here on unknown lists
       // bad news, we either have unresolved vars or a loop situation
-      // console.log("can't resolve all variable references: " + undef_vars);
-      for (var k = 0; k < undef_vars.length; k++) {
-        // console.log("undef_vars[" + k + "] = " + undef_vars[k] + " " + variable_usage[undef_vars[k]]);
-        if (variable_usage[undef_vars[k]] == 'set') { // the variable is set without being used (otherwise it would be "both")
-          continue;
-        } else {
-          var err_str = "can\'t resolve variable references: " + undef_vars;
-          throw err_str;
-        }
-      }
-      // throw 'can\'t resolve variable references';
-      // trying to let this go in case unresolved var is never used
+       console.log("can't resolve all variable references: " + undef_vars);
+       for (var key in variable_usage) {
+          if (variable_usage.hasOwnProperty(key)) {
+            // console.log(variable_usage[key]);
+            if ((variable_usage[key] == 'set') || (variable_usage[key] == 'both')) { // set but not gotten is ok, both is ok
+              continue;
+            } else { // get but not set is an error
+              var err_str = "can\'t resolve variable references: " + key + " is used but not given a value";
+              throw err_str;
+              }
+          }
+       }
       return 1;
     } else {
       // go through all variables_set blocks again to try to resolve more references.
@@ -883,6 +889,7 @@ function del_varname_from_undef_vars_list(varName) {
 }
 
 function add_varname_to_variable_usage(varname,type) {
+  // console.log("add_varname_to_variable_usage " + varname)
   if (!variable_usage[varname]) {
     variable_usage[varname] = type;
   } else
