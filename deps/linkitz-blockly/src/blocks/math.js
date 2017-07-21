@@ -102,14 +102,16 @@ Blockly.Blocks['math_magnitude'] = {
     this.appendDummyInput()
       .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_10_Math.png",50,50,"*"));
     this.appendDummyInput()
-        .appendField("magnitude");
+        .appendField("absolute value");
         this.setHelpUrl(Blockly.Msg.MATH_MAGNITUDE_HELPURL);
     this.setColour(Blockly.Blocks.math.HUE);
     this.setOutput(true, 'Number');
-    this.appendValueInput('NUM');
+    this.appendValueInput('NUM')
+      .setCheck('Number');
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
-    this.setTooltip('Calculate the absolute value of a scalar input, or the magnitude of a list input.');
+    // this.setTooltip('Calculate the absolute value of a scalar input, or the magnitude of a list input.');
+    this.setTooltip('Calculate the absolute value of a number.');
   }
 };
 

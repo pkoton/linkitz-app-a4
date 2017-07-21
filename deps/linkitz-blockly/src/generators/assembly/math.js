@@ -250,7 +250,7 @@ Blockly.Assembly['math_binary'] = function(block) {
 };
 
 Blockly.Assembly['math_magnitude'] = function(block) {
-  // Magnitude is absolute value for scalars, square root of sum of squares for lists.
+  // Magnitude is absolute value for scalars, square root of sum of squares for lists (curently disabled for lists).
   var code = '; starting math_magnitude\n';
   var targetBlock = block.getInputTargetBlock('NUM');
   if (!targetBlock) {
@@ -264,12 +264,15 @@ Blockly.Assembly['math_magnitude'] = function(block) {
     code += '; ending math_magnitude\n';
     return [code, Blockly.Assembly.ORDER_NONE];
   }
-//it's a list
+  else {
+    throw("Can't take absolute value of a list.");
+  }
+//it's a list - not handling this yet
   // console.log("in math_magnitude of list");
-  var list = Blockly.Assembly.valueToCode(block, 'LIST', Blockly.Assembly.ORDER_NONE); // list on stack, length is TOS
-  code += list + "syscall MAGR1\n"; // finds its argument on stack, leaves result in R1
-  code += '; ending math_magnitude\n';
-  return [code, Blockly.Assembly.ORDER_NONE];
+  //var list = Blockly.Assembly.valueToCode(block, 'LIST', Blockly.Assembly.ORDER_NONE); // list on stack, length is TOS
+  //code += list + "syscall MAGR1\n"; // finds its argument on stack, leaves result in R1
+  //code += '; ending math_magnitude\n';
+  //return [code, Blockly.Assembly.ORDER_NONE];
 }
 
 Blockly.Assembly['math_on_list'] = function(block) { // if list elements are themselves lists, they are flattened
