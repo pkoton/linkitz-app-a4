@@ -542,7 +542,7 @@ Blockly.Blocks['radiogetrange'] = {
 
 // https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#v4hgbw
 
-Blockly.Blocks['set_regular_event_speed'] = {
+Blockly.Blocks['set_regular_event_delay'] = {
   init: function() {
     this.appendDummyInput()
 	.appendField(new Blockly.FieldImage("../../images/timer_icon.png", 50, 50, "*"));
@@ -554,7 +554,7 @@ Blockly.Blocks['set_regular_event_speed'] = {
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setColour('#FFCE00');
-    this.setTooltip('');
+    this.setTooltip('Set the time delay between regular events. Range is 0 (1 ms) - 36 (256 s)');
     this.setHelpUrl('http://www.example.com/');
   }
 };

@@ -411,13 +411,13 @@ Blockly.Assembly['get_ambient_light'] = function(block) {
 };
 
 
-Blockly.Assembly['set_regular_event_speed'] = function(block) {
-  var code = "; starting get_ambient_light\n";
+Blockly.Assembly['set_regular_event_delay'] = function(block) {
+  var code = "; starting set_regular_event_delay\n";
   var argument0 = block.getInputTargetBlock('PERIOD');
   if (!argument0) {
     // console.log("here RES1");
     code += 'Syscall SET_REG_EVENT_SPEED R0\n';
-    code += "; ending set_regular_event_speed\n";
+    code += "; ending set_regular_event_delay\n";
     return code;
     }
     else {
@@ -436,10 +436,10 @@ Blockly.Assembly['set_regular_event_speed'] = function(block) {
       }
       else { //it's not scalar
         // console.log("here RES3");
-        throw 'inputs to SET_REG_EVENT_SPEED block can\'t be lists';
+        throw 'input to Set Regular Event Delay block can\'t be a list';
       }
       code += argument0 + 'Syscall SET_REG_EVENT_SPEED R1\n'; //finds it's argument in R1
-      code += "; ending set_regular_event_speed\n";
+      code += "; ending set_regular_event_delay\n";
       return code;
     }
 };
