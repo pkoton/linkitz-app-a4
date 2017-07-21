@@ -116,7 +116,7 @@ if (!targetBlock) {
             if (variable_usage[varName] == 'set') { // the variable is set without being used (otherwise it would be "both")
               code = ''; // so we don't care about it, don't generate code
             } else {
-            var errStr =  'trying to set ' +  + varName ' to an undefined variable ';
+            var errStr =  'trying to set ' +  varName + ' to something that is undefined ';
             throw errStr;
             }
           return code;
@@ -556,11 +556,11 @@ if (!targetBlock) {
       // we win!
       return 1;
     }
-    else if (Object.keys(unknown_lists).length > 0) {
-      var err_str = "can\'t resolve variable references: list not fully specified";
-      throw err_str;
-    }
-    else if (sim_arrays(undef_vars, undef_vars_prev)) { // need a check here on unknown lists
+    //else if (Object.keys(unknown_lists).length > 0) {
+    //  var err_str = "can\'t resolve variable references: list not fully specified";
+    //  throw err_str;
+    //}
+    else if (sim_arrays(undef_vars, undef_vars_prev) || (Object.keys(unknown_lists).length > 0)) { 
       // bad news, we either have unresolved vars or a loop situation
        console.log("can't resolve all variable references: " + undef_vars);
        for (var key in variable_usage) {
