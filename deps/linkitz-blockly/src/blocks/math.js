@@ -343,7 +343,7 @@ Blockly.Blocks['math_random_int'] = {
       this.appendDummyInput().appendField("random");
       this.setOutput(true,"Number");
       this.setColour(Blockly.Blocks.math.HUE);
-      this.setTooltip("Generates a random integer between -127 to 127");
+      this.setTooltip("Generates a random integer between -128 to 127");
       this.setHelpUrl(Blockly.Msg.MATH_RANDOM_INT_HELPURL);
     }
 };

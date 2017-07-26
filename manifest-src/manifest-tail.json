@@ -18,7 +18,8 @@
     "hid",
     {
       "usbDevices": [
-        { "vendorId": 1240, "productId": 60 }
+        { "vendorId": 1240, "productId": 60 },
+        { "vendorId": 1240, "productId": 61427 }
       ]
     },
     "https://stormy-savannah-87206.herokuapp.com/*",

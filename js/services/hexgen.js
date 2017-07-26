@@ -358,8 +358,8 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
             hex_line+=linkitzApp_hexgen_identify_Rreg(token_list[1]);
             
             var value = parseInt(token_list[2])
-            if(value<-127){
-                value = -127;
+            if(value<-128){
+                value = -128;
             } else if(value>127){
                 value = 127;
             }
