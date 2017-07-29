@@ -19,11 +19,6 @@ linkitzApp.controller('ToolbarController', [
 
 	$scope.savedProgramList = null;
 
-	$scope.updateSavedProgramList = function () {
-	}
-	
-	
-
 	//$scope.isSelected = false;
 	
 	//$scope.getSelected = function(num) {
