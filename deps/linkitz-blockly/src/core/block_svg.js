@@ -570,6 +570,15 @@ Blockly.BlockSvg.prototype.showContextMenu_ = function(e) {
     }
     menuOptions.push(duplicateOption);
 
+    var copyOption = {
+      text: Blockly.Msg.COPY_BLOCK,
+      enabled: true,
+      callback: function() {
+        Blockly.Linkitz_copy_(block);
+      }
+    };
+    menuOptions.push(copyOption);
+    
     if (this.isEditable() && !this.collapsed_ &&
         this.workspace.options.comments) {
       // Option to add/remove a comment.

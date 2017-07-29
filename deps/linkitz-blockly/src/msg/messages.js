@@ -88,6 +88,10 @@ Blockly.Msg.DISABLE_BLOCK = 'Disable Block';
 Blockly.Msg.ENABLE_BLOCK = 'Enable Block';
 /// context menu - Provide helpful information about the selected block.\n{{Identical|Help}}
 Blockly.Msg.HELP = 'Help';
+/// context menu - Make a copy of the selected block (and any blocks it contains) and save to clipboard (do not automatically paste).
+Blockly.Msg.COPY_BLOCK = 'Copy';
+/// context menu - Paste the contents of the clipboard to the current workspace.
+Blockly.Msg.PASTE_BLOCK = 'Paste';
 
 // Realtime collaboration.
 /// collaboration instruction - Tell the user that they can talk with other users.
