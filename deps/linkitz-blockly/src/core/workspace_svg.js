@@ -684,24 +684,21 @@ Blockly.WorkspaceSvg.prototype.cleanUp_ = function() {
  * @private
  */
 Blockly.WorkspaceSvg.prototype.showContextMenu_ = function(e) {
-  console.log("here1");
   if (this.options.readOnly || this.isFlyout) {
     return;
   }
   var menuOptions = [];
   var topBlocks = this.getTopBlocks(true);
-    console.log("here2");
   // Option to paste block(s) from clipboard
   if (Blockly.clipboardXml_) {
-      console.log("here3");
     var pasteOption = {};
     pasteOption.text = Blockly.Msg.PASTE_BLOCK;
     pasteOption.enabled = true;  
     pasteOption.callback = function() {
       Blockly.clipboardSource_.paste(Blockly.clipboardXml_);
-      // Restore the clipboard.
-      Blockly.clipboardXml_ = clipboardXml;
-      Blockly.clipboardSource_ = clipboardSource;
+      //// Restore the clipboard.
+      //Blockly.clipboardXml_ = clipboardXml;
+      //Blockly.clipboardSource_ = clipboardSource;
     };
     menuOptions.push(pasteOption);
   }
