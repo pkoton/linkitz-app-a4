@@ -55,6 +55,7 @@ Blockly.Assembly['math_arithmetic'] = function(block) {
     'MINUS': ['SUB', Blockly.Assembly.ORDER_NONE],
     'MULTIPLY': ['MUL', Blockly.Assembly.ORDER_NONE],
     'DIVIDE': ['DIV', Blockly.Assembly.ORDER_NONE],
+    'MODULO': ['MOD', Blockly.Assembly.ORDER_NONE],
     'POWER': ['POW', Blockly.Assembly.ORDER_NONE]  // Handle power separately.
   };
   var tuple = OPERATORS[block.getFieldValue('OP')];
@@ -94,24 +95,24 @@ Blockly.Assembly['math_arithmetic'] = function(block) {
         }
     }
     else if ((number_arg1 == 0)  && (operator == 'MUL')) { // mult by zero = 0
-      code += "Set R1 0\n"
+      code += "Set R1 0\n";
       code += '; ending math_arithmetic\n';
       return [code,Blockly.Assembly.ORDER_NONE];
     }
   } // end if (arg1_type == 'math_number')
   if (arg2.type == 'math_number'){
     var number_arg2 = parseFloat(arg2.getFieldValue('NUM'));
-    if ((number_arg2 == 0) && (operator == 'DIV')) {
+    if ((number_arg2 == 0) && ((operator == 'DIV') || (operator == 'MOD'))) {
       throw("Divide by zero error in math_arithmetic");
     } 
-    else if (((number_arg2 == 0) && (operator == 'ADD')) || ((number_arg2 == 1) && ((operator == 'MUL') || (operator == 'DIV')))) { // additive/multiplicative identity
+    else if (((number_arg2 == 0) && (operator == 'ADD')) || ((number_arg2 == 1) && ((operator == 'MUL') || (operator == 'DIV') || (operator == 'MOD')))) { // additive/multiplicative identity
       if (is_scalar(arg1) || (get_list_desc (arg1, [])[1].length == 0)) { // and arg1 is scalar
         if (arg1.type == 'variables_get') {
           var varName1 = Blockly.Assembly.variableDB_.getName(arg1.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
           var in_GSV2 = global_scalar_variables.indexOf(varName1); // if in global_scalar_variable
           if (in_GSV2 >= 0) {
             code += "LoadR1from R" + in_GSV2 +"\n"; // Rsrc2 is R + in_GSV, put it in R1
-            return [code,Blockly.Assembly.ORDER_NONE];
+            return [code,Blockly.Assembly.ORDER_NONE]
           } else {
               throw("Error 1 in math_arithmetic: Undefined variable.");
               }
@@ -191,38 +192,51 @@ Blockly.Assembly['math_arithmetic'] = function(block) {
     return [code,Blockly.Assembly.ORDER_NONE];
   }
   if (arg1usesR1==1) {
-    var code = argument1 + operator + ' R1 R' +  in_GSV2 + ' R1\n'; // Rsrc1 is in R1
+    code = argument1 + operator + ' R1 R' +  in_GSV2 + ' R1\n'; // Rsrc1 is in R1
     code += '; ending math_arithmetic\n';
     return [code,Blockly.Assembly.ORDER_NONE];
   }
   if (arg2usesR1==1) {
-    var code = argument2 + operator + ' R' +  in_GSV1 + ' R1 R1\n'; // note: Rscr2 is in R1
+    code = argument2 + operator + ' R' +  in_GSV1 + ' R1 R1\n'; // note: Rscr2 is in R1
     code += '; ending math_arithmetic\n';
     return [code,Blockly.Assembly.ORDER_NONE];
   }
-  var code =operator + ' R' +  in_GSV1 + ' R' +  in_GSV2 + ' R1\n'; // => oper Rsrc1 Rsrc2 R1
+  code =operator + ' R' +  in_GSV1 + ' R' +  in_GSV2 + ' R1\n'; // => oper Rsrc1 Rsrc2 R1
   code += '; ending math_arithmetic\n';
   return [code,Blockly.Assembly.ORDER_NONE];
 };
 
 Blockly.Assembly['math_binary'] = function(block) {
-  // Bitwise AND and Bitwise OR
+  // BITWISE_ AND and BITWISE_ OR
   var code = '; starting math_binary\n';
   var OPERATORS = {
-    'BITWISEAND': ['band3', Blockly.Assembly.ORDER_NONE],
-    'BITWISEOR': ['bor3', Blockly.Assembly.ORDER_NONE]
+    'BITWISE_AND': ['band3', Blockly.Assembly.ORDER_NONE],
+    'BITWISE_OR': ['bor3', Blockly.Assembly.ORDER_NONE],
+    'BITWISE_XOR': ['bxor3', Blockly.Assembly.ORDER_NONE]
   };
   var tuple = OPERATORS[block.getFieldValue('OP')];
   var operator = tuple[0];
   var order = tuple[1];
-  var defaultArgument = (operator == 'band3') ? '127\n' : 'R0\n';
+  var defaultArgument;
+  if (operator == 'band3') {
+    defaultArgument ='127';
+  } else if (operator == 'bor3'){
+    defaultArgument = 'R0';
+  }
   var arg0 = block.getInputTargetBlock('A');
   var arg1 = block.getInputTargetBlock('B');
-  if ((!arg0) && (!arg1)) { // no args returns false
-    code += 'set R1 R0\n';
+  if ((!arg0) && (!arg1)) { // no args is a no-op
     code += '; ending math_binary\n';
     return [code,Blockly.Assembly.ORDER_NONE];
   }
+  if (((!arg0) || (!arg1)) && (operator == 'bxor3')) {
+    throw ('Error in math_binary: XOR requires two arguments, only given one.');
+  }
+  var save = gsv_next;
+    gsv_next++;
+    if (gsv_next > glv_next) {
+      throw 'out of register space in math_modulo';
+    }
   if (!arg0) {
     argument0 = 'set R1 ' + defaultArgument;
   } else //arg0 exists
@@ -231,7 +245,7 @@ Blockly.Assembly['math_binary'] = function(block) {
     var argument0 = Blockly.Assembly.valueToCode(block, 'A', order);
     }
     else { //it's not scalar
-    throw 'input1 to math_binary block can\'t be a list';
+    throw 'Error in math_binary: input1 to math_binary block can\'t be a list';
     }
   }
   if (!arg1) { //blank input
@@ -241,11 +255,13 @@ Blockly.Assembly['math_binary'] = function(block) {
     if (is_scalar(arg1) || (get_list_desc (arg1, [])[1].length == 0)) { // and arg1 is scalar
     var argument1 = Blockly.Assembly.valueToCode(block, 'B', order);  
     } else { //it's not scalar
-      throw 'input2 to math_binary block can\'t be alist';
+      throw 'Error in math_binary: input2 to math_binary block can\'t be alist';
       }
   }
-    code += argument0 + 'loadR1to R2\n' + argument1 + '\n' + operator + ' R2 R1 R1\n';
+    code += argument0 + 'loadR1to R' + save + '\n' + argument1 + operator + ' R' + save + ' R1 R1\n'; 
     code += '; ending math_binary\n';
+    gsv_next--;
+     if(gsv_next != save){throw("gsv_next was decremented to: "+gsv_next+" when seeking to do math_binary")}
     return [code,Blockly.Assembly.ORDER_NONE];
 };
 
@@ -427,4 +443,35 @@ Blockly.Assembly['math_random_int'] = function(block) {
   return [code, Blockly.Assembly.ORDER_NONE];
 };
 
-
+//Blockly.Assembly['math_modulo'] = function(block) {
+//  // 
+//  var code = '; starting math_modulo\n';
+//  var targetBlock1 = block.getInputTargetBlock('DIVIDEND');
+//  var targetBlock2 = block.getInputTargetBlock('DIVISOR');
+//  if (!targetBlock1 || !targetBlock2) {
+//    code += 'set R1 R0\n';
+//    code += '; ending math_modulo\n';
+//    return [code, Blockly.Assembly.ORDER_NONE];
+//  }
+//  if ((is_scalar(targetBlock1) || (get_list_desc (targetBlock1, [])[1].length == 0)) &&
+//      (is_scalar(targetBlock2) || (get_list_desc (targetBlock2, [])[1].length == 0))) { // if arguments are scalars
+//    var DIVIDEND_VAL = Blockly.Assembly.valueToCode(block, 'DIVIDEND', Blockly.Assembly.ORDER_NONE);
+//    var save = gsv_next;
+//    code += DIVIDEND_VAL + 'LOADR1to R' + save; // DIVIDEND in Rsave
+//    gsv_next++;
+//    if (gsv_next > glv_next) {
+//      throw 'out of register space in math_modulo';
+//    }
+//    var DIVISOR_VAL = Blockly.Assembly.valueToCode(block, 'DIVISOR', Blockly.Assembly.ORDER_NONE); // DIVISOR in R1
+//    code += DIVISOR_VAL + 'MOD R' + save + ' R1 R1\n';
+//    code += '; ending math_modulo\n';
+//    gsv_next--;
+//    if(gsv_next!=save) {
+//      throw("gsv_next was decremented to: "+gsv_next+" when seeking to do math on a list");
+//      };
+//    return [code, Blockly.Assembly.ORDER_NONE];
+//  }
+//  else {
+//    throw("Arguments to modulo cannot be a list.");
+//  }
+//}

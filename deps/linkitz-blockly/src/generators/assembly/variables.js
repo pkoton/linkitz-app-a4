@@ -664,6 +664,7 @@ function addNewScalarVar(varName) {
       case "math_magnitude":
       case "math_binary":
       case "math_random_int":
+      case "math_modulo":
       case "led_attached":
       case "usb_attached":
       case "motion_attached":

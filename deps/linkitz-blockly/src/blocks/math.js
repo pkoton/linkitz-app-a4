@@ -65,7 +65,8 @@ Blockly.Blocks['math_arithmetic'] = {
         [[Blockly.Msg.MATH_ADDITION_SYMBOL, 'ADD'],
          [Blockly.Msg.MATH_SUBTRACTION_SYMBOL, 'MINUS'],
          [Blockly.Msg.MATH_MULTIPLICATION_SYMBOL, 'MULTIPLY'],
-         [Blockly.Msg.MATH_DIVISION_SYMBOL, 'DIVIDE']];
+         [Blockly.Msg.MATH_DIVISION_SYMBOL, 'DIVIDE'],
+         [Blockly.Msg.MATH_MODULUS_SYMBOL, 'MODULO']];
     this.appendDummyInput()
       .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_10_Math.png",50,50,"*"));
     this.setHelpUrl(Blockly.Msg.MATH_ARITHMETIC_HELPURL);
@@ -86,7 +87,8 @@ Blockly.Blocks['math_arithmetic'] = {
         'MINUS': Blockly.Msg.MATH_ARITHMETIC_TOOLTIP_MINUS,
         'MULTIPLY': Blockly.Msg.MATH_ARITHMETIC_TOOLTIP_MULTIPLY,
         'DIVIDE': Blockly.Msg.MATH_ARITHMETIC_TOOLTIP_DIVIDE,
-        'POWER': Blockly.Msg.MATH_ARITHMETIC_TOOLTIP_POWER
+        'POWER': Blockly.Msg.MATH_ARITHMETIC_TOOLTIP_POWER,
+        'MODULO': Blockly.Msg.MATH_ARITHMETIC_TOOLTIP_MODULO
       };
       return TOOLTIPS[mode];
     });

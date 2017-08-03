@@ -1,7 +1,7 @@
 {
 	"@metadata": {
 		"author": "Ellen Spertus <ellen.spertus@gmail.com>",
-		"lastupdated": "2017-07-29 14:56:32.840862",
+		"lastupdated": "2017-08-01 15:28:53.318708",
 		"locale": "en",
 		"messagedocumentation" : "qqq"
 	},
@@ -116,6 +116,7 @@
 	"MATH_DIVISION_SYMBOL": "÷",
 	"MATH_MULTIPLICATION_SYMBOL": "×",
 	"MATH_POWER_SYMBOL": "^",
+	"MATH_MODULUS_SYMBOL": "%",
 	"MATH_TRIG_SIN": "sin",
 	"MATH_TRIG_COS": "cos",
 	"MATH_TRIG_TAN": "tan",
@@ -128,6 +129,10 @@
 	"MATH_ARITHMETIC_TOOLTIP_MULTIPLY": "Return the product of the two numbers.",
 	"MATH_ARITHMETIC_TOOLTIP_DIVIDE": "Return the quotient of the two numbers.",
 	"MATH_ARITHMETIC_TOOLTIP_POWER": "Return the first number raised to the power of the second number.",
+	"MATH_ARITHMETIC_TOOLTIP_MODULO": "Return the integer part of the remainder of the first number divided by the second number.",
+	"MATH_ARITHMETIC_TOOLTIP_BITWISE_AND": "Takes two equal-length binary representations and performs the logical AND operation on each pair of the corresponding bits, by multiplying them.",
+	"MATH_ARITHMETIC_TOOLTIP_BITWISE_OR": "Takes two bit patterns of equal length and performs the logical inclusive OR operation on each pair of corresponding bits. The result in each position is 0 if both bits are 0, while otherwise the result is 1.",
+	"MATH_ARITHMETIC_TOOLTIP_BITWISE_XOR": "Takes two bit patterns of equal length and performs the logical exclusive OR operation on each pair of corresponding bits. The result in each position is 1 if the two bits are different, and 0 if they are the same.",
 	"MATH_MAGNITUDE_HELPURL": "https://en.wikipedia.org/wiki/Magnitude_(mathematics)",
 	"MATH_SINGLE_OP_ROOT": "square root",
 	"MATH_SINGLE_TOOLTIP_ROOT": "Return the square root of a number.",

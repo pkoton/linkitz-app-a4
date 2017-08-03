@@ -316,6 +316,8 @@ Blockly.Msg.MATH_MULTIPLICATION_SYMBOL = '×';
 /// value of the left operand is L and the value of the right operand (the exponent) is
 /// R, multiply L by itself R times.  (Fractional and negative exponents are also legal.)
 Blockly.Msg.MATH_POWER_SYMBOL = '^';
+/// {{optional}}\nmath - The symbol for the binary operation modulo.
+Blockly.Msg.MATH_MODULUS_SYMBOL = '%';
 
 /// math - The short name of the trigonometric function
 /// [https://en.wikipedia.org/wiki/Trigonometric_functions#Sine.2C_cosine_and_tangent sine].
@@ -348,6 +350,14 @@ Blockly.Msg.MATH_ARITHMETIC_TOOLTIP_MULTIPLY = 'Return the product of the two nu
 Blockly.Msg.MATH_ARITHMETIC_TOOLTIP_DIVIDE = 'Return the quotient of the two numbers.';
 /// tooltip - See [https://en.wikipedia.org/wiki/Exponentiation https://en.wikipedia.org/wiki/Exponentiation].
 Blockly.Msg.MATH_ARITHMETIC_TOOLTIP_POWER = 'Return the first number raised to the power of the second number.';
+/// tooltip - See [https://en.wikipedia.org/wiki/Modulo_operation].
+Blockly.Msg.MATH_ARITHMETIC_TOOLTIP_MODULO = 'Return the integer part of the remainder of the first number divided by the second number.';
+/// tooltip - See [https://en.wikipedia.org/wiki/Bitwise_operation#AND].
+Blockly.Msg.MATH_ARITHMETIC_TOOLTIP_BITWISE_AND = 'Takes two equal-length binary representations and performs the logical AND operation on each pair of the corresponding bits, by multiplying them.';
+/// tooltip - See [https://en.wikipedia.org/wiki/Bitwise_operation#OR].
+Blockly.Msg.MATH_ARITHMETIC_TOOLTIP_BITWISE_OR = 'Takes two bit patterns of equal length and performs the logical inclusive OR operation on each pair of corresponding bits. The result in each position is 0 if both bits are 0, while otherwise the result is 1.';
+/// tooltip - See [https://en.wikipedia.org/wiki/Bitwise_operation#XOR].
+Blockly.Msg.MATH_ARITHMETIC_TOOLTIP_BITWISE_XOR = 'Takes two bit patterns of equal length and performs the logical exclusive OR operation on each pair of corresponding bits. The result in each position is 1 if the two bits are different, and 0 if they are the same.';
 
 /// url - Information about the magnitude operation.
 Blockly.Msg.MATH_MAGNITUDE_HELPURL = 'https://en.wikipedia.org/wiki/Magnitude_(mathematics)';

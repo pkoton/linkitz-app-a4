@@ -238,8 +238,9 @@ Blockly.Blocks['math_binary'] = {
    */
   init: function() {
     var OPERATORS =
-        [['&','BITWISEAND'],
-         ['|','BITWISEOR']];
+        [['&','BITWISE_AND'],
+         ['|','BITWISE_OR'],
+         ['^','BITWISE_XOR']];
     this.appendDummyInput()
       .appendField(new Blockly.FieldImage("../../images/LZ_Icons_binary.png",50,50,"*"));
     this.setHelpUrl(Blockly.Msg.MATH_ARITHMETIC_HELPURL);
@@ -256,8 +257,9 @@ Blockly.Blocks['math_binary'] = {
     this.setTooltip(function() {
       var mode = thisBlock.getFieldValue('OP');
       var TOOLTIPS = {
-        'BITWISEAND':Blockly.Msg.MATH_ARITHMETIC_TOOLTIP_BITWISEAND,
-        'BITWISEOR':Blockly.Msg.MATH_ARITHMETIC_TOOLTIP_BITWISEOR
+        'BITWISE_AND':Blockly.Msg.MATH_ARITHMETIC_TOOLTIP_BITWISE_AND,
+        'BITWISE_OR':Blockly.Msg.MATH_ARITHMETIC_TOOLTIP_BITWISE_OR,
+        'BITWISE_XOR':Blockly.Msg.MATH_ARITHMETIC_TOOLTIP_BITWISE_XOR
       };
       return TOOLTIPS[mode];
     });
