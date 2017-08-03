@@ -241,6 +241,7 @@ Blockly.Assembly['lists_setIndex_nonMut'] = function(block) {
   // Set element at index.
   var code = '; starting lists_setIndex_nonMut\n';
   var mode = 'SET';
+  var save_offset;
   console.log("in lists_setIndex_nonMut");
   var where = block.getFieldValue('WHERE') || 'FROM_START';
   console.log("WHERE = " + where);
@@ -316,11 +317,12 @@ Blockly.Assembly['lists_setIndex_nonMut'] = function(block) {
       console.log("AT is "+ at);// index of req item is now in R1, calculate pointer to [start of] item
       code += at + "set R2 1\nSub R1 R2 R1\nset R2 " +  list_elt_size + "\nMul R1 R2 R1\n Set R2 1\n Add R1 R2 R2\n";
       // R2 now has offset from head of list to req item
-      var save_offset = gsv_next; //*** ******check to make sure this is not hitting glv_next
-      if (save_offset > glv_next) {
+      save_offset = gsv_next; //*** ******check to make sure this is not hitting glv_next
+      gsv_next += 1;
+      if (gsv_next > glv_next) {
       throw 'out of register space (lists_setIndex)';
       }
-      gsv_next += 1;
+      
       code += "push R2\npop R" + save_offset + "\n";
       var value = Blockly.Assembly.valueToCode(block, 'TO', Blockly.Assembly.ORDER_NONE) || 'null';
       console.log("value = " + value); // value is in R1 or on stack
@@ -362,11 +364,11 @@ Blockly.Assembly['lists_setIndex_nonMut'] = function(block) {
       code += at + "SUB R2 R1 R1\n"; // R1 now holds index FROM_START, calculate pointer to [start of] item
       code += "set R2 1\nSub R1 R2 R1\nset R2 " +  list_elt_size + "\nMul R1 R2 R1\n Set R2 1\n Add R1 R2 R2\n";
       // R2 now has offset from head of list to req item
-      var save_offset = gsv_next; //*** ******check to make sure this is not hitting glv_next
-      if (save_offset > glv_next) {
+      save_offset = gsv_next; //*** ******check to make sure this is not hitting glv_next
+      gsv_next += 1;
+      if (gsv_next > glv_next) {
       throw 'out of register space (lists_setIndex)';
       }
-      gsv_next += 1;
       code += "push R2\npop R" + save_offset + "\n";
       var value = Blockly.Assembly.valueToCode(block, 'TO', Blockly.Assembly.ORDER_NONE) || 'null';
       console.log("value = " + value); // value is in R1 or on stack
