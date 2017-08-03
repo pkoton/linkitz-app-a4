@@ -98,6 +98,11 @@ Blockly.Variables.renameVariable = function(oldName, newName, workspace) {
  */
 Blockly.Variables.flyoutCategory = function(workspace) {
   var variableList = Blockly.Variables.allVariables(workspace);
+  for (var j = 0; j < variableList.length; j++) {
+    if (variableList[j].match(/\+/)) {
+      goog.array.remove(variableList, variableList[j]);
+    }
+}
   variableList.sort(goog.string.caseInsensitiveCompare);
   // In addition to the user's variables, we also want to display the default
   // variable name at the top.  We also don't want this duplicated if the
