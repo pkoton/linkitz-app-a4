@@ -54,17 +54,20 @@ linkitzApp.controller('LinkitzAppController', [
     $scope.LinkitzPrograms = [];
     $scope.newProg = -1;
     
+    $scope.OK = false;
+    
     //$scope.hubID = null;
     $scope.activeProgram = null;
     // $scope.localID = null; // move initialization to app-entry because we only want it to be set once
     $scope.activeProgramID = '';
+    $scope.loadInfo = {}; // used to pass info about program to be loaded from loadEditor to loadEditor2 (I know its a kludge)
 
     $scope.devMode = false;
     $scope.editor = {};
     $scope.editor.blocklyXML = emptyBlocklyXML;
     $scope.editor.dirty = false;
     $scope.editor.noOverwrite = false; // this flag is set to true if editor contains a builtIn program
-
+    $scope.eraseOK = false;
 
     $scope.setHubID = function setHubID(connectedHubId) { // connectedHubId  is array [32]
         var temp= '';
@@ -198,6 +201,18 @@ linkitzApp.controller('LinkitzAppController', [
     }  
 
     $scope.loadEditor = function loadEditor (program,writeFlag) {
+        $scope.loadInfo = {program:program, writeFlag:writeFlag};
+        if ($scope.editor.blocklyXML == '<xml xmlns="http://www.w3.org/1999/xhtml"></xml>') {
+                $scope.loadEditor2(); // empty workspace, don't need a warning, just load code
+        } else
+        {
+            errorCatcher.confirm('WARNING', 'This will erase all the blocks on your workspace!', $scope.loadEditor2);
+        }
+    };
+   
+    $scope.loadEditor2 = function loadEditor () {
+        var program = $scope.loadInfo.program;
+        var writeFlag = $scope.loadInfo.writeFlag;
         var blocklyxml = program.codexml;
         $scope.activeProgram = program;
 //        LogService.appLogMsg("Loading Blockly XML:\n" + blocklyxml);
@@ -212,15 +227,25 @@ linkitzApp.controller('LinkitzAppController', [
             $scope.activeProgramID = program.userid;
             $scope.isLocal = false;
         }
-    }
+    };
 
     $scope.clearEditor = function clearEditor () {
-//        LogService.appLogMsg("Re-initializing Blockly XML");
-            $scope.activeProgram = null;
-	    $scope.editor.blocklyXML = emptyBlocklyXML;
-	    $scope.editor.dirty = false;
-	    $scope.newProg = -1;
-    }
+        if ($scope.editor.blocklyXML == '<xml xmlns="http://www.w3.org/1999/xhtml"></xml>') {
+                return; // empty workspace, don't need a warning, workspace is already clear 
+        } else
+        {
+            errorCatcher.confirm('WARNING', 'This will erase all the blocks on your workspace!', $scope.wipeEditor);
+        }
+    };
+    
+
+$scope.wipeEditor = function wipeEditor () {    
+        // console.log("Wipe editor: Re-initializing Blockly XML");
+        $scope.activeProgram = null;
+        $scope.editor.blocklyXML = emptyBlocklyXML;
+        $scope.editor.dirty = false;
+        $scope.newProg = -1;
+}
 
     $scope.saveEditor = function saveEditor () {
         var saveBody;
@@ -252,9 +277,6 @@ linkitzApp.controller('LinkitzAppController', [
                 })
                 .then($scope.saveState)
                 .then($scope.queryPrograms)
-                .then(function() {
-                //console.log("case 1" + JSON.stringify($scope.hubs)); // 7
-                })
                 .catch(function (reason) {
                 console.log("Couldn't save " + reason);
                 });
@@ -462,7 +484,7 @@ linkitzApp.controller('LinkitzAppController', [
     $scope.toggleDevMode = function toggleDevMode() {
         $scope.devMode = !$scope.devMode;
         LogService.setDevMode($scope.devMode);
-    }
+    };
 
     $scope.modals = {
         about: {
@@ -475,7 +497,16 @@ linkitzApp.controller('LinkitzAppController', [
                 });
             }
         },
-        alert: {
+        confirm: {
+            open: function open() {
+                $scope.modals.confirm.instance = $uibModal.open({
+                    templateUrl: 'partials/modals/confirm.html',
+                    controller: 'ConfirmController',
+                    size: 'lg',
+                    scope: $scope
+                });
+            }
+        },alert: {
             open: function open() {
                 $scope.modals.alert.instance = $uibModal.open({
                     templateUrl: 'partials/modals/alert.html',
