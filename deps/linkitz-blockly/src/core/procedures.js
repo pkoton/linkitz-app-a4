@@ -189,24 +189,26 @@ Blockly.Procedures.flyoutCategory = function(workspace) {
   function populateProcedures(procedureList, templateName) {
     for (var i = 0; i < procedureList.length; i++) {
       var name = procedureList[i][0];
-      var args = procedureList[i][1];
-      // <block type="procedures_callnoreturn" gap="16">
-      //   <mutation name="do something">
-      //     <arg name="x"></arg>
-      //   </mutation>
-      // </block>
-      var block = goog.dom.createDom('block');
-      block.setAttribute('type', templateName);
-      block.setAttribute('gap', 16);
-      var mutation = goog.dom.createDom('mutation');
-      mutation.setAttribute('name', name);
-      block.appendChild(mutation);
-      for (var t = 0; t < args.length; t++) {
-        var arg = goog.dom.createDom('arg');
-        arg.setAttribute('name', args[t]);
-        mutation.appendChild(arg);
+      if (!name.match(/\+/)) {
+        var args = procedureList[i][1];
+        // <block type="procedures_callnoreturn" gap="16">
+        //   <mutation name="do something">
+        //     <arg name="x"></arg>
+        //   </mutation>
+        // </block>
+        var block = goog.dom.createDom('block');
+        block.setAttribute('type', templateName);
+        block.setAttribute('gap', 16);
+        var mutation = goog.dom.createDom('mutation');
+        mutation.setAttribute('name', name);
+        block.appendChild(mutation);
+        for (var t = 0; t < args.length; t++) {
+          var arg = goog.dom.createDom('arg');
+          arg.setAttribute('name', args[t]);
+          mutation.appendChild(arg);
+        }
+        xmlList.push(block);
       }
-      xmlList.push(block);
     }
   }
 
