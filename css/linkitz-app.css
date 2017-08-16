@@ -86,40 +86,65 @@ body {
     background: #e81a4b;
     color: #ffffff;
     border-radius: 4px;
+    outline: none;
 }
 .btn-clear:hover, .btn-clear:focus, .btn-clear:active, .btn-clear.active, .open > .dropdown-toggle.btn-clear {
     background: #ed486f;
+    outline: none;
 }
 .btn-clear:active, .btn-clear.active {
     background: #d31542;
     box-shadow: none;
+    outline: none;
 }
 
 .btn-saveprogram {
     background: #0BD7E0;
     color: #ffffff;
     border-radius: 4px;
+    outline: none;
 }
-.btn-saveprogram:hover, .btn-saveprogram:focus {
+.btn-saveprogram:hover, .btn-saveprogram:focus,.btn-saveprogram:active, .btn-saveprogram.active, .open > .dropdown-toggle.btn-saveprogram {
     background: #44eef6;
+    outline: none;
 }
 .btn-saveprogram:active, .btn-saveprogram.active {
     background: #09a8af;
     box-shadow: none;
+    outline: none;
+}
+
+.btn-load {
+    background: #FFCE00;
+    color: #ffffff;
+    border-radius: 4px;
+    outline: none;
+}
+.btn-load:hover, .btn-load:focus,.btn-load:active, .btn-load.active, .open > .dropdown-toggle.btn-load {
+    background: #ffdd4d;
+    outline: none;
+}
+.btn-load:active, .btn-load.active {
+    background: #cca500;
+    box-shadow: none;
+    outline: none;
 }
 
 btn-saved {
     background: #873299;
     color: #ffffff;
-    border: 2px solid #873299;
+    /*border: 2px solid #873299;*/
     border-radius: 4px;
+    outline: none;
 }
 .btn-saved:hover, .btn-saved:focus, .btn-saved:active, .btn-saved.active, .open > .dropdown-toggle.btn-saved {
     background: #b251c6;
+    outline: none;
 }
 .btn-saved:active, .btn-saved.active {
     background: #652573;
     box-shadow: none;
+    outline: none;
 }
 
 /* main content layout styles */
