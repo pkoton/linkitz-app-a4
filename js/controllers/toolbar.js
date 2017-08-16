@@ -1,4 +1,5 @@
 // toolbar.js
+'use strict';
 
 var linkitzApp = angular.module('linkitzApp');
 
@@ -13,10 +14,6 @@ linkitzApp.controller('ToolbarController', [
     'minimumFirmwareVersion',
     function($scope, $timeout, LogService, LinkitzToy, Messager, errorCatcher, ChromeBrowser, minimumFirmwareVersion) {
 
-
-
-	//$scope.savedDropdownOpen = false;
-
 	$scope.savedProgramList = null;
 
 	//$scope.isSelected = false;
@@ -30,17 +27,17 @@ linkitzApp.controller('ToolbarController', [
 	//}
 	
 	$scope.getSelected = function(hubNum,progNum) {
-		if (($scope.activeProgram) && (hubNum == $scope.activeProgram.userid) && (progNum == $scope.activeProgram.codeid)) {
+		if ($scope.activeProgram && (hubNum == $scope.activeProgramHubID) && (progNum == $scope.activeProgramCodeID)) {
 			return true;
 			} else
 		if (!($scope.activeProgram) && (progNum == $scope.newProg)){
-			return true;
+				return true;
 			} else
-			return false;	
-	}
+				return false;	
+	};
 	
 	// hub id = undefined $scope.localID = 16b1b6d7-a459-418f-a968-c62a62fb8fac
-	$scope.useLocalLabel = function(hubNum) {	
+	$scope.useLocalLabel = function(hubNum) {
 		if (!($scope.localID == null) && !(hubNum==null)) {
 			if (hubNum == $scope.localID) {
 				return true;

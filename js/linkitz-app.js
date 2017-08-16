@@ -38,9 +38,9 @@ linkitzApp.controller('LinkitzAppController', [
 
 	$scope.toggled = function(open) {
 	    if (open) {
-		$scope.savedDropdownOpen = true;
+            $scope.savedDropdownOpen = true;
 	    } else {
-		$scope.savedDropdownOpen = false;
+            $scope.savedDropdownOpen = false;
 	    }
 	};
 
@@ -48,42 +48,78 @@ linkitzApp.controller('LinkitzAppController', [
     $scope.isAttached = false;
 
     $scope.hubs = {};
+ /*   
+ $scope.hubs format:
+ $scope.hubs[hubid] is a list of program objects [{userid: hubid,codeid:number,codexml: string,codename:string},{},{},...{}]
+    {"string1 long hub name":
+        [
+            {"userid":"string1 long hub name",
+            "codeid":1,
+            "codexml":"<xml xmlns=\"http://www.w3.org/1999/xhtml\"> ...</xml>",
+            "codename":null},
+            {"userid":"string1 long hub name",
+            "codeid":2,
+            "codexml":"<xml xmlns=\"http://www.w3.org/1999/xhtml\">...</xml>",
+            "codename":null},
+            {"userid":"string1 long hub name",
+            "codeid":3,
+            "codexml":"<xml xmlns=\"http://www.w3.org/1999/xhtml\">...</xml>",
+            "codename":null}
+            ],
+    "string2 long hub name":
+         [
+            {"userid":"string2 long hub name",
+            "codeid":1,
+            "codexml":"<xml xmlns=\"http://www.w3.org/1999/xhtml\"> ...</xml>",
+            "codename":null},
+            {"userid":"string2 long hub name",
+            "codeid":2,
+            "codexml":"<xml xmlns=\"http://www.w3.org/1999/xhtml\">...</xml>",
+            "codename":null},
+            {"userid":"string2 long hub name",
+            "codeid":3,
+            "codexml":"<xml xmlns=\"http://www.w3.org/1999/xhtml\">...</xml>",
+            "codename":null}
+            ],
+       
+        ...
+    }
+ */   
     //$scope.lastHub = '00:00:00:00';
-    $scope.fullHub = '';
+    
     
     $scope.LinkitzPrograms = [];
-    $scope.newProg = -1;
+    $scope.newProgNum = -1;
     
     $scope.OK = false;
     
-    //$scope.hubID = null;
-    $scope.activeProgram = null;
-    // $scope.localID = null; // move initialization to app-entry because we only want it to be set once
-    $scope.activeProgramID = '';
+    // $scope.localID = null; // ID for local storage in $scope.hubs for this installation of the app. moved initialization to app-entry because we only want it to be set once
+    $scope.connectedID = ''; // the hubid of the currently plugged-in hub. A string.
+    $scope.activeProgram = false; // this is TRUE if a program has been loaded from $scope.hubs or if a new program on the workspace has been saved.
+    $scope.activeProgramHubID = ''; // used for Saved Programs menu arrow
+    $scope.activeProgramCodeID = null; // used for Saved Programs menu arrow
     $scope.loadInfo = {}; // used to pass info about program to be loaded from loadEditor to loadEditor2 (I know its a kludge)
-
-    $scope.devMode = false;
+    $scope.devMode = false; // true if developer mode is selected (toggle button is in the about.html modal)
     $scope.editor = {};
     $scope.editor.blocklyXML = emptyBlocklyXML;
     $scope.editor.dirty = false;
-    $scope.editor.noOverwrite = false; // this flag is set to true if editor contains a builtIn program
-    $scope.eraseOK = false;
-
+    $scope.editor.noOverwrite = false; // this flag is set to true if editor contains a builtIn program, which users are not alowed ot modify
+    
     $scope.setHubID = function setHubID(connectedHubId) { // connectedHubId  is array [32]
         var temp= '';
         for (var i = 0; i < 31; i++) {
             temp += padhex(connectedHubId[i]) + ':'; //fullHub is a string of 64 2-char hex separated by :
         }
         temp += padhex(connectedHubId[31]);
-        $scope.fullHub = temp;
-//        console.log("full hub " + $scope.fullHub);
+        $scope.connectedID = temp;
+//        console.log("full hub " + $scope.connectedID);
 //        $scope.lastHub = padhex(connectedHubId[0]) + ':' + // lastHub is char(11)
 //                        padhex(connectedHubId[1]) + ':' +
 //				     	padhex(connectedHubId[2]) + ':' +
 //				     	padhex(connectedHubId[3]);
 //        console.log("last hub " + $scope.lastHub);
-	if (!$scope.hubs[$scope.fullHub]) {
-            $scope.hubs[$scope.fullHub] = {};
+	if (!$scope.hubs[$scope.connectedID]) {
+            $scope.hubs[$scope.connectedID] = {};
 	    //console.log("in setHubID, hubs is " + JSON.stringify($scope.hubs));
         }
         return $scope.saveState();
@@ -136,7 +172,7 @@ linkitzApp.controller('LinkitzAppController', [
     }
     
     setInterval(function(){
-        linkitzPing()}, 5000)
+        linkitzPing()}, 5000);
     
     function padhex(d) {
         var h = d.toString(16);
@@ -148,40 +184,48 @@ linkitzApp.controller('LinkitzAppController', [
         return ChromeBrowser.loadLocalStorage("persistState")
             .then(function (persistState) {
                 if (persistState) {
-                    $scope.fullHub = persistState.fullHub;
+                    $scope.connectedID = persistState.fullHub;
                     $scope.localID = persistState.localID;
-                    angular.forEach(persistState.hubs, function(value, key) {
-                        $scope.hubs[key] = {};
-                    });
+                    for (var hubid in persistState.hubs) {
+                        if (persistState.hubs.hasOwnProperty(hubid)) {
+                            $scope.hubs[hubid] = {};
+                        }
+                    }
                 }
                 // NEW: call queryPrograms for hubs to restore savedPrograms dropdown
                 $scope.queryPrograms();
             });
-    }
+    };
 
     $scope.saveState = function saveState() {
         var persistState = {
             'hubs': {},
-            'fullHub': $scope.fullHub,
+            'fullHub': $scope.connectedID,
             'localID': $scope.localID
         };
-        angular.forEach($scope.hubs, function(value, key) {
-            persistState.hubs[key] = key;
-        });
+        for (var hubid in $scope.hubs) {
+          if ($scope.hubs.hasOwnProperty(hubid)) { 
+            // persistState.hubs[key] = key; // trying to remove all the duplicate info in $scope.hubs
+            persistState.hubs[hubid] = {};
+          }
+        }
         //console.log("in saveState, hubs is " + JSON.stringify($scope.hubs));
         return ChromeBrowser.saveLocalStorage("persistState", persistState);
-    }
+    };
 
     $scope.queryPrograms = function queryPrograms() {
-	//console.log("in queryPrograms start, hubs is " + JSON.stringify($scope.hubs));
-	$scope.LinkitzPrograms = HubPrograms.query({'userid': 'builtIn'});
-	angular.forEach($scope.hubs, function(value, key) {
-            //console.log(key);
-	    value['hubId'] = key;
-        value['hubPrograms'] = HubPrograms.query({'userid': key});
-        });
-	//console.log("after queryPrograms loop, hubs is " + JSON.stringify($scope.hubs));
-    }
+        //console.log("in queryPrograms start, hubs is " + JSON.stringify($scope.hubs));
+        $scope.LinkitzPrograms = HubPrograms.query({'userid': 'builtIn'});
+        for (var hubid in $scope.hubs) { //$scope.hubs[hubid] is a list of program objects [{userid: hubid,codeid:number,codexml: string,codename:string},{},{},...{}]
+          if ($scope.hubs.hasOwnProperty(hubid)) {
+            //console.log("before HubPrograms.query, $scope.hubs["+hubid+"].length = " + ($scope.hubs[hubid]).length);
+            //console.log("HubPrograms.query " + HubPrograms.query({'userid': hubid}));
+            $scope.hubs[hubid] = HubPrograms.query({'userid': hubid});
+            //console.log("after HubPrograms.query, $scope.hubs["+hubid+"].length = " + ($scope.hubs[hubid]).length);
+          }
+        }
+        //console.log("after queryPrograms loop, hubs is " + JSON.stringify($scope.hubs));
+    };
     
   $scope.queryProgramsNoThrottle = function queryProgramsNoThrottle() {
 	var size = Object.keys($scope.hubs).length;
@@ -190,41 +234,43 @@ linkitzApp.controller('LinkitzAppController', [
     var rand = Math.floor((Math.random() * size + 1)); // use rand to pick one hub to query
     //console.log("rand = " + rand);
     var i = 1;
-	angular.forEach($scope.hubs, function(value, key) {
-        if (i == rand) {
-            value['hubId'] = key;
-            value['hubPrograms'] = HubPrograms.query({'userid': key});
-            //console.log("querying  " + key);
-        };
-        i += 1;
-        });
-    }  
+	for (var hubid in $scope.hubs) {
+        //console.log("hubid: " + hubid);
+          if ($scope.hubs.hasOwnProperty(hubid)) {
+            if (i == rand) {
+                 $scope.hubs[hubid] = HubPrograms.query({'userid': hubid});
+            } else i++;
+          }
+        }
+    };  
 
-    $scope.loadEditor = function loadEditor (program,writeFlag) {
-        $scope.loadInfo = {program:program, writeFlag:writeFlag};
+    $scope.loadEditor = function loadEditor (selectedProg,noOverWriteFlag) {
+        $scope.loadInfo = {"prog":selectedProg, "noOverWriteFlag":noOverWriteFlag};
         if ($scope.editor.blocklyXML == '<xml xmlns="http://www.w3.org/1999/xhtml"></xml>') {
                 $scope.loadEditor2(); // empty workspace, don't need a warning, just load code
+        } else
+        if ($scope.editor.dirty == false) {
+                $scope.loadEditor2(); // no changes were made to workspace, don't need a warning, just load code
         } else
         {
             errorCatcher.confirm('WARNING', 'This will erase all the blocks on your workspace!', $scope.loadEditor2);
         }
     };
    
-    $scope.loadEditor2 = function loadEditor () {
-        var program = $scope.loadInfo.program;
-        var writeFlag = $scope.loadInfo.writeFlag;
-        var blocklyxml = program.codexml;
-        $scope.activeProgram = program;
-//        LogService.appLogMsg("Loading Blockly XML:\n" + blocklyxml);
-        $scope.editor.blocklyXML = blocklyxml;
+    $scope.loadEditor2 = function loadEditor2 () {
+        var prog = $scope.loadInfo.prog;
+        var flag = $scope.loadInfo.noOverWriteFlag;
+        $scope.activeProgram = true;
+        $scope.editor.blocklyXML = prog.codexml;
         $scope.editor.dirty = false;
-        $scope.editor.noOverwrite = writeFlag;
-        $scope.newProg = -1;
-        if (program.userid == $scope.localID) { // this matters for saving local code when a hub is attached
+        $scope.editor.noOverwrite = flag;
+        $scope.newProgNum = -1;
+        $scope.activeProgramHubID = prog.userid;
+        $scope.activeProgramCodeID = prog.codeid;
+        
+        if (prog.userid == $scope.localID) { // this matters for saving local code when a hub is attached
             $scope.isLocal = true;
-        } else
-        {
-            $scope.activeProgramID = program.userid;
+        } else {
             $scope.isLocal = false;
         }
     };
@@ -241,121 +287,124 @@ linkitzApp.controller('LinkitzAppController', [
 
 $scope.wipeEditor = function wipeEditor () {    
         // console.log("Wipe editor: Re-initializing Blockly XML");
-        $scope.activeProgram = null;
+        $scope.activeProgram = false;
+        $scope.activeProgramHubID = '';
+        $scope.activeProgramCodeID = null;
         $scope.editor.blocklyXML = emptyBlocklyXML;
         $scope.editor.dirty = false;
-        $scope.newProg = -1;
-}
-
+        $scope.newProgNum = -1;
+ };
     $scope.saveEditor = function saveEditor () {
         var saveBody;
         var newProgram;
-        var temp;
+        // case: blank worskpace. Don't save
         if ($scope.editor.blocklyXML == '<xml xmlns="http://www.w3.org/1999/xhtml"></xml>') {
                 LogService.appLogMsg("Save: Empty workspace, did not save");
-        } else {
-            if (!($scope.fullHub) && ($scope.localID == null)) { // CREATE localID, SAVE code ID, and save code locally
-                saveBody = {
-                    "userid": 'local',
-                    "codexml": $scope.editor.blocklyXML
-                };
-                newProgram = new HubPrograms(saveBody);
-                newProgram.$save(function(response) {
-                console.log("Saved as local program # " + response.codeid); //
+        }
+        // case: no hub ID (this will occur right after installing). Save locally
+        else if (!($scope.connectedID) && ($scope.localID == null)) { // db CREATES a localID, SAVE code ID, and save code locally
+            saveBody = {
+                "userid": 'local',
+                "codexml": $scope.editor.blocklyXML
+            };
+            newProgram = new HubPrograms(saveBody);
+            newProgram.$save(function(response) {
+                LogService.appLogMsg("Saved as local program #  " + response.codeid);
                 if ($scope.devMode) {
-                    console.log(" = " + (response.userid).substring(0, 11)); // show userID in dev mode
+                    LogService.appLogMsg(" for userid: " + (response.userid).substring(0, 11)); // show userID in dev mode
                 }
                 $scope.localID = response.userid;
-                $scope.newProg = response.codeid;
-                console.log("program variable localID " + $scope.localID); //
-                    })
-                // add localID to hubs structure
-                .then(function() {
-                //console.log("program variable localID outside if " + $scope.localID); //
-                $scope.hubs[$scope.localID] = {};
-                //console.log("case 0" + JSON.stringify($scope.hubs[$scope.localID])); // 2
-                })
-                .then($scope.saveState)
-                .then($scope.queryPrograms)
-                .catch(function (reason) {
-                console.log("Couldn't save " + reason);
+                $scope.activeProgramHubID = response.userid;
+                $scope.activeProgramCodeID = response.codeid;
+                $scope.activeProgram = true;
+                $scope.hubs[$scope.activeProgramHubID] = HubPrograms.query({'userid': $scope.activeProgramHubID});
                 });
             }
-            else if (($scope.editor.noOverwrite) || (!($scope.activeProgram))) { // if code is built-in or new, SAVE AS NEW
-            // $scope.fullHub = $scope.attachedHub;
-            if (!($scope.fullHub)) { // if no attached hub
-                saveBody = {
-                    "userid": $scope.localID,
-                    "codexml": $scope.editor.blocklyXML
-                };
-            } else {
-                saveBody = {
-                    "userid": $scope.fullHub,
-                    "codexml": $scope.editor.blocklyXML
-                };
-            }
-            newProgram = new HubPrograms(saveBody);
+        // case: code is built-in or new. SAVE AS NEW (don't overwrite built-in code)
+            else if (($scope.activeProgram && $scope.editor.noOverwrite) || (!($scope.activeProgram))) { 
+                if (!($scope.connectedID)) { // if no attached hub
+                    saveBody = {
+                        "userid": $scope.localID,
+                        "codexml": $scope.editor.blocklyXML
+                    };
+                } else {
+                    saveBody = {
+                        "userid": $scope.connectedID,
+                        "codexml": $scope.editor.blocklyXML
+                    };
+                }
+                newProgram = new HubPrograms(saveBody);
                 newProgram.$save(function(response) {
                 LogService.appLogMsg("Saved program, stored as codeid: " + response.codeid);
                 if ($scope.devMode) {
-                    temp = response.userid;
-                    LogService.appLogMsg(" for userid: " + temp.substring(0,11) + "."); // show userID in dev mode
+                    LogService.appLogMsg(" for userid: " + (response.userid).substring(0, 11)); // show userID in dev mode
                 }
-                $scope.newProg = response.codeid;
-                $scope.queryPrograms();
+                $scope.activeProgramHubID = ($scope.connectedID) ? $scope.connectedID : $scope.localID;
+                $scope.activeProgramCodeID = response.codeid;
+                $scope.activeProgram = true;
+                $scope.hubs[$scope.activeProgramHubID] = HubPrograms.query({'userid': $scope.activeProgramHubID});
                 });
-            }
-            else if ($scope.fullHub && ($scope.isLocal == true)) { // save changes to a local program to the hubID if there is one
+            } // case: local program has been changed and there is a hub. Save to hub.
+            else if ($scope.connectedID && $scope.isLocal) { // save changes to a local program to the hubID if there is one
                 saveBody = {
-                    "userid": $scope.fullHub,
+                    "userid": $scope.connectedID,
                     "codexml": $scope.editor.blocklyXML
                     };
                 newProgram = new HubPrograms(saveBody);
                     newProgram.$save(function(response) {
                     LogService.appLogMsg("Saved local program to hub, stored as codeid: " + response.codeid);
                     if ($scope.devMode) {
-                        temp = response.userid;
-                        LogService.appLogMsg(" for userid: " + temp.substring(0,11) + "."); // show userID in dev mode
+                        LogService.appLogMsg(" for userid: " + (response.userid).substring(0, 11)); // show userID in dev mode
                     }
-                    $scope.newProg = response.codeid;
-                    $scope.queryPrograms();
-                    var progs = $scope.hubs[$scope.fullHub].hubPrograms;
-                    $scope.activeProgram = progs[$scope.newProg - 1];
+                    $scope.activeProgramHubID = $scope.connectedID;
+                    $scope.activeProgramCodeID = response.codeid;
+                    $scope.activeProgram = true;
+                    $scope.hubs[$scope.activeProgramHubID] = HubPrograms.query({'userid': $scope.activeProgramHubID});
                     });
             }
-            else if ($scope.activeProgram.userid != $scope.fullHub){ // the program we edited doesn't belong to this hub, save it to the current hub
+            // case: the program we edited doesn't belong to this hub, save it to the current hub
+            else if ($scope.activeProgramHubID && $scope.connectedID && ($scope.activeProgramHubID != $scope.connectedID)){ 
+               //$scope.activeProgram = $scope.hubs[$scope.activeProgramHubID][$scope.activeProgramCodeID]; // this is the program currently loaded on the workspace
                saveBody = {
-                    "userid": $scope.fullHub,
+                    "userid": $scope.connectedID,
                     "codexml": $scope.editor.blocklyXML
                     };
-                newProgram = new HubPrograms(saveBody);
+                    newProgram = new HubPrograms(saveBody);
                     newProgram.$save(function(response) {
-                    LogService.appLogMsg("Saved local program to hub, stored as codeid: " + response.codeid);
-                    if ($scope.devMode) {
-                        temp = response.userid;
-                        LogService.appLogMsg(" for userid: " + temp.substring(0,11) + "."); // show userID in dev mode
-                    }
-                    $scope.newProg = response.codeid;
-                    $scope.queryPrograms();
-                    var progs = $scope.hubs[$scope.fullHub].hubPrograms;
-                    $scope.activeProgram = progs[$scope.newProg - 1];
-                    }); 
+                        LogService.appLogMsg("Saved program to hub, stored as codeid: " + response.codeid);
+                        if ($scope.devMode) {
+                            LogService.appLogMsg(" for userid: " + (response.userid).substring(0, 11)); // show userID in dev mode
+                        }
+                        $scope.activeProgramHubID = $scope.connectedID;
+                        $scope.activeProgramCodeID = response.codeid;
+                        $scope.activeProgram = true;
+                        $scope.hubs[$scope.activeProgramHubID] = HubPrograms.query({'userid': $scope.activeProgramHubID});
+                        });
             }
+
             else if ($scope.activeProgram) { // if existing usercode, UPDATE it (write back under same codeID) <<< where is userid???? <<<<<<
-                $scope.activeProgram.codexml = $scope.editor.blocklyXML;
-                $scope.activeProgram.$save(function(response) {
-                    LogService.appLogMsg("Updated program codeid: " + response.codeid);
-                    if ($scope.devMode) {
-                        temp = response.userid;
-                        LogService.appLogMsg(" for userid: " + temp.substring(0,11) + "."); // show userID in dev mode
-                    }
-                    $scope.queryPrograms();
+                // have to update active program here to reflect the hubid and code id on the workspace. it is not available after $save
+                //$scope.activeProgram = $scope.hubs[$scope.activeProgramHubID][$scope.activeProgramCodeID]; // this is the program currently loaded on the workspace
+                saveBody = {
+                        "userid": $scope.activeProgramHubID,
+                        "codexml": $scope.editor.blocklyXML,
+                        "codeid": $scope.activeProgramCodeID
+                    };
+                     newProgram = new HubPrograms(saveBody);
+                    newProgram.$save(function(response) {
+                        LogService.appLogMsg("Updated program codeid: " + response.codeid);
+                        if ($scope.devMode) {
+                            LogService.appLogMsg(" for userid: " + (response.userid).substring(0, 11)); // show userID in dev mode
+                        }
+                    $scope.activeProgramHubID = ($scope.connectedID) ? $scope.connectedID : $scope.localID;
+                    $scope.activeProgramCodeID = response.codeid;
+                    $scope.activeProgram = true;
+                    $scope.hubs[$scope.activeProgramHubID] = HubPrograms.query({'userid': $scope.activeProgramHubID});
                 });
             }
             else {
             errorCatcher.handle("Save: Error saving program", {});
             }
-        }
     };
 
     $scope.generateCode = function generateCode () {
