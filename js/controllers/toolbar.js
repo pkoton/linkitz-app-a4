@@ -36,7 +36,6 @@ linkitzApp.controller('ToolbarController', [
 				return false;	
 	};
 	
-	// hub id = undefined $scope.localID = 16b1b6d7-a459-418f-a968-c62a62fb8fac
 	$scope.useLocalLabel = function(hubNum) {
 		if (!($scope.localID == null) && !(hubNum==null)) {
 			if (hubNum == $scope.localID) {

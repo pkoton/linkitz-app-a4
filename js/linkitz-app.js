@@ -48,6 +48,7 @@ linkitzApp.controller('LinkitzAppController', [
     $scope.isAttached = false;
 
     $scope.hubs = {};
+    $scope.hubKeys = []; // this is formaintaining the order in which hubs are displayed in the savedProrams dropdown menu
  /*   
  $scope.hubs format:
  $scope.hubs[hubid] is a list of program objects [{userid: hubid,codeid:number,codexml: string,codename:string},{},{},...{}]
@@ -108,10 +109,11 @@ linkitzApp.controller('LinkitzAppController', [
     $scope.setHubID = function setHubID(connectedHubId) { // connectedHubId  is array [32]
         var temp= '';
         for (var i = 0; i < 31; i++) {
-            temp += padhex(connectedHubId[i]) + ':'; //fullHub is a string of 64 2-char hex separated by :
+            // temp += padhex(connectedHubId[i]) + ':'; //connectedHubId is a string of 64 2-char hex separated by :
+            temp += padhex(connectedHubId[i]); //connectedHubId is a string of 64 2-char hex (no separator)
         }
         temp += padhex(connectedHubId[31]);
-        $scope.connectedID = temp;
+        $scope.connectedID = temp; // $scope.connectedID is a 64-char string
 //        console.log("full hub " + $scope.connectedID);
 //        $scope.lastHub = padhex(connectedHubId[0]) + ':' + // lastHub is char(11)
 //                        padhex(connectedHubId[1]) + ':' +
@@ -120,7 +122,11 @@ linkitzApp.controller('LinkitzAppController', [
 //        console.log("last hub " + $scope.lastHub);
 	if (!$scope.hubs[$scope.connectedID]) {
             $scope.hubs[$scope.connectedID] = {};
-	    //console.log("in setHubID, hubs is " + JSON.stringify($scope.hubs));
+            //put connectedID at front of hubKeys array
+            ($scope.hubKeys).splice(0,0,$scope.connectedID);
+        } else {
+            var i = ($scope.hubKeys).indexOf($scope.connectedID);
+            swapElement($scope.hubKeys, i, 0);
         }
         return $scope.saveState();
     }
@@ -178,6 +184,13 @@ linkitzApp.controller('LinkitzAppController', [
         var h = d.toString(16);
         return (h.length < 2? '0' : '') + h;
     }
+    // use swapElement(array,from,to) to move the currently attached hub to the top of the savedPrograms dropdown list
+    function swapElement(array, indexA, indexB) {
+        if (indexA ==indexB) return;
+        var tmp = array[indexA];
+        array[indexA] = array[indexB];
+        array[indexB] = tmp;
+    }
     
     $scope.restoreState = function restoreState() {
         // console.log("in restore state");
@@ -185,10 +198,15 @@ linkitzApp.controller('LinkitzAppController', [
             .then(function (persistState) {
                 if (persistState) {
                     $scope.connectedID = persistState.fullHub;
+                    $scope.hubKeys[0] = $scope.connectedID;
                     $scope.localID = persistState.localID;
+                    ($scope.hubKeys).push($scope.localID);
                     for (var hubid in persistState.hubs) {
                         if (persistState.hubs.hasOwnProperty(hubid)) {
                             $scope.hubs[hubid] = {};
+                            if (($scope.hubKeys).indexOf(hubid) === -1) {
+                                ($scope.hubKeys).push(hubid);
+                            }
                         }
                     }
                 }
@@ -294,6 +312,7 @@ $scope.wipeEditor = function wipeEditor () {
         $scope.editor.dirty = false;
         $scope.newProgNum = -1;
  };
+    
     $scope.saveEditor = function saveEditor () {
         var saveBody;
         var newProgram;
@@ -309,6 +328,10 @@ $scope.wipeEditor = function wipeEditor () {
             };
             newProgram = new HubPrograms(saveBody);
             newProgram.$save(function(response) {
+                if ((response.userid == null) || (response.codeid == null)) {
+                       errorCatcher.handle("Save: Error saving program", {});
+                       return;
+                }
                 LogService.appLogMsg("Saved as local program #  " + response.codeid);
                 if ($scope.devMode) {
                     LogService.appLogMsg(" for userid: " + (response.userid).substring(0, 11)); // show userID in dev mode
@@ -335,6 +358,10 @@ $scope.wipeEditor = function wipeEditor () {
                 }
                 newProgram = new HubPrograms(saveBody);
                 newProgram.$save(function(response) {
+                if ((response.userid == null) || (response.codeid == null)) {
+                   errorCatcher.handle("Save: Error saving program", {});
+                   return;
+                }
                 LogService.appLogMsg("Saved program, stored as codeid: " + response.codeid);
                 if ($scope.devMode) {
                     LogService.appLogMsg(" for userid: " + (response.userid).substring(0, 11)); // show userID in dev mode
@@ -352,6 +379,10 @@ $scope.wipeEditor = function wipeEditor () {
                     };
                 newProgram = new HubPrograms(saveBody);
                     newProgram.$save(function(response) {
+                    if ((response.userid == null) || (response.codeid == null)) {
+                       errorCatcher.handle("Save: Error saving program", {});
+                       return;
+                    }
                     LogService.appLogMsg("Saved local program to hub, stored as codeid: " + response.codeid);
                     if ($scope.devMode) {
                         LogService.appLogMsg(" for userid: " + (response.userid).substring(0, 11)); // show userID in dev mode
@@ -371,7 +402,11 @@ $scope.wipeEditor = function wipeEditor () {
                     };
                     newProgram = new HubPrograms(saveBody);
                     newProgram.$save(function(response) {
-                        LogService.appLogMsg("Saved program to hub, stored as codeid: " + response.codeid);
+                    if ((response.userid == null) || (response.codeid == null)) {
+                       errorCatcher.handle("Save: Error saving program", {});
+                       return;
+                    }
+                    LogService.appLogMsg("Saved program to hub, stored as codeid: " + response.codeid);
                         if ($scope.devMode) {
                             LogService.appLogMsg(" for userid: " + (response.userid).substring(0, 11)); // show userID in dev mode
                         }
@@ -392,6 +427,10 @@ $scope.wipeEditor = function wipeEditor () {
                     };
                      newProgram = new HubPrograms(saveBody);
                     newProgram.$save(function(response) {
+                        if ((response.userid == null) || (response.codeid == null)) {
+                            errorCatcher.handle("Save: Error saving program", {});
+                            return;
+                        }
                         LogService.appLogMsg("Updated program codeid: " + response.codeid);
                         if ($scope.devMode) {
                             LogService.appLogMsg(" for userid: " + (response.userid).substring(0, 11)); // show userID in dev mode
