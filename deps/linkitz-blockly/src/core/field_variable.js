@@ -82,10 +82,10 @@ Blockly.FieldVariable.prototype.setValidator = function(handler) {
  * @param {!Blockly.Block} block The block containing this text.
  */
 Blockly.FieldVariable.prototype.init = function(block) {
-  if (this.sourceBlock_) {
-    // Dropdown has already been initialized once.
-    return;
-  }
+  //if (this.sourceBlock_) {
+  //  // Dropdown has already been initialized once.
+  //  return;
+  //}
   Blockly.FieldVariable.superClass_.init.call(this, block);
   if (!this.getValue()) {
     // Variables without names get uniquely named for this workspace.
@@ -124,30 +124,60 @@ Blockly.FieldVariable.prototype.setValue = function(newValue) {
  * @this {!Blockly.FieldVariable}
  */
 Blockly.FieldVariable.dropdownCreate = function() {
-  if (this.sourceBlock_ && this.sourceBlock_.workspace) {
-    var variableList =  Blockly.Variables.allVariables(this.sourceBlock_.workspace);
-    for (var j = 0; j < variableList.length; j++) {
+    var variableList;
+    var hideList = [];
+    var j;
+    if (this.sourceBlock_ && this.sourceBlock_.workspace) {
+    variableList =  Blockly.Variables.allVariables(this.sourceBlock_.workspace);
+    // console.log("in sourceBlock, variableList: " + JSON.stringify(variableList));
+    for (j = 0; j < variableList.length; j++) {
+      // console.log("j = " + j + ", variable["+j+"] = " + variableList[j]);
       if (variableList[j].match(/\+/)) {
-        goog.array.remove(variableList, variableList[j]);
+        // console.log("found 1 " + variableList[j]);
+        hideList.push(variableList[j]);
+        }
       }
-  }
-  } else {
-    var variableList = [];
-  }
+      // console.log("in sourceBlock, hideList: " + JSON.stringify(hideList));
+      for (j = 0; j < hideList.length; j++) {
+        goog.array.remove(variableList, hideList[j]);
+      }
+      hideList=[];
+      // console.log("after sourceBlock and remove, variableList: " + JSON.stringify(variableList));
+    }
+   else {
+    variableList = [];
+    // console.log("empty variableList");
+    }
   // Ensure that the currently selected variable is an option.
   var name = this.getText();
   if (name && variableList.indexOf(name) == -1) {
     variableList.push(name);
+    // console.log("current var variableList: " + JSON.stringify(variableList));
   }
   variableList.sort(goog.string.caseInsensitiveCompare);
   variableList.push(Blockly.Msg.RENAME_VARIABLE);
   variableList.push(Blockly.Msg.NEW_VARIABLE);
+  // console.log("final loop");
+  for (j = 0; j < variableList.length; j++) {
+      // console.log("j = " + j + ", variable[" +j+  "] = " + variableList[j]);
+      if (variableList[j].match(/\+/)) {
+        // console.log("final loop found " + variableList[j]);
+        hideList.push(variableList[j]);
+        }
+      }
+      // console.log("in final loop, hideList: " + JSON.stringify(hideList));
+      for (j = 0; j < hideList.length; j++) {
+        goog.array.remove(variableList, hideList[j]);
+      }
+      hideList=[];
+  // console.log("after final loop and remove, variableList: " + JSON.stringify(variableList));
   // Variables are not language-specific, use the name as both the user-facing
   // text and the internal representation.
   var options = [];
   for (var x = 0; x < variableList.length; x++) {
     options[x] = [variableList[x], variableList[x]];
   }
+  // console.log("finally, options: " + JSON.stringify(options));
   return options;
 };
 
@@ -173,9 +203,11 @@ Blockly.FieldVariable.dropdownChange = function(text) {
           newVar == Blockly.Msg.NEW_VARIABLE) {
         // Ok, not ALL names are legal...
         newVar = null;
+        //Blockly.FieldVariable.dropdownCreate();
         return;
       }
       Blockly.Variables.renameVariable(oldVar, newVar, workspace);
+      //Blockly.FieldVariable.dropdownCreate();
     }
   }
 
@@ -187,9 +219,11 @@ Blockly.FieldVariable.dropdownChange = function(text) {
           newVar == Blockly.Msg.NEW_VARIABLE) {
         // Ok, not ALL names are legal...
         newVar = null;
+        //Blockly.FieldVariable.dropdownCreate();
         return;
       }
       Blockly.Variables.renameVariable(newVarName, newVar, workspace);
+      //Blockly.FieldVariable.dropdownCreate();
     }
   }
 
@@ -201,6 +235,7 @@ Blockly.FieldVariable.dropdownChange = function(text) {
   } else if (text == Blockly.Msg.NEW_VARIABLE) {
     Blockly.hideChaff();
     promptDialog('New Variable', Blockly.Msg.NEW_VARIABLE_TITLE, newVarName, newVariableCallback);
+    //Blockly.FieldVariable.dropdownCreate();
     return newVarName;
   }
   return undefined;
