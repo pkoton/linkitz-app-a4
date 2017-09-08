@@ -395,21 +395,21 @@ Blockly.Assembly['lists_setIndex_nonMut'] = function(block) {
 // so just push n 0s onto the stack, plus the length
 
 Blockly.Assembly['lists_create_n'] = function(block) { 
-  console.log("in lists_create_n");
+  //console.log("in lists_create_n");
   var code = '; starting lists_create_n\n';
   if (block.id in blockid_return_value_desc) {
-    console.log("have block.id");
+    //console.log("have block.id");
     var list_desc = blockid_return_value_desc[block.id];
     var pushes = list_length_from_sublist_desc(list_desc);
-    console.log("pushes = " + pushes);
+    //console.log("pushes = " + pushes);
     for (var i = 0; i < pushes; i++) {
-      console.log("on list element #" + i);
+      //console.log("on list element #" + i);
       code += 'Push R0\n';
     }
     code += 'Set R1 ' + pushes + '\nPush R1\n';
   } else
   {
-    console.log("don't have block.id");
+    //console.log("don't have block.id");
     var numItems = parseInt(block.getFieldValue('NUM_ITEMS')); 
     if (numItems == 0) {
       numItems = 1; // this should never happen due to countingNumberValidator on block
@@ -417,10 +417,10 @@ Blockly.Assembly['lists_create_n'] = function(block) {
       else if (numItems > 127) {
         numItems = 127; // 127 max
       }
-    console.log("numItems = " + numItems);
+    //console.log("numItems = " + numItems);
     var code = '';
     for (var i = 0; i < numItems; i++) {
-      console.log("on list element #" + i);
+      //console.log("on list element #" + i);
       code += 'Push R0\n';
     }
     code += 'Set R1 ' + numItems + '\nPush R1\n';
