@@ -686,6 +686,9 @@ function addNewScalarVar(varName) {
             res = 1;
             blockid_return_value_desc[block.id] = [];
             }
+            else if (varName in global_list_variables) {
+              res = 0;
+            }
         break;
       case "procedures_callreturn":
         var funcName = Blockly.Assembly.variableDB_.getName(block.getFieldValue('NAME'),Blockly.Procedures.NAME_TYPE);
