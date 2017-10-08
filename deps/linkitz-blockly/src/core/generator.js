@@ -106,6 +106,7 @@ Blockly.Generator.prototype.workspaceToCode = function(workspace) {
       undef_vars_next = 0;
       ifCount = 0;
       variable_usage = new Object();
+      var resolve_var_refs_complete = false;
       
       // console.log("calling resolve var refs");
       if (resolve_var_refs(workspace,undef_vars) == 0) {
@@ -113,7 +114,7 @@ Blockly.Generator.prototype.workspaceToCode = function(workspace) {
       }
       else {
         // console.log("out of resolve var refs");
-        var resolve_var_refs_complete = true;
+        resolve_var_refs_complete = true;
         console.log("GSV = " + global_scalar_variables);
         console.log("GLV = " + JSON.stringify(global_list_variables));
         // console.log("blockid_return_value_desc = " + JSON.stringify(blockid_return_value_desc)); 

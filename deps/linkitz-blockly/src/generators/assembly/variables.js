@@ -144,7 +144,7 @@ if (!targetBlock) {
  
  function resolve_var_refs(workspace, undef_vars_init){
   undef_vars_prev = undef_vars_init.slice(0); // make a copy of previous list of undef vars to check for loops
-  //  console.log("at start, undef_vars_prev " + undef_vars_prev);
+  // console.log("at start, undef_vars_prev " + undef_vars_prev);
   var blocks = workspace.getAllBlocks();
   var i2 = 0; // index into undefined_vars
   // console.log("In resolve var refs, reviewing " + blocks.length + " blocks");
@@ -186,10 +186,10 @@ if (!targetBlock) {
                 proc_types[procName] = [0,0];
                 // console.log(procName +" returns a scalar");
                 if (procName in proc_types) {
-                  // console.log("added " + procName + " proc_types: " + JSON.stringify(proc_types));
+                   // console.log("added " + procName + " proc_types: " + JSON.stringify(proc_types));
                   }
                   else {
-                    // console.log("didn't add " + procName);
+                     // console.log("didn't add " + procName);
                   }
                 // Find and remove procName from undef_vars list
                 // console.log("deleting " + procName + " from unknown_lists " + JSON.stringify(unknown_lists));
@@ -200,30 +200,40 @@ if (!targetBlock) {
                 del_varname_from_undef_vars_list(procName);
                 // console.log("undef_vars now " + undef_vars);
                 } // end if (is_scalar(returnBlock))
-                else if (ldata = get_list_desc(returnBlock,[], -1)) {  // ldata is being assigned the value of get_list_desc; not a typo!
-                  // console.log('in loop1 returnBlock is a list, ldata is ' + ldata); 
-                  if (ldata[0] == 1) {   // we are getting back a fully specified list
-                    // console.log('returnBlock is list');
-                    proc_types[procName] = ldata;  // 1=returns a list, with list desc
-                    // console.log(procName + " returns a list  " + ldata[1]); // 
-                    if (procName in proc_types) {
-                      // console.log("added " + procName);
-                        } else {
-                          // console.log("didn't add " + procName);
-                          }
-                    // Find and remove procName from undef_vars list
+                else {
+                  ldata = get_list_desc(returnBlock,[], -1);
+                  if (ldata) {  
+                    // console.log('in loop1 returnBlock is a list, ldata is ' + ldata); 
+                    if (ldata[0] == 1) {   // we are getting back a fully specified list
+                      // console.log('returnBlock is list');
+                      proc_types[procName] = ldata;  // 1=returns a list, with list desc
+                      // console.log(procName + " returns a list  " + ldata[1]); // 
+                      //if (procName in proc_types) {
+                        // console.log("added " + procName);
+                          //} else {
+                            // console.log("didn't add " + procName);
+                           // }
+                      // Find and remove procName from undef_vars list
+                        del_varname_from_undef_vars_list(procName);
+                        delete unknown_lists[procName];
+                    }
+                    else if (ldata ==0) {
+                      proc_types[procName] = [0,0];
+                      delete unknown_lists[procName];
                       del_varname_from_undef_vars_list(procName);
-                      delete unknown_lists[varName];
-                  } else {
-                      // console.log("still working on " + procName);
-                      add_varname_to_undef_vars_list(procName);
-                      }
-                  }
-                   else {
+                    }
+                    else {
+                        // console.log("still working on " + procName);
+                        add_varname_to_undef_vars_list(procName);
+                        // console.log("undef_vars now  " + undef_vars);
+                        }
+                  } // end if (ldata)
+                  else {
                     // console.log("in loop1 unknown if returnBlock is scalar or list");
                     // add procName to undef_vars list
                     add_varname_to_undef_vars_list(procName);
-                   }
+                  }
+                }
           } // end if (returnBlock)
       } // end else
     } // end if (blocks[i].type == 'procedures_defreturn')
@@ -255,7 +265,7 @@ if (!targetBlock) {
               } else continue;
             } else { // NEW VARIABLE, add it to the correct variables list
               // console.log("in loop2 " + varName + " is a new var" );
-              var targetBlock = current_block.getInputTargetBlock('VALUE');
+              // var targetBlock = current_block.getInputTargetBlock('VALUE');
               // console.log("in loop2 targetBlock " + targetBlock);
               if (targetBlock) {
               var inputType = targetBlock.type;
@@ -276,7 +286,7 @@ if (!targetBlock) {
                   //case "math_on_list":
                   //case "get_battery_level":
                   //case "get_ambient_light":
-                    // console.log("in loop2 found scalar by case");
+                     // console.log("in loop2 found scalar by case");
                     addNewScalarVar(varName, undef_vars_prev);
                     }
                   // ********* LISTS *********
@@ -378,12 +388,16 @@ if (!targetBlock) {
                         // console.log("found procedure " + funcName +  " in proc_types");
                           if (proc_types[funcName][0] == 0) {
                             addNewScalarVar(varName);
+                            delete unknown_lists[funcName];
+                            del_varname_from_undef_vars_list(funcName);
                             break;
                             }
                             else if (proc_types[funcName][0] == 1) { 
                               // console.log("procedure returns a list in resolve_variable_refs");
                               addNewListVar(varName, list_length_from_sublist_desc(proc_types[funcName][1]), proc_types[funcName][1]); //varName,num_items,desc
                               blockid_to_list_desc(targetBlock,proc_types[funcName][1]);
+                              delete unknown_lists[funcName];
+                              del_varname_from_undef_vars_list(funcName);
                             break;
                             }
                         } else
@@ -527,6 +541,8 @@ if (!targetBlock) {
                       if (proc_types[funcName][0] == 0) {     // list item is assigned to a scalar
                           addNewListVar(varName,list_length_from_sublist_desc(list_desc),list_desc);
                           blockid_to_list_desc(targetBlock, list_desc);
+                          delete unknown_lists[funcName];
+                          del_varname_from_undef_vars_list(funcName);
                         break;
                         }
                       else if (proc_types[funcName][0] == 1) {  // list item is assigned to another list, we get list_desc?
@@ -534,6 +550,8 @@ if (!targetBlock) {
                         list_desc = list_desc.concat(proc_types[funcName][1]);
                         addNewListVar(varName, proc_types[funcName][0], proc_types[funcName][1]); //varName,num_items,desc
                         blockid_to_list_desc(targetBlock, list_desc);
+                        delete unknown_lists[funcName];
+                        del_varname_from_undef_vars_list(funcName);
                       }
                       // else we don't know return type of proc, can't do aything
                   }
@@ -561,8 +579,10 @@ if (!targetBlock) {
     //  throw err_str;
     //}
     else if (sim_arrays(undef_vars, undef_vars_prev) || (Object.keys(unknown_lists).length > 0)) { 
+    //else if (sim_arrays(undef_vars, undef_vars_prev)) { // try deleting test for unknown lists.length >0
       // bad news, we either have unresolved vars or a loop situation
-       console.log("can't resolve all variable references: " + undef_vars);
+       // console.log("can't resolve all variable references: " + undef_vars + " previously " + undef_vars_prev);
+       // console.log("unknown_lists " + JSON.stringify(unknown_lists));
        for (var key in variable_usage) {
           if (variable_usage.hasOwnProperty(key)) {
             // console.log(variable_usage[key]);
@@ -636,6 +656,7 @@ function addNewScalarVar(varName) {
   if (gsv_next > glv_next) {
     throw 'out of register space in addNewScalarVar';
   }
+  // console.log("adding new scalar variable " +varName);
   global_scalar_variables[gsv_next] = varName;
   // console.log("in resolve_var_refs: " + varName + " stored in GSV[" + gsv_next + "]");
   gsv_next++; // point to next empty space
@@ -720,7 +741,7 @@ function addNewScalarVar(varName) {
     if (is_scalar(block)) { // this is to stop the recursive call
       full_spec = 1;
       blockid_return_value_desc[block.id] = [];
-      return [1,res];
+      return [0,res];
     } else 
     {
       // console.log(">>>> in get_list_desc switch");
@@ -755,8 +776,7 @@ function addNewScalarVar(varName) {
              blockid_return_value_desc[block.id] = [];
              return [full_spec, res];
              }
-           else if (varName in global_list_variables)
-           { // is it in global_list_variables
+           else if (varName in global_list_variables) { // is it in global_list_variables
              // console.log(varName + " is in GLV");
              res = res.concat(global_list_variables[varName][2]); //  sublist_desc
              full_spec = 1;
@@ -764,8 +784,9 @@ function addNewScalarVar(varName) {
              return [full_spec,res];
            }
            else
-           { // if not in GSV or GLV we don't have final info, add it unknown_lists
-           add_listvar_to_unknown_lists(varName, res);   
+           { // if not in GSV or GLV we don't have final info, add it to undef_vars
+           //add_listvar_to_unknown_lists(varName, res);
+           add_varname_to_undef_vars_list(varName);
            return [full_spec,res];
            }
          break;
@@ -786,6 +807,7 @@ function addNewScalarVar(varName) {
          }
            else
            { // if not in proclist or if proclist is -1, we don't have final info, add it unknown_lists
+            // console.log("in get_list_desc:  "+funcName);
              return [full_spec,res];
            }
          break;
@@ -850,7 +872,6 @@ return true;
 
 function add_listvar_to_unknown_lists(varName, desc) {
   // console.log("in add_listvar_to_unknown_lists varName " + varName + " desc " + desc + " length " + desc.length);
-  // console.log("unknown_lists = " + JSON.stringify(unknown_lists));
   if (varName in unknown_lists) { // already there, only add if new info
     var list_desc = unknown_lists[varName];
     // console.log("Found " + varName + " in unknown_lists with value" + list_desc + " length " + list_desc.length);
@@ -866,6 +887,7 @@ function add_listvar_to_unknown_lists(varName, desc) {
       unknown_lists[varName] = desc;
       // console.log("unknown_lists now = " + JSON.stringify(unknown_lists));
     }
+  // console.log("unknown_lists = " + JSON.stringify(unknown_lists));
 }
 
 function list_length_from_sublist_desc(desc) {
