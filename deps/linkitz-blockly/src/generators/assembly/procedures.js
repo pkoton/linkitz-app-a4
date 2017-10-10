@@ -49,19 +49,19 @@ Blockly.Assembly['procedures_defreturn'] = function(block) {
     //  get return value type
     var returnBlock = block.getInputTargetBlock('RETURN');
     var returnType = returnBlock.type;
-    // console.log("Return block " + returnBlock + ", returnType = " + returnType);
+    // console.log("Procedure " + funcName + " Return block " + returnBlock + ", returnType = " + returnType);
     if (is_scalar(returnBlock) || (returnType == 'Number') || (returnType == 'Boolean') || (returnType == 'String')) {
-      // console.log("procedure return type should be AKO scalar, is " + returnType);
+       console.log("Found scalar");
       // var returnCode = returnValue + 'syscall return R1\n'; // value in R1
       var returnCode = returnValue + 'syscall return\n'; // value in R1
     } else if ((get_list_desc(returnBlock, [])[0] == 1) || (returnType == 'Array') || (returnType == 'Colour')) {
-        console.log("procedure return type should be AKO list, is " + returnType);
+        // console.log("found list");
         // var returnCode = returnValue + 'syscall Lreturn\n'; // value on stack
         var returnCode = returnValue + 'syscall return\n'; // value on stack
       } 
       // else if (returnType == 'variables_get') {}
       else {
-        console.log("procedure return type failed");
+        // console.log("procedure return type failed");
         //returnValue = Blockly.Assembly.INDENT + 'syscall return R0\n';  // we couldn't figure it out, just return R0
         var returnCode = 'syscall return R0\n';
       }
@@ -75,7 +75,7 @@ Blockly.Assembly['procedures_defreturn'] = function(block) {
         Blockly.Variables.NAME_TYPE);
   }
   var code =  funcName + ':\n' + branch + returnCode ;
-  console.log('procedure code is ' + code);
+  // console.log('procedure code is ' + code);
   code = Blockly.Assembly.scrub_(block, code);
   Blockly.Assembly.definitions_[funcName] = code;
   return code;
