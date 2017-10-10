@@ -1,24 +1,40 @@
 {
-  "name": "linkitz-app",
-  "version": "0.9.3",
-  "description": "Linkitz Desktop Application",
-  "main": "app-entry.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "name": "Linkitz",
+  "version": "0.9.7.29",
+  "manifest_version": 2,
+  "minimum_chrome_version": "46",
+  "description": "Linkitz empowers kids to explore technology and build endless amazing creations.",
+
+  "icons": {
+    "128": "icons/corplogo128x128.png"
   },
-  "devDependencies": {
-    "grunt": "1.0.1",
-    "grunt-contrib-concat": "1.0.1",
-    "grunt-contrib-jshint": "1.0.0",
-    "grunt-contrib-copy": "1.0.0",
-    "grunt-contrib-watch": "1.0.0",
-    "grunt-contrib-compress": "1.3.0",
-    "grunt-shell": "1.3.0"
+
+  "app": {
+    "background": {
+      "scripts": ["app-entry.js"]
+    }
   },
-  "repository": {
-    "type": "git",
-    "url": "http://jhacker@fizban.arcanefour.com:7990/scm/lnkz/linkitz-app.git"
-  },
-  "author": "Linkitz Systems",
-  "private": true
+
+  "permissions": [
+    "contextMenus",
+    "webview",
+    "storage",
+    "fileSystem",
+    "clipboardRead",
+    "clipboardWrite",
+    "hid",
+    {
+      "usbDevices": [
+        { "vendorId": 1240, "productId": 60 },
+        { "vendorId": 1240, "productId": 61427 }
+      ]
+    },
+    "https://stormy-savannah-87206.herokuapp.com/*",
+    "https://polar-hamlet-45060.herokuapp.com/*"
+   ],
+
+  "sandbox": {
+    "pages": ["blocklyframe.html"]
+  }
+
 }
