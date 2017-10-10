@@ -22,4 +22,7 @@ subprocess.call("python install_extension.py",shell=True)
 #You have to log into the sahniard as linkitzdev@google.com
 #Into the dashboard
 
-
+#To build for Windows, use this script to update the release directory.
+#Rename release/manifest.json to release/package.json
+#Use nwbuild to make a portable application
+#Then use winrar to make a SFX archive.
