@@ -24,5 +24,9 @@ subprocess.call("python install_extension.py",shell=True)
 
 #To build for Windows, use this script to update the release directory.
 #Rename release/manifest.json to release/package.json
+subprocess.call("copy release\manifest.json release\package.json",shell=True)
 #Use nwbuild to make a portable application
+subprocess.call("nwbuild -p win32 --winIco icons/windows.ico -o prepackaged release",shell=True)
 #Then use winrar to make a SFX archive.
+#I end up only getting the following to work intermittently, just do this last step by hand if you need a downloadable version... sorry :(
+#subprocess.call("WinRAR a prepackaged/Linkitz/win32 -cpSFX6",shell=True)

@@ -1,4 +1,4 @@
-# This script runs an install for an extension based version of the Linkitz Blockly app
+# This script updates the version number found in manifest-src/manifest-head.json
 
 import sys
 if sys.version_info[0] != 2:
@@ -12,7 +12,7 @@ for line_number, line in enumerate(fileinput.input("manifest-src/manifest-head.j
   if re.search('''"version": ''',line):
     lineElements=line.split('''"''')[3].split('''.''')
     
-    versionString = lineElements[0]+'.'+lineElements[1]+'.'+lineElements[2]+'.'+str(int(lineElements[3])+1)
+    versionString = lineElements[0]+'.'+lineElements[1]+'.'+str(int(lineElements[2])+1)#support for symantic version numbers
     sys.stdout.write('''  "version": "'''+versionString+'''",\n''')
   else:
     sys.stdout.write(line)
