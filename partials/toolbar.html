@@ -32,8 +32,8 @@
     <li class="divider"></li>
    <li ng-repeat-start="hub in hubs" class="dropdown-header">
     <span ng-show = "useLocalLabel(hub[0].userid)">Local Code </span>
-    <span ng-show = "!useLocalLabel(hub[0].userid)">User Code </span>
-    <span ng-show="devMode"> for hub {{ (hub[0].userid).substring(0,11) }}</span>
+    <span ng-show = "!useLocalLabel(hub[0].userid)">Hub: {{wordify(hub[0].userid.substring(0,11))}}</span>
+    <span ng-show="devMode"> id starts: {{(hub[0].userid).substring(0,11) }}</span>
    </li>
    <li role="menuitem" ng-repeat="program in hub">
       <a href="#" ng-click="loadEditor(program,false)"><i class='fa' ng-class="{'fa-arrow-right' : getSelected(program.userid,program.codeid)}"></i> Program {{ program.codeid }}</a>

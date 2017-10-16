@@ -191,6 +191,55 @@ linkitzApp.controller('LinkitzAppController', [
         array[indexA] = array[indexB];
         array[indexB] = tmp;
     }
+
+    //portable wordifying library, reveals 10 bits of information about a name in a memorable and 
+//useful fashion
+
+var adjectives = ["Energetic",  "Bright",   "Excited",  "Red", 
+        "Orange", "Yellow",     "Green",    "Blue",     "Violet",
+        "Indigo", "Brilliant",  "Transparent",          "Opaque",
+        "Precise","Accurate",   "Absolute", "Apparent", "Conductive",
+        "Constant",             "Reflective",           "Efficient",
+        "Electronic",           "Fundamental",          "Optical"]
+var nouns =    ["Boron",    "Carbon",   "Oxygen",   "Neon", "Helium",
+        "Hydrogen", "Iron", "Aluminium",    "Copper",   "Gold", 
+        "Silver",   "Diode",    "Transistor",   "Resistor", "Light",
+        "Capacitor",    "Inductor", "Coil", "Acceleration", "Action",
+        "Anode",    "Cathode",  "Atom", "Molecule", "Cell", "Acid",
+        "Base", "Conductor",    "Constant", "Energy",   "Work", 
+        "Power",    "Field",    "Proton",   "Electron", "Neutron",
+        "Flow", "Frequency",    "Gravity",  "Ion",  "Mass", "Matter",
+        "Particle", "Satellite",    "Wave"]
+
+function abs(number){
+    if(number<0){
+        return -number;
+    }else{
+        return number;
+    }
+}
+
+function djb2Code(str){
+    var hash = 5381;
+    for (var i = 0; i < str.length; i++) {
+        char = str.charCodeAt(i);
+        hash = ((hash << 5) + hash) + char; /* hash * 33 + c */
+    }
+    return hash;
+}
+
+$scope.wordify = function wordify(number){
+    if(parseInt(number)){
+        number=parseInt(number);
+    } else if(number){
+        number = abs(djb2Code(number));
+    } else {
+        return "New Hub"
+    }
+    var adsel = number%adjectives.length;
+    var nounsel = parseInt(number/adjectives.length)%nouns.length;
+    return adjectives[adsel]+" "+nouns[nounsel];
+}
     
     $scope.restoreState = function restoreState() {
         // console.log("in restore state");
