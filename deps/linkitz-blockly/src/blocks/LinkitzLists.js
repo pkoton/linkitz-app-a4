@@ -57,6 +57,19 @@ Blockly.Blocks['lists_getIndex_nonMut'] = {
     container.setAttribute('at', isAt);
     return container;
   },
+   /**
+   * Notification that a variable is renaming.
+   * If the name matches one of this block's variables, rename it.
+   * @param {string} oldName Previous name of variable.
+   * @param {string} newName Renamed variable.
+   * @this Blockly.Block
+   */
+  renameVar: function(oldName, newName) {
+    if (Blockly.Names.equals(oldName.toLowerCase(), this.getFieldValue('VAR').toLowerCase())||
+      Blockly.Names.equals(newName.toLowerCase(), this.getFieldValue('VAR').toLowerCase())) {//ADM: we also need to rename names that are equal to the newname (same thing but different case)
+      this.setFieldValue(newName, 'VAR');
+    }
+  },
   /**
    * Parse XML to restore the 'AT' input.
    * @param {!Element} xmlElement XML storage element.
@@ -181,8 +194,19 @@ Blockly.Blocks['lists_setIndex_nonMut'] = {
     container.setAttribute('at', isAt);
     return container;
   },
-  
-  
+  /**
+   * Notification that a variable is renaming.
+   * If the name matches one of this block's variables, rename it.
+   * @param {string} oldName Previous name of variable.
+   * @param {string} newName Renamed variable.
+   * @this Blockly.Block
+   */
+  renameVar: function(oldName, newName) {
+    if (Blockly.Names.equals(oldName.toLowerCase(), this.getFieldValue('VAR').toLowerCase())||
+      Blockly.Names.equals(newName.toLowerCase(), this.getFieldValue('VAR').toLowerCase())) {//ADM: we also need to rename names that are equal to the newname (same thing but different case)
+      this.setFieldValue(newName, 'VAR');
+    }
+  },
   /**
    * Parse XML to restore the 'AT' input.
    * @param {!Element} xmlElement XML storage element.
