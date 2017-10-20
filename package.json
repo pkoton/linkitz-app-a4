@@ -4,17 +4,16 @@
   "manifest_version": 2,
   "minimum_chrome_version": "46",
   "description": "Linkitz empowers kids to explore technology and build endless amazing creations.",
-
   "icons": {
     "128": "icons/corplogo128x128.png"
   },
-
   "app": {
     "background": {
-      "scripts": ["app-entry.js"]
+      "scripts": [
+        "app-entry.js"
+      ]
     }
   },
-
   "permissions": [
     "contextMenus",
     "webview",
@@ -25,16 +24,34 @@
     "hid",
     {
       "usbDevices": [
-        { "vendorId": 1240, "productId": 60 },
-        { "vendorId": 1240, "productId": 61427 }
+        {
+          "vendorId": 1240,
+          "productId": 60
+        },
+        {
+          "vendorId": 1240,
+          "productId": 61427
+        }
       ]
     },
     "https://stormy-savannah-87206.herokuapp.com/*",
     "https://polar-hamlet-45060.herokuapp.com/*"
-   ],
-
+  ],
   "sandbox": {
-    "pages": ["blocklyframe.html"]
+    "pages": [
+      "blocklyframe.html"
+    ]
+  },
+  "dependencies": {
+    "grunt-cli": "1.2.0"
+  },
+  "devDependencies": {
+    "grunt": "^1.0.1",
+    "grunt-contrib-compress": "^1.4.3",
+    "grunt-contrib-concat": "^1.0.1",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-jshint": "^1.1.0",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-shell": "^2.1.0"
   }
-
 }
