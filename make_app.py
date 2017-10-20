@@ -18,7 +18,7 @@ subprocess.call("python install_extension.py",shell=True)
 
 print("Done using install_extension.py to build cross platform app in release directory")
 
-if platform.System()=="Windows":
+if platform.system()=="Windows":
   #To build for Windows, use this script to update the release directory.
   #Rename release/manifest.json to release/package.json
   print("Starting process to make exe for Windows")
@@ -35,5 +35,6 @@ if platform.System()=="Windows":
 #The one in the build directory
 #Remove the key and increment the version number to 0.9.6.0
 #Save the manifest.json file
-    
+
+print("Updating manifest with a new version number")
 subprocess.call("python update_versionNumber.py",shell=True)
