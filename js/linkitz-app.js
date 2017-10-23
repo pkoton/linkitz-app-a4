@@ -195,18 +195,18 @@ linkitzApp.controller('LinkitzAppController', [
     //portable wordifying library, reveals 10 bits of information about a name in a memorable and 
     //useful fashion
 
-    var adjectives = ["Energetic",  "Bright",   "Excited",  "Red", 
-            "Orange", "Yellow",     "Green",    "Blue",     "Violet",
-            "Indigo", "Brilliant",  "Transparent",          "Opaque",
-            "Precise","Accurate",   "Absolute", "Apparent", "Conductive",
-            "Constant",             "Reflective",           "Efficient",
-            "Electronic",           "Fundamental",          "Optical"]
-    var nouns =    ["Boron",    "Carbon",   "Oxygen",   "Neon", "Helium",
+    var adjectives = ["Energetic",  "Bright",   "Swift",  "Clever", 
+            "Active", "Daring",     "Fearless",    "Gentle",     "Happy",
+            "Strong", "Brilliant",  "Neat",     "Useful",
+            "Precise","Accurate",   "Vast", "Apparent", "Lively",
+            "Constant",             "Mighty",           "Efficient",
+            "Electronic",           "Rare",          "Wise"]
+    var nouns =    ["Plane",    "Carbon",   "Oxygen",   "Neon", "Helium",
             "Hydrogen", "Iron", "Aluminium",    "Copper",   "Gold", 
             "Silver",   "Diode",    "Transistor",   "Resistor", "Light",
-            "Capacitor",    "Inductor", "Coil", "Acceleration", "Action",
-            "Anode",    "Cathode",  "Atom", "Molecule", "Cell", "Acid",
-            "Base", "Conductor",    "Constant", "Energy",   "Work", 
+            "Star",    "Line", "Circuit", "X-ray", "Action",
+            "Anode",    "Cathode",  "Atom", "Molecule", "Cell", "Beam",
+            "Network", "Conductor",    "Constant", "Energy",   "Map", 
             "Power",    "Field",    "Proton",   "Electron", "Neutron",
             "Flow", "Frequency",    "Gravity",  "Ion",  "Mass", "Matter",
             "Particle", "Satellite",    "Wave"]
