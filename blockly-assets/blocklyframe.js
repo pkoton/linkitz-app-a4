@@ -49,6 +49,7 @@ function onBlocklyGenerate() {
     }
     catch (ex) {
       exn = ex;
+      //console.error("ADM would like you to know something has gone wrong during workspaceToCode. "+exn);
     }
 //    var code = "  On_motion_trigger:\n    Syscall Flash ([3, 255,0,0])\n\n  Syscall Return Null\n";
     window.parent.postMessage({method: 'onBlocklyGenerate', arg: code, exceptn: exn}, '*');

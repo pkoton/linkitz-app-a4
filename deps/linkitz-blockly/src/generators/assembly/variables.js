@@ -58,10 +58,16 @@ goog.require('Blockly.Assembly');
       return [code, Blockly.Assembly.ORDER_NONE];
     }
     else {
-      if (resolve_var_refs_complete == true) {
+      console.warn("trying to access variable \""+varName+"\" that isn't in GLV or GSV");
+      //ADM PK FIXME I need to get this varName to a user that might be unfamiliar with a console, with GLV and with GSV
+      if (resolve_var_refs_complete === true) {
+        console.error("trying to use variable whose value isn't set, but all variables are resolved: "+varName);
         throw 'trying to use variable whose value is not set';
-      } else {
+      } else if(resolve_var_refs_complete === false) {
         add_varname_to_undef_vars_list(varName); // this is to handle forward references when running
+      } else {
+        console.error("resolve_var_refs_complete: "+resolve_var_refs_complete);
+        throw 'resolve_var_refs_complete is undefined';
       }
     } 
 }
