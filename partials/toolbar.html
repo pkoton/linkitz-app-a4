@@ -25,7 +25,7 @@
   </button>
   
   <ul class="dropdown-menu wide-450" uib-dropdown-menu role="menu" aria-labelledby="saved-programs">
-    <li class="dropdown-header">Linkitz Code</li>
+    <li class="dropdown-header">Demos</li>
     <li role="menuitem" ng-repeat="program in LinkitzPrograms">
       <a href="#" ng-click="loadEditor(program,true)"><i class='fa' ng-class="{'fa-arrow-right' : getSelected(program.userid,program.codeid)}"></i> {{ program.codename }}</a> 
     </li>
