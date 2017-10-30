@@ -133,7 +133,7 @@ module.exports = function(grunt) {
       blocklybuild: {
         command: 'python build.py',
         options: {
-          stderr: false,
+          stderr: true,
           execOptions: {
             cwd: 'deps/linkitz-blockly/src'
           }
