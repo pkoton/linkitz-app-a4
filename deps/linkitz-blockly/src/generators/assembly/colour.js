@@ -43,7 +43,7 @@ function lkzify(num) {
 		var rangein = 255;
 		var rangeout = 127;
 		var A=rangeout/Math.pow(rangein,gamma);
-        num = Math.floor(A*Math.pow(num,gamma));
+        num = A*Math.pow(num,gamma);
         return num;
     }
 }
@@ -58,6 +58,32 @@ function hexToRGB (hex){
     return [r,g,b];
 }
 
+function adjustForR7Brightness(colorRGB){
+	var gamma = 2;
+	var rangein = 255;
+	var rangeout = 127;
+	colorRGB = [lkzify(colorRGB[0]),
+				lkzify(colorRGB[1]),
+				lkzify(colorRGB[2])]
+	//green LEDs are too dim, we have to compensate
+	//screen color 255,230,0 should map to 93,127
+	//lkzify will map it to 255^gamma*rangeOut/rangeIn^gamma
+
+	var greenScaling = 127/93*lkzify(255)/lkzify(230);
+	console.log("greenScaling constant is: "+greenScaling);
+	if(Math.floor(greenScaling*colorRGB[1])<=127){
+		console.log("green is scaled here and fits");
+		colorRGB=[Math.floor(colorRGB[0]),
+				  Math.floor(colorRGB[1]*greenScaling),
+				  Math.floor(colorRGB[2])]; 
+	} else {
+		console.log("green must be scaled down to fit, so all values are similarly scaled")
+		colorRGB=[Math.floor(colorRGB[0]*127/(colorRGB[1]*greenScaling)),
+				  127,
+				  Math.floor(colorRGB[2]*127/(colorRGB[1]*greenScaling))];
+	}
+	return colorRGB;
+}
 // convert (h,s,v) to [r,g,b]
 
 function HSVtoRGB(h, s, v) {
@@ -86,23 +112,26 @@ Blockly.Assembly.addReservedWords('Math');
 
 Blockly.Assembly['colour_picker'] = function(block) {
   // Colour picker.
-  var code = "; starting colour_picker\n";
+  var code = "; starting colour_picker.\n";
   var value_color = block.getFieldValue('COLOUR'); // getFieldValue('COLOUR') returns the color as a hex string no quotes
+  code += ";using color "+value_color+"\n";
   var colorRGB = hexToRGB (value_color);
+  colorRGB=adjustForR7Brightness(colorRGB);
+  code += ";adjusted to "+colorRGB+"\n";
   var Rcode, Gcode, Bcode;
-  var R = lkzify(colorRGB[0]);
+  var R = colorRGB[0];
   if (R == 0) {
         Rcode = 'Push R0\n';}
         else {
             Rcode = 'Set R1 ' + R + '\nPush R1\n'; // 
         }
-  var G = lkzify(colorRGB[1]);
+  var G = colorRGB[1];
   if (G == 0) {
         Gcode = 'Push R0\n';}
         else {
             Gcode = 'Set R1 ' + G + '\nPush R1\n'; // 
         }
-  var B = lkzify(colorRGB[2]);
+  var B = colorRGB[2];
   if (B == 0) {
         Bcode = 'Push R0\n';}
         else {
