@@ -12,3 +12,7 @@ prepackaged/Linkitz/win32/chromedriver.exe
 *.dll
 *.bin
 prepackaged/
+deps/linkitz-blockly/src/.DS_Store
+deps/linkitz-blockly/.DS_Store
+deps/.DS_Store
+.DS_Store
