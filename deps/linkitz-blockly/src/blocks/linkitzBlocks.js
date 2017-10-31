@@ -72,7 +72,7 @@ Blockly.Blocks['ledoutput1'] = {
     this.appendDummyInput()
         .appendField("Flash LED 1")
         .appendField("color")
-        .appendField(new Blockly.FieldColour("#E81A4B"), "NAME");
+        .appendField(new Blockly.FieldColour("#cc0000"), "NAME");
     this.appendDummyInput()
         .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_4.2_Sparkle.png", 50, 50, "LEDLink"));
     this.setPreviousStatement(true);
