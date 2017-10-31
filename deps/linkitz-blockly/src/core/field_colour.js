@@ -132,13 +132,21 @@ Blockly.FieldColour.prototype.getText = function() {
  * @type {!Array.<string>}
  */
 // Blockly.FieldColour.COLOURS = goog.ui.ColorPicker.SIMPLE_GRID_COLORS;
-// Blockly.FieldColour.COLOURS = ['#E81A4B', '#FF7245',  '#ffe600',  '#009245', '#00989a',  '#1329c3', '#873299', '#DEDFE0', '#ff6aa2', '#ffa31d', '#fff267', '#33cc66', '#66d9ff','#0083CA','#9862e6','#FFFFFF'];
-Blockly.FieldColour.COLOURS = ['#FF0000', '#FF7245',  '#ffe600',  '#00FF00', '#00989a',  '#1329c3', '#873299', '#DEDFE0', '#ff6aa2', '#ffa31d', '#fff267', '#33cc66', '#66d9ff','#0000ff','#9862e6','#FFFFFF'];
-
+//Blockly.FieldColour.COLOURS = ['#E81A4B', '#FF7245', '#ffe600',  '#009245', '#00989a', '#1329c3', '#873299', '#DEDFE0', '#ff6aa2', '#ffa31d', '#fff267', '#33cc66', '#66d9ff','#0083CA','#9862e6','#FFFFFF'];
+//Blockly.FieldColour.COLOURS = ['#FF0000', '#FF7245', '#ffe600',  '#00FF00', '#00989a', '#1329c3', '#873299', '#DEDFE0', '#ff6aa2', '#ffa31d', '#fff267', '#33cc66', '#66d9ff','#0000ff','#9862e6','#FFFFFF'];
+//                                red, brand v pure      arbitrary yellow       arbitrarycyan          
+//                                           arbitrary pink?         pure v brand green     arbitrary blue
+//Blockly.FieldColour.COLOURS =   ['#FF0000', '#F37C8D', '#FF9903', '#FFE900', '#33CC66', '#00FF00', '#009245', '#3CC6AF', '#0083CA', '#0000FF', '#873299', '#FFFFFF'];
+                                //pure red   main pink  toy orange            toy lightgreen        toy darkgreen                    pure blue  toy purple
+                                //                                 toy yellow            pure green            main cyan  toy blue                         pure white
+//above but folded to make it work with 6cols
+Blockly.FieldColour.COLOURS =   ['#FF0000', '#FF9903', '#33CC66', '#00FF00', '#0083CA', '#873299', '#F37C8D',  '#FFE900', '#009245', '#3CC6AF', '#0000FF', '#FFFFFF'];
+                                //pure red   toy orange toy lightgreen        toy blue   toy purple main pink   toy yellow toy dark green        pure blue  pure white
+                                //                                 pure green                                                         main cyan
 /**
  * Number of columns in the palette.
  */
-Blockly.FieldColour.COLUMNS = 8;
+Blockly.FieldColour.COLUMNS = 6;
 
 /**
  * Set a custom colour grid for this field.
