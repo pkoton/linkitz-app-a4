@@ -73,6 +73,10 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
     var address=code_offset;
 
     //we're prepared for parsing
+    if((!(assembly_code))||(assembly_code="")){
+        console.error("Assembly code generator wasn't able to generate assembly from the code in your workspace. There may not be any lines of code there. If there is code it might be improperly structured. Try using an event block to enclose your code so the assembly code generator knows when to run it.");
+        throw("Assembly code generator wasn't able to generate assembly from the code in your workspace. There may not be any lines of code there. If there is code it might be improperly structured. Try using an event block to enclose your code so the assembly code generator knows when to run it.");
+    }
     var assembly_lines = assembly_code.toLowerCase().split("\n");
     var line_ptr;
     for(line_ptr=0;line_ptr<assembly_lines.length;line_ptr++){

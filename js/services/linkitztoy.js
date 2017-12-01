@@ -35,7 +35,7 @@ linkitzApp.factory('LinkitzToy',
         var deferred = $q.defer();
 
         if ((!lastDevice) || (!deviceId)) {
-            deferred.reject("No device found, not connecting.");
+            deferred.reject("Could not find a Linkitz device: Check that your Linkitz Hub is connected using a USB Petal and USB Micro cable. Try changing which port the USB Petal is connected to on the Hub. If the hub runs out of battery it can take a while to recondition the cell, so just try waiting.");
         } else {
 
         linkitz.connect(deviceId,
@@ -47,12 +47,12 @@ linkitzApp.factory('LinkitzToy',
             },
             function onTimeout () {
                 $rootScope.$evalAsync(function () {
-                    deferred.reject("Error connecting to Linkitz");
+                    deferred.reject("Could not find a Linkitz device: Check that your Linkitz Hub is connected using a USB Petal and USB Micro cable. Try changing which port the USB Petal is connected to on the Hub. If the hub runs out of battery it can take a while to recondition the cell, so just try waiting.");
                 });
             },
             function onError (reason) {
                 $rootScope.$evalAsync(function () {
-                    deferred.reject("Error connecting to Linkitz: \n" + reason);
+                    deferred.reject("Could not find a Linkitz device: Check that your Linkitz Hub is connected using a USB Petal and USB Micro cable. Try changing which port the USB Petal is connected to on the Hub. If the hub runs out of battery it can take a while to recondition the cell, so just try waiting.: \n" + reason);
                 });
             });
         }

@@ -176,7 +176,7 @@ if (!targetBlock) {
       if (current_block.type == 'procedures_defreturn') { //********** returns scalar or list?
         var procName = Blockly.Assembly.variableDB_.getName(current_block.getFieldValue('NAME'),Blockly.Procedures.NAME_TYPE);              
         // console.log("procName: " + procName);
-        if (procName in proc_types) { // already figured out return type
+        if(procName in proc_types) { // already figured out return type
           continue; // move to next block
         } else
         {
@@ -191,12 +191,12 @@ if (!targetBlock) {
                 // console.log('in loop1 returnBlock is scalar');
                 proc_types[procName] = [0,0];
                 // console.log(procName +" returns a scalar");
-                if (procName in proc_types) {
+                /*if(procName in proc_types) {
                    // console.log("added " + procName + " proc_types: " + JSON.stringify(proc_types));
                   }
                   else {
                      // console.log("didn't add " + procName);
-                  }
+                  }*/
                 // Find and remove procName from undef_vars list
                 // console.log("deleting " + procName + " from unknown_lists " + JSON.stringify(unknown_lists));
                 delete unknown_lists[procName];
