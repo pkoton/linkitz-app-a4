@@ -291,7 +291,7 @@ Blockly.Assembly.scrub_ = function(block, code) {
 };
 
 function optimize_assembly(assembly_code) {
-    if((!(assembly_code))||(assembly_code="")){
+    if((!(assembly_code))||(assembly_code=="")){
         console.error("Assembly code generator wasn't able to generate assembly from the code in your workspace. There may not be any lines of code there. If there is code it might be improperly structured. Try using an event block to enclose your code so the assembly code generator knows when to run it.");
     }
     var assembly_lines = assembly_code.toLowerCase().split("\n");

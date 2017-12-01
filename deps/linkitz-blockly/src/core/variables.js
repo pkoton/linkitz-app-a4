@@ -175,7 +175,7 @@ Blockly.Variables.generateUniqueName = function(workspace) {
     while (!newName) {
       var inUse = false;
       for (var i = 0; i < variableList.length; i++) {
-        if((!(variableList[i]))||(variableList[i]="")){
+        if((!(variableList[i]))||(variableList[i]=="")){
           console.error("Assembly code generator wasn't able to generate assembly from the code in your workspace. There may not be any lines of code there. If there is code it might be improperly structured. Try using an event block to enclose your code so the assembly code generator knows when to run it.");
         }
         if (variableList[i].toLowerCase() == potName) {
