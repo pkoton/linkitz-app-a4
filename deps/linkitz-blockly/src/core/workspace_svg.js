@@ -1054,6 +1054,30 @@ Blockly.WorkspaceSvg.prototype.zoomReset = function(e) {
   e.stopPropagation();
 };
 
+Blockly.WorkspaceSvg.prototype.zoomResetLinkitz = function() {
+  this.scale = 1;
+  this.updateGridPattern_();
+  Blockly.hideChaff(false);
+  if (this.flyout_) {
+    // No toolbox, resize flyout.
+    this.flyout_.reflow();
+  }
+  // Zoom level has changed, update the scrollbars.
+  if (this.scrollbar) {
+    this.scrollbar.resize();
+  }
+  // Center the workspace.
+  var metrics = this.getMetrics();
+  if (this.scrollbar) {
+    this.scrollbar.set((metrics.contentWidth - metrics.viewWidth) / 2,
+        (metrics.contentHeight - metrics.viewHeight) / 2);
+  } else {
+    this.translate(0, 0);
+  }
+  // This event has been handled.  Don't start a workspace drag.
+  // e.stopPropagation();
+};
+
 /**
  * Updates the grid pattern.
  * @private

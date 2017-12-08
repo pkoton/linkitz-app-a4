@@ -5,6 +5,8 @@ blocklyMessageHandlers = {
         var xml = Blockly.Xml.textToDom(arg);
         Blockly.mainWorkspace.clear();
         Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, xml);
+        //Blockly.mainWorkspace.zoomToFit();
+        Blockly.mainWorkspace.zoomResetLinkitz();//in order for this to zoom meaningfully we have to calculate location of petals from xml file
     },
     setBlocklyHighlight: function setBlocklyHighlight (arg) {
         var blockId = arg;
@@ -83,7 +85,7 @@ function init() {
           { controls: true,
             wheel: true,
           },                                    
-      });
+      })
 
     Blockly.mainWorkspace.addChangeListener(onBlocklyChanged);
 //    Blockly.addChangeListener();
