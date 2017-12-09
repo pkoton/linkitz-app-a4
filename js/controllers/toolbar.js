@@ -16,15 +16,27 @@ linkitzApp.controller('ToolbarController', [
 
 	$scope.savedProgramList = null;
 
-	//$scope.isSelected = false;
-	
-	//$scope.getSelected = function(num) {
-	//	if ($scope.activeProgram) {
-	//		if (num == $scope.activeProgram.codeid) {
-	//		return true;
-	//		}
-	//	}
-	//}
+	$scope.notAttached = !$scope.isAttached;
+    $scope.notGeneratingAssembly = !$scope.isGeneratingAssembly;
+    $scope.notProgrammingDevice = !$scope.isProgrammingDevice;
+    $scope.notVerifying = !$scope.isVerifying;
+    $scope.notSigning = !$scope.isSigning;
+    
+    $scope.hideAttached = function() {
+		if ($scope.notAttached || $scope.isGeneratingAssembly || $scope.isSigning) {
+			return true;
+			}
+		else return false;
+	}
+    
+    $scope.hideNotAttached = function() {
+		if ($scope.isAttached || $scope.isGeneratingAssembly || $scope.isSigning) {
+			return true;
+			}
+		else return false;
+	}
+    
+    //$scope.isSelected = false;
 	
 	$scope.getSelected = function(hubNum,progNum) {
 		if ($scope.activeProgram && (hubNum == $scope.activeProgramHubID) && (progNum == $scope.activeProgramCodeID)) {
