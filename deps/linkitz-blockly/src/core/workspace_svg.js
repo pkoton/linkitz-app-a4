@@ -1074,7 +1074,7 @@ Blockly.WorkspaceSvg.prototype.zoomResetLinkitz = function() {
   } else {
     this.translate(0, 0);
   }
-  // This event has been handled.  Don't start a workspace drag.
+  // Linkitz version is not triggered by an event.  Don't start a workspace drag.
   // e.stopPropagation();
 };
 

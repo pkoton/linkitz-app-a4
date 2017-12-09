@@ -20,11 +20,11 @@
   </a>
 </div>
  <div class="navbar-text" uib-dropdown is-open="status.isopen" on-toggle="toggled(open)">
-  <button  type="button" class="btn btn-saved btn-lg wide-450" style="background: #873299; color: #ffffff;" uib-dropdown-toggle ng-disabled="disabled" ng-click="queryPrograms()">
+  <button  type="button" class="btn btn-saved btn-lg wide-300" style="background: #873299; color: #ffffff;" uib-dropdown-toggle ng-disabled="disabled" ng-click="queryPrograms()">
     Saved Programs <i class='fa pull-right fa-lg'  style="color:#FFFFFF;" ng-class="savedDropdownOpen ? 'fa-close' : 'fa-caret-down'"></i>
   </button>
   
-  <ul class="dropdown-menu wide-450" uib-dropdown-menu role="menu" aria-labelledby="saved-programs">
+  <ul class="dropdown-menu wide-300" uib-dropdown-menu role="menu" aria-labelledby="saved-programs">
     <li class="dropdown-header">Demos</li>
     <li role="menuitem" ng-repeat="program in LinkitzPrograms">
       <a href="#" ng-click="loadEditor(program,true)"><i class='fa' ng-class="{'fa-arrow-right' : getSelected(program.userid,program.codeid)}"></i> {{ program.codename }}</a> 
@@ -46,6 +46,13 @@
   <a class="btn btn-load" href="#" ng-click="toggleConnect()" tooltip-placement="bottom" uib-tooltip="Load Program to Linkitz" >
       <i class="fa fa-2x" ng-class="connectTransitioning ? 'fa-spinner fa-spin': 'fa-share-square-o'"></i>
   </a>
+</div>
+ <div class="navbar-text">
+       <div ng-show="isAttached" ng-hide="hideAttached" style="color: #ADAFB1;">A hub is attached</div>
+       <div ng-show="notAttached" ng-hide="isAttached" style="color: #ADAFB1;">No hub detected</div>
+       <div ng-show="isGeneratingAssembly" ng-hide="notGeneratingAssembly" style="color: #ADAFB1;">Generating Assembly Code</div>
+       <div ng-show="isSigning" ng-hide="notSigning" style="color: #ADAFB1;">Signing Code</div>
+       &nbsp; &nbsp; &nbsp; &nbsp;
 </div>
 
 <!-- right side of toolbar, markup in RTL order -->
