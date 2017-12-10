@@ -23,7 +23,7 @@ linkitzApp.controller('LinkitzAppController', [
     'HubPrograms',
     function($scope, $http, $uibModal, $window, $q, errorCatcher, LogService, ChromeBrowser, Messager, HexGenerator, IntelHex, LinkitzToy, HubPrograms) {
 
-    const emptyBlocklyXML = '<xml xmlns="http://www.w3.org/1999/xhtml"></xml>';
+    // const emptyBlocklyXML = '<xml xmlns="http://www.w3.org/1999/xhtml"></xml>';
     const AlmostEmptyBlocklyXML = '<xml xmlns="http://www.w3.org/1999/xhtml"> <block type="on_regular_event" x="0" y="0"></block> </xml>';
 
 
@@ -104,7 +104,7 @@ linkitzApp.controller('LinkitzAppController', [
     $scope.loadInfo = {}; // used to pass info about program to be loaded from loadEditor to loadEditor2 (I know its a kludge)
     $scope.devMode = false; // true if developer mode is selected (toggle button is in the about.html modal)
     $scope.editor = {};
-    $scope.editor.blocklyXML = emptyBlocklyXML;
+    $scope.editor.blocklyXML = AlmostEmptyBlocklyXML;
     $scope.editor.dirty = false;
     $scope.editor.noOverwrite = false; // this flag is set to true if editor contains a builtIn program, which users are not alowed ot modify
     
