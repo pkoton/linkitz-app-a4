@@ -24,6 +24,8 @@ linkitzApp.controller('LinkitzAppController', [
     function($scope, $http, $uibModal, $window, $q, errorCatcher, LogService, ChromeBrowser, Messager, HexGenerator, IntelHex, LinkitzToy, HubPrograms) {
 
     const emptyBlocklyXML = '<xml xmlns="http://www.w3.org/1999/xhtml"></xml>';
+    const AlmostEmptyBlocklyXML = '<xml xmlns="http://www.w3.org/1999/xhtml"> <block type="on_regular_event" x="0" y="0"></block> </xml>';
+
 
     ChromeBrowser.updateCheck();
     ChromeBrowser.getPlatformInfo()
@@ -357,7 +359,7 @@ $scope.wipeEditor = function wipeEditor () {
         $scope.activeProgram = false;
         $scope.activeProgramHubID = '';
         $scope.activeProgramCodeID = null;
-        $scope.editor.blocklyXML = emptyBlocklyXML;
+        $scope.editor.blocklyXML = AlmostEmptyBlocklyXML;
         $scope.editor.dirty = false;
         $scope.newProgNum = -1;
  };
