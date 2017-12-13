@@ -696,9 +696,6 @@ Blockly.WorkspaceSvg.prototype.showContextMenu_ = function(e) {
     pasteOption.enabled = true;  
     pasteOption.callback = function() {
       Blockly.clipboardSource_.paste(Blockly.clipboardXml_);
-      //// Restore the clipboard.
-      //Blockly.clipboardXml_ = clipboardXml;
-      //Blockly.clipboardSource_ = clipboardSource;
     };
     menuOptions.push(pasteOption);
   }
