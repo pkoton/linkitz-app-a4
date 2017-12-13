@@ -468,9 +468,16 @@ Blockly.WorkspaceSvg.prototype.paste = function(xmlBlock) {
   Blockly.terminateDrag_();  // Dragging while pasting?  No.
   Blockly.Events.disable();
   var block = Blockly.Xml.domToBlock(this, xmlBlock);
-  // Move the duplicate to original position.
-  var blockX = parseInt(xmlBlock.getAttribute('x'), 10);
-  var blockY = parseInt(xmlBlock.getAttribute('y'), 10);
+  // Move the duplicate to original position.*** This could put pasted blocks potentially WAY offscreen, so paste appears not to work
+  //var blockX = parseInt(xmlBlock.getAttribute('x'), 10);
+  //var blockY = parseInt(xmlBlock.getAttribute('y'), 10);
+  
+  //instead,try to put near center of the workspace (viewWidth/2 and viewHeight/2 still put pasted blocks off in the corner--a visible corner, but still)
+  var metrics = this.getMetrics();
+  var blockX = metrics.viewWidth / 4;
+  var blockY = metrics.viewHeight / 4;
+  
+  
   if (!isNaN(blockX) && !isNaN(blockY)) {
     if (this.RTL) {
       blockX = -blockX;
