@@ -37,6 +37,8 @@ if platform.system()=="Windows":
   #Then use winrar to make a SFX archive.
   #I end up only getting the following to work intermittently, just do this last step by hand if you need a downloadable version... sorry :(
   #subprocess.call("WinRAR a prepackaged/Linkitz/win32 -cpSFX6",shell=True)
+  #CLI hasn't worked well...
+    #let me try the GUI
 
 
 #Open the build directory in Linkitz-app-a4...

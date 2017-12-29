@@ -43,7 +43,8 @@
     ]
   },
   "dependencies": {
-    "grunt-cli": "1.2.0"
+    "grunt-cli": "1.2.0",
+    "nwbuild": "0.0.5"
   },
   "devDependencies": {
     "grunt": "^1.0.1",
@@ -52,6 +53,7 @@
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-jshint": "^1.1.0",
     "grunt-contrib-watch": "^1.0.0",
-    "grunt-shell": "^2.1.0"
+    "grunt-shell": "^2.1.0",
+    "nw-builder": "^3.5.1"
   }
 }
