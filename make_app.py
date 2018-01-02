@@ -40,6 +40,12 @@ if platform.system()=="Windows":
   #CLI hasn't worked well...
     #let me try the GUI
 
+#;The comment below contains SFX script commands
+
+#Setup=Linkitz.exe
+#TempMode
+#Silent=1
+
 
 #Open the build directory in Linkitz-app-a4...
 #Edit the file manifest.json

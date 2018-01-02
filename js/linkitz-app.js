@@ -515,11 +515,7 @@ $scope.wipeEditor = function wipeEditor () {
 		    return;
 	    }
 	    $scope.connectTransitioning = true;
-	    var catch_msg = "Could not connect to a Linkitz device: \n"+
-                                    "Check that your Linkitz Hub is connected using a USB Petal and USB cable. \n"+
-                                    "Try changing which port the USB Petal is connected to on the Hub. If the hub\n"+
-                                    "has run out of battery it can take a while to recondition the cell and start\n"+
-                                    "again, so it may take a bit of time to connect.";
+	    var catch_msg = "Load code: Error connecting to Linkitz";
 	    LinkitzToy.connect()
 	    .then(function () {
 		return LinkitzToy.verifyDevice();
