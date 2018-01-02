@@ -100,7 +100,11 @@ linkitzApp.factory('LinkitzToy',
             },
             function errorCallback() {
                 $rootScope.$evalAsync(function () {
-                    deferred.reject("Error verifying device.");
+                    deferred.reject("Could not find a Linkitz device: \n"+
+                                    "Check that your Linkitz Hub is connected using a USB Petal and USB cable. \n"+
+                                    "Try changing which port the USB Petal is connected to on the Hub. If the hub\n"+
+                                    "has run out of battery it can take a while to recondition the cell and start\n"+
+                                    "again, so it may take a bit of time to connect.");
                 });
             }
         );
