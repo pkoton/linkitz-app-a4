@@ -35,7 +35,8 @@ linkitzApp.factory('LinkitzToy',
         var deferred = $q.defer();
 
         if ((!lastDevice) || (!deviceId)) {
-            deferred.reject("Could not find a Linkitz device: Check that your Linkitz Hub is connected using a USB Petal and USB Micro cable. Try changing which port the USB Petal is connected to on the Hub. If the hub runs out of battery it can take a while to recondition the cell, so just try waiting.");
+            deferred.reject("Could not find a Linkitz device: Check that your Linkitz Hub is connected using a USB Petal and USB Micro cable. Try changing which port the USB Petal is connected to on the Hub. Try unplugging other petals. If the hub runs out of battery it can take a while to recondition the cell, so just try waiting.\n"+
+                            "Error#: 3861");
         } else {
 
         linkitz.connect(deviceId,
@@ -49,16 +50,19 @@ linkitzApp.factory('LinkitzToy',
                 $rootScope.$evalAsync(function () {
                     deferred.reject("Could not find a Linkitz device: Check that your Linkitz Hub is connected\n"+
                                     "using a USB Petal and USB Micro cable. Try changing which port the USB Petal\n"+
-                                    "is connected to on the Hub. If the hub runs out of battery it can take a\n"+
-                                    "while to recondition the cell, so just try waiting.");
+                                    "is connected to on the Hub. Try unplugging other petals. If the hub runs out\n"+
+                                    "of battery it can take a while to recondition the cell, so just try waiting.\n"
+                                    "Error#: 1889");
                 });
             },
             function onError (reason) {
                 $rootScope.$evalAsync(function () {//                                                             |
                     deferred.reject("Could not find a Linkitz device: Check that your Linkitz Hub is connected\n"+
                                     "using a USB Petal and USB Micro cable. Try changing which port the USB Petal\n"+
-                                    "is connected to on the Hub. If the hub runs out of battery it can take a\n"+
-                                    "while to recondition the cell, so just try waiting. \n\n" + reason);
+                                    "is connected to on the Hub. Try unplugging other petals. If the hub runs out\n"+
+                                    "of battery it can take a while to recondition the cell, so just try waiting.\n"
+                                    //"while to recondition the cell, so just try waiting. \n\n" + reason+"\n"
+                                    "Error#: 3425");//reason is usually Invalid HID device ID
                 });
             });
         }
@@ -210,7 +214,8 @@ linkitzApp.factory('LinkitzToy',
                             $rootScope.$evalAsync(function () {
                                 deferred.reject("Something went wrong while programming Linkitz. Please try again, and if\n"+
                                                 "that fails, send an email to support@linkitz.com.\n"+
-                                                "Byte " + n + " in block at address " + address + " does not match record.");
+                                                "Byte " + n + " in block at address " + address + " does not match record.\n"+
+                                                "Error#: 1031");
                             });
                         }
                     }
