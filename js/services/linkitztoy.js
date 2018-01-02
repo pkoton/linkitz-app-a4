@@ -191,7 +191,8 @@ linkitzApp.factory('LinkitzToy',
                     deferred.reject("Timeout programming device.");
                 },
                 function errorCallback() {
-                    deferred.reject("Error after programming device. It may have been unplugged during programming or verification. Please re-attach it and reprogram it.");
+                    deferred.reject("Error after programming device. It may have been unplugged during\n"+
+                                    "programming or verification. Please re-attach it and reprogram it.");
                 }
             );
         }
@@ -207,7 +208,9 @@ linkitzApp.factory('LinkitzToy',
                     for (var n = 0; n < bufferLength; n++) {
                         if (rxBuffer[n] != arrayBuffer[n]) {
                             $rootScope.$evalAsync(function () {
-                                deferred.reject("Something went wrong while programming Linkitz. Please try again, and if that fails, send an email to support@linkitz.com. Byte " + n + " in block at address " + address + " does not match record");
+                                deferred.reject("Something went wrong while programming Linkitz. Please try again, and if\n"+
+                                                "that fails, send an email to support@linkitz.com.\n"+
+                                                "Byte " + n + " in block at address " + address + " does not match record.");
                             });
                         }
                     }
