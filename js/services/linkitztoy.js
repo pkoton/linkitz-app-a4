@@ -171,7 +171,7 @@ linkitzApp.factory('LinkitzToy',
                     deferred.reject("Timeout programming device.");
                 },
                 function errorCallback() {
-                    deferred.reject("Error programming device.");
+                    deferred.reject("Error while programming device. It may have been unplugged during programming. Please re-attach it and reprogram it.");
                 }
             );
         }
@@ -191,7 +191,7 @@ linkitzApp.factory('LinkitzToy',
                     deferred.reject("Timeout programming device.");
                 },
                 function errorCallback() {
-                    deferred.reject("Error programming device.");
+                    deferred.reject("Error after programming device. It may have been unplugged during programming or verification. Please re-attach it and reprogram it.");
                 }
             );
         }
