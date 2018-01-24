@@ -35,7 +35,11 @@ linkitzApp.factory('LinkitzToy',
         var deferred = $q.defer();
 
         if ((!lastDevice) || (!deviceId)) {
-            deferred.reject("Could not find a Linkitz device: Check that your Linkitz Hub is connected using a USB Petal and USB Micro cable. Try changing which port the USB Petal is connected to on the Hub. Try unplugging other petals. If the hub runs out of battery it can take a while to recondition the cell, so just try waiting.\n"+
+            deferred.reject("Could not find a Linkitz device: \n"+
+                            " - Check that your Linkitz Hub is connected using a USB Petal and USB Micro cable. \n"+
+                            " - Try changing which port the USB Petal is connected to on the Hub.\n"+
+                            " - Try unplugging other petals.\n"+
+                            " - If the hub runs out of battery it can take a while to recondition the cell, so just try waiting.\n"+
                             "Error#: 3861");
         } else {
 
@@ -48,21 +52,22 @@ linkitzApp.factory('LinkitzToy',
             },
             function onTimeout () {
                 $rootScope.$evalAsync(function () {
-                    deferred.reject("Could not find a Linkitz device: Check that your Linkitz Hub is connected\n"+
-                                    "using a USB Petal and USB Micro cable. Try changing which port the USB Petal\n"+
-                                    "is connected to on the Hub. Try unplugging other petals. If the hub runs out\n"+
-                                    "of battery it can take a while to recondition the cell, so just try waiting.\n"
-                                    "Error#: 1889");
+                    deferred.reject("Could not find a Linkitz device:\n"+
+                            " - Check that your Linkitz Hub is connected using a USB Petal and USB Micro cable. \n"+
+                            " - Try changing which port the USB Petal is connected to on the Hub.\n"+
+                            " - Try unplugging other petals.\n"+
+                            " - If the hub runs out of battery it can take a while to recondition the cell, so just try waiting.\n"+
+                            "Error#: 1889");
                 });
             },
             function onError (reason) {
                 $rootScope.$evalAsync(function () {//                                                             |
-                    deferred.reject("Could not find a Linkitz device: Check that your Linkitz Hub is connected\n"+
-                                    "using a USB Petal and USB Micro cable. Try changing which port the USB Petal\n"+
-                                    "is connected to on the Hub. Try unplugging other petals. If the hub runs out\n"+
-                                    "of battery it can take a while to recondition the cell, so just try waiting.\n"
-                                    //"while to recondition the cell, so just try waiting. \n\n" + reason+"\n"
-                                    "Error#: 3425");//reason is usually Invalid HID device ID
+                    deferred.reject("Could not find a Linkitz device:\n"+
+                                    " - Check that your Linkitz Hub is connected using a USB Petal and USB Micro cable. \n"+
+                                    " - Try changing which port the USB Petal is connected to on the Hub.\n"+
+                                    " - Try unplugging other petals.\n"+
+                                    " - If the hub runs out of battery it can take a while to recondition the cell, so just try waiting.\n"+
+                                         "Error#: 3425");//reason is usually Invalid HID device ID
                 });
             });
         }
@@ -83,7 +88,8 @@ linkitzApp.factory('LinkitzToy',
                 });
         }
         else {
-            deferred.reject("Already not connected to Linkitz");
+            deferred.reject("Already not connected to Linkitz\n" +
+                            "Error#: 4100");
         }
 
         return deferred.promise;
@@ -99,16 +105,17 @@ linkitzApp.factory('LinkitzToy',
             },
             function timeoutCallback() {
                 $rootScope.$evalAsync(function () {
-                    deferred.reject("Timeout verifying device.");
+                    deferred.reject("Timeout verifying device.\n" +
+                                    "Error#: 7417");
                 });
             },
             function errorCallback() {
                 $rootScope.$evalAsync(function () {
                     deferred.reject("Could not find a Linkitz device: \n"+
-                                    "Check that your Linkitz Hub is connected using a USB Petal and USB cable. \n"+
-                                    "Try changing which port the USB Petal is connected to on the Hub. If the hub\n"+
-                                    "has run out of battery it can take a while to recondition the cell and start\n"+
-                                    "again, so it may take a bit of time to connect.");
+                                    " - Check that your Linkitz Hub is connected using a USB Petal and USB cable. \n"+
+                                    " - Try changing which port the USB Petal is connected to on the Hub.\n "+
+                                    " - If the hub has run out of battery it can take a while to recondition the cell and start again, so it may take a bit of time to connect. Just trying waiting.\n" +
+                                    "Error#: 1645");
                 });
             }
         );
@@ -126,15 +133,18 @@ linkitzApp.factory('LinkitzToy',
                     });
                 },
                 function timeoutCallback() {
-                    deferred.reject("Timeout erasing device.");
+                    deferred.reject("Timeout erasing device.\n "+
+                                    "Error#: 7535");
                 },
                 function errorCallback() {
-                    deferred.reject("Error erasing device.");
+                    deferred.reject("Error erasing device.\n "+
+                                    "Error#: 2042");;
                 }
             );
         }
         else {
-            deferred.reject("Not connected to Linkitz");
+            deferred.reject("Not connected to Linkitz\n "+
+                            "Error#: 6507");
         }
 
         return deferred.promise;
@@ -172,10 +182,13 @@ linkitzApp.factory('LinkitzToy',
                     }
                 },
                 function timeoutCallback() {
-                    deferred.reject("Timeout programming device.");
+                    deferred.reject("Timeout programming device.\n "+
+                            "Error#: 4109");
                 },
                 function errorCallback() {
-                    deferred.reject("Error while programming device. It may have been unplugged during programming. Please re-attach it and reprogram it.");
+                    deferred.reject("Error while programming device. It may have been unplugged during programming.\n "+
+                                    "Please re-attach it and try again.\n "+
+                            "Error#: 3311");
                 }
             );
         }
@@ -192,11 +205,13 @@ linkitzApp.factory('LinkitzToy',
                     }
                 },
                 function timeoutCallback() {
-                    deferred.reject("Timeout programming device.");
+                    deferred.reject("Timeout programming device.\n"+
+                                                "Error#: 3550");
                 },
                 function errorCallback() {
-                    deferred.reject("Error after programming device. It may have been unplugged during\n"+
-                                    "programming or verification. Please re-attach it and reprogram it.");
+                    deferred.reject("Error after programming device. It may have been unplugged during programming or verification.\n "+
+                                    "Please re-attach it and try again.\n "+
+                            "Error#: 8462");
                 }
             );
         }
@@ -212,8 +227,7 @@ linkitzApp.factory('LinkitzToy',
                     for (var n = 0; n < bufferLength; n++) {
                         if (rxBuffer[n] != arrayBuffer[n]) {
                             $rootScope.$evalAsync(function () {
-                                deferred.reject("Something went wrong while programming Linkitz. Please try again, and if\n"+
-                                                "that fails, send an email to support@linkitz.com.\n"+
+                                deferred.reject("Something went wrong while programming Linkitz. Please try again, and if that fails, send an email to support@linkitz.com.\n"+
                                                 "Byte " + n + " in block at address " + address + " does not match record.\n"+
                                                 "Error#: 1031");
                             });
@@ -231,10 +245,12 @@ linkitzApp.factory('LinkitzToy',
                     }
                 },
                 function timeoutCallback() {
-                    deferred.reject("Timeout programming device.");
+                    deferred.reject("Timeout programming device.\n"+
+                                                "Error#: 1124");
                 },
                 function errorCallback() {
-                    deferred.reject("Error programming device.");
+                    deferred.reject("Error programming device.\n"+
+                                                "Error#: 9020");
                 }
             );
 
@@ -266,10 +282,12 @@ linkitzApp.factory('LinkitzToy',
                 });
             },
             function timeoutCallback() {
-                deferred.reject("Timeout programming device.");
+                deferred.reject("Timeout programming device.\n"+
+                                                "Error#: 1134");
             },
             function errorCallback() {
-                deferred.reject("Error programming device.");
+                deferred.reject("Error programming device.\n"+
+                                                "Error#: 9030");
             }
         );
 
@@ -313,15 +331,18 @@ linkitzApp.factory('LinkitzToy',
                     });
                 },
                 function timeoutCallback() {
-                    deferred.reject("Timeout resetting device.");
+                    deferred.reject("Timeout resetting device.\n"+
+                                                "Error#: 2907");
                 },
                 function errorCallback() {
-                    deferred.reject("Error resetting device.");
+                    deferred.reject("Error resetting device.\n"+
+                                                "Error#: 8758");
                 }
             );
         }
         else {
-            deferred.reject("Not connected to Linkitz");
+            deferred.reject("Not connected to Linkitz\n"+
+                                                "Error#: 5806");
         }
 
 
@@ -339,15 +360,18 @@ linkitzApp.factory('LinkitzToy',
                     });
                 },
                 function timeoutCallback() {
-                    deferred.reject("Timeout signing flash.");
+                    deferred.reject("Timeout signing flash.\n"+
+                                                "Error#: 6426");
                 },
                 function errorCallback() {
-                    deferred.reject("Error signing flash.");
+                    deferred.reject("Error signing flash.\n"+
+                                                "Error#: 3405");
                 }
             );
         }
         else {
-            deferred.reject("Not connected to Linkitz");
+            deferred.reject("Not connected to Linkitz\n"+
+                                                "Error#: 9816");
         }
 
 

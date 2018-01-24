@@ -51,7 +51,7 @@ function onBlocklyGenerate() {
     }
     catch (ex) {
       exn = ex;
-      console.error("Assembly code generator wasn't able to generate assembly from the code in your workspace. There may not be any lines of code there. If there is code it might be improperly structured. Try using an event block to enclose your code so the assembly code generator knows when to run it.");
+      console.error("Assembly code generator wasn't able to generate assembly from the code in your workspace. \n There may not be any lines of code there. \n If there is code it might be improperly structured. \n Try using an event block to enclose your code so the assembly code generator knows when to run it.\n Error#: 4971");
     }
 //    var code = "  On_motion_trigger:\n    Syscall Flash ([3, 255,0,0])\n\n  Syscall Return Null\n";
     window.parent.postMessage({method: 'onBlocklyGenerate', arg: code, exceptn: exn}, '*');
