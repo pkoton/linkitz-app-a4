@@ -270,23 +270,50 @@ Blockly.Blocks['math_binary'] = {
 // MICROPHONE MICROPHONE MICROPHONE MICROPHONE MICROPHONE MICROPHONE MICROPHONE MICROPHONE
 // **************************************************************************************************
 
-Blockly.Blocks['on_mic_event'] = {
+Blockly.Blocks['get_mic_data'] = {
   init: function() {
-    this.setHelpUrl('http://www.example.com/');
-    this.setColour('#E81A4B');
     this.appendDummyInput()
-        .appendField("On Mic Trigger");
-    this.appendValueInput("event typye")
-        .setCheck("Number")
-        .appendField("When")
-        .appendField(new Blockly.FieldDropdown([["Amplitude", "Amplitude"], ["Pitch", "Pitch"], ["Frequency", "Frequency"]]), "NAME")
-        .appendField(" is above:");
-    this.appendStatementInput("Do")
-        .setCheck("null")
-        .appendField("Do:");
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_15.3_DataMic.png", 40, 40, "GetMicData"));
+    this.appendDummyInput()
+        .appendField("Get Mic Data");
+    this.setOutput(true, "Array");
+    this.setColour('#E81A4B');
     this.setTooltip('');
+    this.setHelpUrl('http://www.example.com/');
   }
 };
+
+// mic_attached returns 0 if the microphone link is not attached and non-zero otherwise, the value indicting which port(s)
+// 2 = port1, 4 = port2, 8 = port3, 10 = port1 and port3 etc
+
+Blockly.Blocks['mic_attached'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("Microphone Attached?");
+    this.setOutput(true, "Number");
+    this.setColour('#E81A4B');
+    this.setTooltip('Returns 0 if microphone link is not attached, else 2,4,8 indicating which port(s) motion link(s) are on');
+    this.setHelpUrl('http://www.example.com/');
+  }
+};
+
+//Blockly.Blocks['on_mic_event'] = {
+//  init: function() {
+//    this.setHelpUrl('http://www.example.com/');
+//    this.setColour('#E81A4B');
+//    this.appendDummyInput()
+//        .appendField("On Mic Trigger");
+//    this.appendValueInput("event typye")
+//        .setCheck("Number")
+//        .appendField("When")
+//        .appendField(new Blockly.FieldDropdown([["Amplitude", "Amplitude"], ["Pitch", "Pitch"], ["Frequency", "Frequency"]]), "NAME")
+//        .appendField(" is above:");
+//    this.appendStatementInput("Do")
+//        .setCheck("null")
+//        .appendField("Do:");
+//    this.setTooltip('');
+//  }
+//};
 
 //Blockly.Blocks['read_sound_levels'] = {
 //  init: function() {
@@ -301,35 +328,35 @@ Blockly.Blocks['on_mic_event'] = {
 
 // https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#56jkef
 
-Blockly.Blocks['getmicdata'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_15.3_DataMic.png", 40, 40, "GetMicData"));
-    this.appendDummyInput()
-        .appendField("Get Mic Data");
-    this.setOutput(true, "Array");
-    this.setColour('#E81A4B');
-    this.setTooltip('');
-    this.setHelpUrl('http://www.example.com/');
-  }
-};
-
-Blockly.Blocks['set_mic_threshold'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_3_Mic.png", 50, 50, "GetMicData"));
-    this.appendDummyInput()
-        .appendField("Set Mic Threshold");
-    this.appendValueInput("NAME")
-        .setCheck(["Number", "Array"]);	
-    this.setInputsInline(true);
-    this.setPreviousStatement(true);
-    this.setNextStatement(true);
-    this.setColour('#E81A4B');
-    this.setTooltip('');
-    this.setHelpUrl('http://www.example.com/');
-  }
-};
+//Blockly.Blocks['getmicdata'] = {
+//  init: function() {
+//    this.appendDummyInput()
+//        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_15.3_DataMic.png", 40, 40, "GetMicData"));
+//    this.appendDummyInput()
+//        .appendField("Get Mic Data");
+//    this.setOutput(true, "Array");
+//    this.setColour('#E81A4B');
+//    this.setTooltip('');
+//    this.setHelpUrl('http://www.example.com/');
+//  }
+//};
+//
+//Blockly.Blocks['set_mic_threshold'] = {
+//  init: function() {
+//    this.appendDummyInput()
+//        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_3_Mic.png", 50, 50, "GetMicData"));
+//    this.appendDummyInput()
+//        .appendField("Set Mic Threshold");
+//    this.appendValueInput("NAME")
+//        .setCheck(["Number", "Array"]);	
+//    this.setInputsInline(true);
+//    this.setPreviousStatement(true);
+//    this.setNextStatement(true);
+//    this.setColour('#E81A4B');
+//    this.setTooltip('');
+//    this.setHelpUrl('http://www.example.com/');
+//  }
+//};
 
 // **************************************************************************************************
 // SPEAKER SPEAKER SPEAKER SPEAKER SPEAKER SPEAKER SPEAKER SPEAKER SPEAKER SPEAKER SPEAKER
@@ -339,7 +366,7 @@ Blockly.Blocks['set_mic_threshold'] = {
 
 // Play a list of samples as it is being received or recorded. 
 
-Blockly.Blocks['playdatastream'] = {
+Blockly.Blocks['speaker_play_data'] = {
   init: function() {
     this.appendDummyInput()
 	.appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_2_Speaker.png", 50, 50, "GetSpeakerData"));
@@ -376,56 +403,178 @@ Blockly.Blocks['speaker_play_sound'] = {
   }
 };
 
+// speaker_attached returns 0 if the speaker link is not attached and non-zero otherwise, the value indicting which port(s)
+// 2 = port1, 4 = port2, 8 = port3, 10 = port1 and port3 etc
+
+Blockly.Blocks['speaker_attached'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("speaker Attached?");
+    this.setOutput(true, "Number");
+    this.setColour('#33CC66');
+    this.setTooltip('Returns 0 if speaker link is not attached, else 2,4,8 indicating which port(s) motion link(s) are on');
+    this.setHelpUrl('http://www.example.com/');
+  }
+};
 
 // **************************************************************************************************
 // RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO
 // **************************************************************************************************
 
+Blockly.Blocks['radio_transmit_color'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("Transmit");
+    this.appendDummyInput()
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_07012015_5.3_RadioTransmit.png", 67, 55, "*"));
+    this.appendValueInput("Color")
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField("Color");
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour('#873299');
+ this.setTooltip("");
+ this.setHelpUrl("");
+  }
+};
 
-Blockly.Blocks['radio_onreceive'] = {
+Blockly.Blocks['radio_transmit_sound'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("Transmit");
+    this.appendDummyInput()
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_07012015_5.3_RadioTransmit.png", 67, 55, "*"));
+    this.appendValueInput("Sound")
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField("Sound");
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour('#873299');
+ this.setTooltip("");
+ this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['radio_transmit_data'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("Transmit");
+    this.appendDummyInput()
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_07012015_5.3_RadioTransmit.png", 67, 55, "*"));
+    this.appendValueInput("Message")
+        .setCheck("Array")
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField("Message");
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour('#873299');
+ this.setTooltip("");
+ this.setHelpUrl("");
+  }
+};
+
+Blockly.Blocks['radio_on_receive_color'] = {
   init: function() {
     this.appendDummyInput()
         .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_5.1_RadioOnReceive.png", 50, 50, "*"));
     this.appendDummyInput()
-        .appendField("Radio On Receive");
+        .appendField("Radio On Receive Color");
     this.appendStatementInput("NAME");
     this.setNextStatement(true);
-    this.setColour('#FF9903');
+    this.setColour('#873299');
     this.setTooltip('');
     this.setHelpUrl('http://www.example.com/');
   }
 };
 
+Blockly.Blocks['radio_on_receive_sound'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_5.1_RadioOnReceive.png", 50, 50, "*"));
+    this.appendDummyInput()
+        .appendField("Radio On Receive Sound");
+    this.appendStatementInput("NAME");
+    this.setNextStatement(true);
+    this.setColour('#873299');
+    this.setTooltip('');
+    this.setHelpUrl('http://www.example.com/');
+  }
+};
+Blockly.Blocks['radio_on_receive_data'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_5.1_RadioOnReceive.png", 50, 50, "*"));
+    this.appendDummyInput()
+        .appendField("Radio On Receive Data");
+    this.appendStatementInput("NAME");
+    this.setNextStatement(true);
+    this.setColour('#873299');
+    this.setTooltip('');
+    this.setHelpUrl('http://www.example.com/');
+  }
+};
+
+// https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#uqwvsv
+// Returns the most recently received radio message as a list with the sender,  message [and range -- not yet]
+// If no radio is present, it returns the empty list
+
+Blockly.Blocks['get_radio_data'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_15.2_DataFriend.png", 40, 40, "Get Radio Data"));
+    this.appendDummyInput()
+        .appendField("Get Radio Data");
+    this.setInputsInline(true);
+    this.setOutput(true, "Array");
+    this.setColour('#873299');
+    this.setTooltip('');
+    this.setHelpUrl('http://www.example.com/');
+  }
+};
+
+// radio_attached returns 0 if the radio link is not attached and non-zero otherwise, the value indicting which port(s)
+// 2 = port1, 4 = port2, 8 = port3, 10 = port1 and port3 etc
+
+Blockly.Blocks['radio_attached'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("Radio Attached?");
+    this.setOutput(true, "Number");
+    this.setColour('#873299');
+    this.setTooltip('Returns 0 if radio link is not attached, else 2,4,8 indicating which port(s) motion link(s) are on');
+    this.setHelpUrl('http://www.example.com/');
+  }
+};
 
 // getidfromradio returns the ID stored in the attached radio petal as an integer. If not radio petal is attached, returns -1
 
-Blockly.Blocks['getidfromradio'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_5.1_RadioOnReceive.png", 50, 50, "*"));
-    this.appendDummyInput()
-        .appendField("Get ID from radio");
-    this.setOutput(true);
-    this.setColour('#FF9903');
-    this.setTooltip('');
-    this.setHelpUrl('http://www.example.com/');
-  }
-};
-
-Blockly.Blocks['getidfromradioatport'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_5.1_RadioOnReceive.png", 50, 50, "*"));
-    this.appendDummyInput()
-        .appendField("Get ID from radio");
-    this.appendValueInput("port");
-    this.setInputsInline(true);
-    this.setOutput(true);
-    this.setColour('#FF9903');
-    this.setTooltip('');
-    this.setHelpUrl('http://www.example.com/');
-  }
-};
+//Blockly.Blocks['getidfromradio'] = {
+//  init: function() {
+//    this.appendDummyInput()
+//        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_5.1_RadioOnReceive.png", 50, 50, "*"));
+//    this.appendDummyInput()
+//        .appendField("Get ID from radio");
+//    this.setOutput(true);
+//    this.setColour('#FF9903');
+//    this.setTooltip('');
+//    this.setHelpUrl('http://www.example.com/');
+//  }
+//};
+//
+//Blockly.Blocks['getidfromradioatport'] = {
+//  init: function() {
+//    this.appendDummyInput()
+//        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_5.1_RadioOnReceive.png", 50, 50, "*"));
+//    this.appendDummyInput()
+//        .appendField("Get ID from radio");
+//    this.appendValueInput("port");
+//    this.setInputsInline(true);
+//    this.setOutput(true);
+//    this.setColour('#FF9903');
+//    this.setTooltip('');
+//    this.setHelpUrl('http://www.example.com/');
+//  }
+//};
 
 
 // https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#xvonmp
@@ -485,23 +634,6 @@ Blockly.Blocks['check_type'] = {
 };
 
 
-// https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#uqwvsv
-// Returns the most recently received radio message as a list with the sender,  message and range
-// If no radio is present, it returns the empty list
-
-Blockly.Blocks['getradiodata'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_15.2_DataFriend.png", 40, 40, "Get Radio Data"));
-    this.appendDummyInput()
-        .appendField("Get Radio Data");
-    this.setInputsInline(true);
-    this.setOutput(true, "Array");
-    this.setColour('#FF9903');
-    this.setTooltip('');
-    this.setHelpUrl('http://www.example.com/');
-  }
-};
 
 // https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#rzpveq
 

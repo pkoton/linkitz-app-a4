@@ -58,7 +58,32 @@
       <block type="motion_attached"></block>
       </category>
       
-        <sep></sep>     
+        <sep></sep>
+           
+      <category id="Sound" class="Sound" colour="#0083CC">
+      <!--<block type="on_motion_trigger"></block>-->
+      <block type="get_mic_data"></block>
+      <block type="mic_attached"></block>
+      <block type="speaker_play_sound"></block>
+      <block type="speaker_play_data"></block>
+      <block type="speaker_attached"></block>
+      </category>
+      
+      <sep></sep>
+      
+      <category id="Radio" class="Radio" colour="#873299">
+      <!--<block type="on_motion_trigger"></block>-->
+      <block type="radio_transmit_color"></block>
+      <block type="radio_transmit_sound"></block>
+      <block type="radio_transmit_data"></block>
+      <block type="radio_on_receive_color"></block>
+      <block type="radio_on_receive_sound"></block>
+      <block type="radio_on_receive_data"></block>
+      <block type="get_radio_data"></block>
+      <block type="radio_attached"></block>
+      </category>
+      
+      <sep></sep>
     
     <category id="Hub" class="Hub"  colour="#FFCE00">
       <block type="on_initialization"></block>
@@ -163,8 +188,7 @@
     
              <sep></sep>
   </xml>
-
-  <body onload="init()">
+  <body onload="init()"> <!-- init() defined in blocklyframe.js -->
   </body>
 
 </html>
