@@ -14,6 +14,8 @@ var MSG = {
   LED: 'LED',
   Friend: 'Radio',
   Hub: "Hub",
+  Sound: "Sound",
+  Radio: "Radio",
   Advanced: "Advanced",
   catLogic: "Logic",
   catLoops: "Loops",

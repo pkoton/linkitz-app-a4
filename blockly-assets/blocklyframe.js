@@ -61,7 +61,7 @@ function injectLanguage() {
   // Inject language strings.
   document.title += ' ' + MSG['title'];
 
-  var categories = ['Motion','LED','Sound','Radio','Hub','catLogic', 'catMath', 'catLists', 'catVariables', 'catFunctions'];
+  var categories = ['Motion','LED','Hub','Sound','Radio','catLogic', 'catMath', 'catLists', 'catVariables', 'catFunctions'];
   for (var i = 0, cat; (cat = categories[i]); i++) {
     document.getElementById(cat).setAttribute('name', MSG[cat]);
   }
