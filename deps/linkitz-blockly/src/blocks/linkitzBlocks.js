@@ -409,7 +409,7 @@ Blockly.Blocks['speaker_play_sound'] = {
 Blockly.Blocks['speaker_attached'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField("speaker Attached?");
+        .appendField("Speaker Attached?");
     this.setOutput(true, "Number");
     this.setColour('#33CC66');
     this.setTooltip('Returns 0 if speaker link is not attached, else 2,4,8 indicating which port(s) motion link(s) are on');
@@ -419,17 +419,19 @@ Blockly.Blocks['speaker_attached'] = {
 
 // **************************************************************************************************
 // RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO
-// **************************************************************************************************
+// **********************************
 
-Blockly.Blocks['radio_transmit_color'] = {
+// https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#5dn67n
+Blockly.Blocks['radio_transmit'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField("Transmit");
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_5.3_RadioTransmit.png", 50, 50, "*"));
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_07012015_5.3_RadioTransmit.png", 67, 55, "*"));
-    this.appendValueInput("Color")
-        .setAlign(Blockly.ALIGN_RIGHT)
-        .appendField("Color");
+        .appendField("Transmit ");
+    this.appendValueInput("MESSAGE")
+        .setCheck(null)
+        .appendField(new Blockly.FieldDropdown([["color","color"], ["sound","sound"], ["data","data"]]), "NAME");
+    this.setInputsInline(true);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setColour('#873299');
@@ -438,40 +440,6 @@ Blockly.Blocks['radio_transmit_color'] = {
   }
 };
 
-Blockly.Blocks['radio_transmit_sound'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField("Transmit");
-    this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_07012015_5.3_RadioTransmit.png", 67, 55, "*"));
-    this.appendValueInput("Sound")
-        .setAlign(Blockly.ALIGN_RIGHT)
-        .appendField("Sound");
-    this.setPreviousStatement(true);
-    this.setNextStatement(true);
-    this.setColour('#873299');
- this.setTooltip("");
- this.setHelpUrl("");
-  }
-};
-
-Blockly.Blocks['radio_transmit_data'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField("Transmit");
-    this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_07012015_5.3_RadioTransmit.png", 67, 55, "*"));
-    this.appendValueInput("Message")
-        .setCheck("Array")
-        .setAlign(Blockly.ALIGN_RIGHT)
-        .appendField("Message");
-    this.setPreviousStatement(true);
-    this.setNextStatement(true);
-    this.setColour('#873299');
- this.setTooltip("");
- this.setHelpUrl("");
-  }
-};
 
 Blockly.Blocks['radio_on_receive_color'] = {
   init: function() {
