@@ -367,7 +367,9 @@ Blockly.Flyout.prototype.show = function(xmlList) {
   var hide_onReg = false;
   var hide_onMotion = false;
   var hide_onMic = false;
-  var hide_onRadio = false;
+  var hide_onRadioColor = false;
+  var hide_onRadioSound = false;
+  var hide_onRadioData = false;
   
   // Delete any blocks from a previous showing.
   var blocks = this.workspace_.getTopBlocks(false);
@@ -407,8 +409,14 @@ Blockly.Flyout.prototype.show = function(xmlList) {
         case 'on_mic_event':
           hide_onMic = true;
           break;
-        case 'radio_onreceive':
-          hide_onRadio = true;
+        case 'radio_on_receive_color':
+          hide_onRadioColor = true;
+          break;
+        case 'radio_on_receive_sound':
+          hide_onRadioSound = true;
+          break;
+        case 'radio_on_receive_data':
+          hide_onRadioData = true;
           break;
     }
   } 
@@ -430,7 +438,11 @@ Blockly.Flyout.prototype.show = function(xmlList) {
          continue;
         } else if (blockType == 'on_mic_event' && hide_onMic) {
           continue;
-        } else if (blockType == 'radio_onreceive' && hide_onRadio) {
+        } else if (blockType == 'radio_on_receive_color' && hide_onRadioColor) {
+          continue;
+        } else if (blockType == 'radio_on_receive_sound' && hide_onRadioSound) {
+          continue;
+        } else if (blockType == 'radio_on_receive_data' && hide_onRadioData) {
           continue;
         } else {
           var block = Blockly.Xml.domToBlock(this.workspace_, xml);
