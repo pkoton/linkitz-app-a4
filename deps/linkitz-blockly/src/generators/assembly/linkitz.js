@@ -217,26 +217,39 @@ Blockly.Assembly['setmotiontrigger'] = function(block) {
 // MICROPHONE MICROPHONE MICROPHONE MICROPHONE MICROPHONE MICROPHONE MICROPHONE MICROPHONE
 // **************************************************************************************************
 
-Blockly.Assembly['on_microphone_trigger'] = function(block) {
-  var statements_name = Blockly.Assembly.statementToCode(block, 'NAME');
-  var code = 'On_microphone_trigger:\n' + statements_name + '\n' + 'syscall exit R0\n';
-  return code;
-};
+//Blockly.Assembly['on_microphone_trigger'] = function(block) {
+//  var statements_name = Blockly.Assembly.statementToCode(block, 'NAME');
+//  var code = 'On_microphone_trigger:\n' + statements_name + '\n' + 'syscall exit R0\n';
+//  return code;
+//};
 
 // Advanced:
 
-Blockly.Assembly['getmicdata'] = function(block) {
+Blockly.Assembly['get_mic_data'] = function(block) {
   var code = 'GETMICDATA\n'; // format TBD
   return code;
 };
 
+Blockly.Assembly['mic_attached'] = function(block) {
+  var code = "; starting mic_attached\n";
+  var found = global_scalar_variables.indexOf('mic_attached');
+  if (found >= 0) { // it better be!
+    code += 'set R2 '+ mask + '\nband3 R' + found +  ' R2 R1\n'; // only look at the lower bits
+    // the value in R1, if 0 then no motion attached, else 2 4 8 tells you where
+    } else {
+      code += 'Set R1 0\n'; // if you can't find motion_attached in GSV, treat as no motion attached
+    }
+  code += "; ending mic_attached\n";
+  return [code, Blockly.Assembly.ORDER_NONE];
+};
+
 // Advanced: POSTPONED
 
-Blockly.Assembly['set_mic_threshold'] = function(block) {
-  // TODO: Assemble Dart into code variable.
-  var code = '...';
-  return code;
-};
+//Blockly.Assembly['set_mic_threshold'] = function(block) {
+//  // TODO: Assemble Dart into code variable.
+//  var code = '...';
+//  return code;
+//};
 
 //Blockly.Assembly['read_sound_levels'] = function(block) {
 //  // TODO: Assemble Dart into code variable.
@@ -281,84 +294,123 @@ Blockly.Assembly['playdatastream'] = function(block) {
   return code;
 };
 
-// Advanced: Sound with frequency - make a sound with provided FDV
-
-Blockly.Assembly['sound_fdv'] = function(block) {
-  var value_frequency = Blockly.Assembly.valueToCode(block, 'Frequency', Blockly.Assembly.ORDER_NONE);
-  var value_duration = Blockly.Assembly.valueToCode(block, 'Duration', Blockly.Assembly.ORDER_NONE);
-  var value_volume = Blockly.Assembly.valueToCode(block, 'Volume', Blockly.Assembly.ORDER_NONE);
-  // TODO: Assemble Dart into code variable.
-  var code = '...';
-  // TODO: Change ORDER_NONE to the correct strength.
+Blockly.Assembly['speaker_attached'] = function(block) {
+  var code = "; starting speaker_attached\n";
+  var found = global_scalar_variables.indexOf('speaker_attached');
+  if (found >= 0) { // it better be!
+    code += 'set R2 '+ mask + '\nband3 R' + found +  ' R2 R1\n'; // only look at the lower bits
+    // the value in R1, if 0 then no motion attached, else 2 4 8 tells you where
+    } else {
+      code += 'Set R1 0\n'; // if you can't find motion_attached in GSV, treat as no motion attached
+    }
+  code += "; ending speaker_attached\n";
   return [code, Blockly.Assembly.ORDER_NONE];
 };
+
+
+// Advanced: Sound with frequency - make a sound with provided FDV
+
+//Blockly.Assembly['sound_fdv'] = function(block) {
+//  var value_frequency = Blockly.Assembly.valueToCode(block, 'Frequency', Blockly.Assembly.ORDER_NONE);
+//  var value_duration = Blockly.Assembly.valueToCode(block, 'Duration', Blockly.Assembly.ORDER_NONE);
+//  var value_volume = Blockly.Assembly.valueToCode(block, 'Volume', Blockly.Assembly.ORDER_NONE);
+//  // TODO: Assemble Dart into code variable.
+//  var code = '...';
+//  // TODO: Change ORDER_NONE to the correct strength.
+//  return [code, Blockly.Assembly.ORDER_NONE];
+//};
 
 // **************************************************************************************************
 // RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO
 // **************************************************************************************************
 
-Blockly.Assembly['radio_onreceive'] = function(block) {
+Blockly.Assembly['radio_on_receive_color'] = function(block) {
   var statements_name = Blockly.Assembly.statementToCode(block, 'NAME');
-  var code = 'Radio_onreceive:\n' + statements_name + '\n' + 'syscall return R0\n';
+  var code = 'radio_on_receive_color:\n' + statements_name + '\n' + 'syscall return R0\n';
   return code;
 };
 
-Blockly.Assembly['createmessage'] = function(block) {
-  var value_messagename = Blockly.Assembly.valueToCode(block, 'MessageName', Blockly.Assembly.ORDER_NONE);
+Blockly.Assembly['radio_on_receive_sound'] = function(block) {
   var statements_name = Blockly.Assembly.statementToCode(block, 'NAME');
-  var code = value_messagename + ' = ' + statements_name +'\n'; // statements name is just a string
+  var code = 'radio_on_receive_sound:\n' + statements_name + '\n' + 'syscall return R0\n';
   return code;
 };
 
-Blockly.Assembly['transmit2'] = function(block) {
-  var value_targetid = Blockly.Assembly.valueToCode(block, 'targetid', Blockly.Assembly.ORDER_NONE) || 0;
-  var value_message = Blockly.Assembly.valueToCode(block, 'message', Blockly.Assembly.ORDER_NONE);
-  // var value_range = Blockly.Assembly.valueToCode(block, 'range', Blockly.Assembly.ORDER_NONE);
-  var code = 'syscall Transmit' + value_targetid + ', ' + value_message +'\n';
+Blockly.Assembly['radio_on_receive_data'] = function(block) {
+  var statements_name = Blockly.Assembly.statementToCode(block, 'NAME');
+  var code = 'radio_on_receive_data:\n' + statements_name + '\n' + 'syscall return R0\n';
   return code;
 };
 
-// Advanced: Read and return range estimate from radio
-
-Blockly.Assembly['radiogetrange'] = function(block) {
-  var code = 'GetRadioRange()\n';
+Blockly.JavaScript['radio_transmit'] = function(block) {
+  var dropdown_msg_type = block.getFieldValue('MSG_TYPE');
+  var value_message = Blockly.JavaScript.valueToCode(block, 'MESSAGE', Blockly.JavaScript.ORDER_ATOMIC);
+  // TODO: Assemble JavaScript into code variable.
+  var code = '...;\n';
   return code;
 };
 
-// Advanced: Get Radio Data returns the most recently received radio message as a list with the sender,  message and range
+// Get Radio Data returns the most recently received radio message as a list with the sender,  message [and range - not yet]
 // If no radio is present, it returns the empty list
 
-Blockly.Assembly['getradiodata'] = function(block) {
+Blockly.Assembly['get_radio_data'] = function(block) {
   // TODO: Assemble Dart into code variable.
   var code = '...';
   // TODO: Change ORDER_NONE to the correct strength.
   return [code, Blockly.Assembly.ORDER_NONE];
 };
 
-// Advanced: getidfromradio returns the ID stored in the attached radio petal as an integer. If not radio petal is attached, returns -1
-
-Blockly.Assembly['getidfromradio'] = function(block) {
-  // TODO: Assemble Dart into code variable.
-  var code = '...';
-  // TODO: Change ORDER_NONE to the correct strength.
+Blockly.Assembly['radio_attached'] = function(block) {
+  var code = "; starting radio_attached\n";
+  var found = global_scalar_variables.indexOf('radio_attached');
+  if (found >= 0) { // it better be!
+    code += 'set R2 '+ mask + '\nband3 R' + found +  ' R2 R1\n'; // only look at the lower bits
+    // the value in R1, if 0 then no motion attached, else 2 4 8 tells you where
+    } else {
+      code += 'Set R1 0\n'; // if you can't find motion_attached in GSV, treat as no motion attached
+    }
+  code += "; ending radio_attached\n";
   return [code, Blockly.Assembly.ORDER_NONE];
 };
 
-// Advanced:
+//// Advanced: Read and return range estimate from radio
+//
+//Blockly.Assembly['radiogetrange'] = function(block) {
+//  var code = 'GetRadioRange()\n';
+//  return code;
+//};
+//
+//Blockly.Assembly['createmessage'] = function(block) {
+//  var value_messagename = Blockly.Assembly.valueToCode(block, 'MessageName', Blockly.Assembly.ORDER_NONE);
+//  var statements_name = Blockly.Assembly.statementToCode(block, 'NAME');
+//  var code = value_messagename + ' = ' + statements_name +'\n'; // statements name is just a string
+//  return code;
+//};
 
-Blockly.Assembly['setradioeventtrigger'] = function(block) {
-  var value_name = Blockly.Assembly.valueToCode(block, 'NAME', Blockly.Assembly.ORDER_NONE);
-  // TODO: Assemble Dart into code variable.
-  var code = '...';
-  return code;
-};
-
-Blockly.Assembly['getidfromradioatport'] = function(block) {
-  // TODO: Assemble Dart into code variable.
-  var code = '...';
-  // TODO: Change ORDER_NONE to the correct strength.
-  return [code, Blockly.Assembly.ORDER_NONE];
-};
+//// Advanced: getidfromradio returns the ID stored in the attached radio petal as an integer. If not radio petal is attached, returns -1
+//
+//Blockly.Assembly['getidfromradio'] = function(block) {
+//  // TODO: Assemble Dart into code variable.
+//  var code = '...';
+//  // TODO: Change ORDER_NONE to the correct strength.
+//  return [code, Blockly.Assembly.ORDER_NONE];
+//};
+//
+//// Advanced:
+//
+//Blockly.Assembly['setradioeventtrigger'] = function(block) {
+//  var value_name = Blockly.Assembly.valueToCode(block, 'NAME', Blockly.Assembly.ORDER_NONE);
+//  // TODO: Assemble Dart into code variable.
+//  var code = '...';
+//  return code;
+//};
+//
+//Blockly.Assembly['getidfromradioatport'] = function(block) {
+//  // TODO: Assemble Dart into code variable.
+//  var code = '...';
+//  // TODO: Change ORDER_NONE to the correct strength.
+//  return [code, Blockly.Assembly.ORDER_NONE];
+//};
 
 // **************************************************************************************************
 // HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  

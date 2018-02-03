@@ -430,7 +430,7 @@ Blockly.Blocks['radio_transmit'] = {
         .appendField("Transmit ");
     this.appendValueInput("MESSAGE")
         .setCheck(null)
-        .appendField(new Blockly.FieldDropdown([["color","color"], ["sound","sound"], ["data","data"]]), "NAME");
+        .appendField(new Blockly.FieldDropdown([["color","color"], ["sound","sound"], ["data","data"]]), "MSG_TYPE");
     this.setInputsInline(true);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
