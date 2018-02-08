@@ -19,7 +19,7 @@
  */
 
 /**
- * @fileoverview Helper functions for generating Python for blocks.
+ * @fileoverview Helper functions for generating Linkitz Assembly code for blocks.
  * @author fraser@google.com (Neil Fraser)
  */
 'use strict';
@@ -30,7 +30,7 @@ goog.require('Blockly.Generator');
 
 
 /**
- * Python code generator.
+ * Linkitz Assembly code generator.
  * @type {!Blockly.Generator}
  */
 Blockly.Assembly = new Blockly.Generator('Assembly');
