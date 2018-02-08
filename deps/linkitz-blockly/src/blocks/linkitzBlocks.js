@@ -421,7 +421,7 @@ Blockly.Blocks['speaker_attached'] = {
 // RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO  RADIO
 // **********************************
 
-// https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#5dn67n
+// https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#398rxx
 Blockly.Blocks['radio_transmit'] = {
   init: function() {
     this.appendDummyInput()
@@ -543,100 +543,100 @@ Blockly.Blocks['radio_attached'] = {
 //    this.setHelpUrl('http://www.example.com/');
 //  }
 //};
-
-
-// https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#xvonmp
-
-Blockly.Blocks['transmit2'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_5.3_RadioTransmit.png", 50, 50, "*"));
-    this.appendDummyInput()
-        .appendField("Transmit");
-    this.appendValueInput("Target")
-        .setCheck(["String", "Array"])
-        .setAlign(Blockly.ALIGN_RIGHT)
-        .appendField("To");
-    this.appendValueInput("Message")
-        .setCheck("String")
-        .setAlign(Blockly.ALIGN_RIGHT)
-        .appendField("Message");
-    this.setPreviousStatement(true);
-    this.setNextStatement(true);
-    this.setColour('#FF9903');
-    this.setTooltip('');
-    this.setHelpUrl('http://www.example.com/');
-  }
-};
-
-// https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#zsxq2k
-
-Blockly.Blocks['createmessage'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_5.2_CreateAMessage.png", 50, 50, "*"));
-    this.appendDummyInput()
-        .appendField("Create a message");
-    this.appendValueInput("MessageName")
-        .setCheck("String")
-        .appendField("Name this message");
-    this.appendStatementInput("NAME");
-    this.setOutput(true);
-    this.setColour('#FF9903');
-    this.setTooltip('');
-    this.setHelpUrl('http://www.example.com/');
-  }
-};
-
-Blockly.Blocks['check_type'] = {
-  init: function() {
-    this.appendValueInput("message")
-        .setCheck("String")
-        .appendField("Check if inputted message is")
-        .appendField(new Blockly.FieldDropdown([["Output a microphone signal", "requestForMicrophone"], ["Output a motion signal", "requestForMotion"], ["Motion signal", "motion signal"], ["Microphone signal", "microphone signal"], ["LED signal", "LED signal"], ["Speaker signal", "speaker signal"], ["Secret message", "secret message"], ["Nothing", "Nothing"]]), "different messages");
-    this.setOutput(true, "Boolean");
-    this.setColour('#FF9903');
-    this.setTooltip('');
-    this.setHelpUrl('http://www.example.com/');
-  }
-};
-
-
-
-// https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#rzpveq
-
-Blockly.Blocks['setradioeventtrigger'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_5.1_RadioOnReceive.png", 50, 50, "*"));
-    this.appendDummyInput()
-        .appendField("Set Radio Event Trigger");
-    this.appendValueInput("NAME")
-        .setCheck("Array");
-    this.setInputsInline(true);
-    this.setPreviousStatement(true);
-    this.setNextStatement(true);
-    this.setColour('#FF9903');
-    this.setTooltip('');
-    this.setHelpUrl('http://www.example.com/');
-  }
-};
-
-// Read and return range estimate from radio
-// https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#avt2iz
-
-Blockly.Blocks['radiogetrange'] = {
-  init: function() {
-    this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_5.1_RadioOnReceive.png", 50, 50, "*"));
-    this.appendDummyInput()
-        .appendField("Get Radio Range");
-    this.setOutput(true, "Number");
-    this.setColour('#FF9903');
-    this.setTooltip('');
-    this.setHelpUrl('http://www.example.com/');
-  }
-};
+//
+//
+//// https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#xvonmp
+//
+//Blockly.Blocks['transmit2'] = {
+//  init: function() {
+//    this.appendDummyInput()
+//        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_5.3_RadioTransmit.png", 50, 50, "*"));
+//    this.appendDummyInput()
+//        .appendField("Transmit");
+//    this.appendValueInput("Target")
+//        .setCheck(["String", "Array"])
+//        .setAlign(Blockly.ALIGN_RIGHT)
+//        .appendField("To");
+//    this.appendValueInput("Message")
+//        .setCheck("String")
+//        .setAlign(Blockly.ALIGN_RIGHT)
+//        .appendField("Message");
+//    this.setPreviousStatement(true);
+//    this.setNextStatement(true);
+//    this.setColour('#FF9903');
+//    this.setTooltip('');
+//    this.setHelpUrl('http://www.example.com/');
+//  }
+//};
+//
+//// https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#zsxq2k
+//
+//Blockly.Blocks['createmessage'] = {
+//  init: function() {
+//    this.appendDummyInput()
+//        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_5.2_CreateAMessage.png", 50, 50, "*"));
+//    this.appendDummyInput()
+//        .appendField("Create a message");
+//    this.appendValueInput("MessageName")
+//        .setCheck("String")
+//        .appendField("Name this message");
+//    this.appendStatementInput("NAME");
+//    this.setOutput(true);
+//    this.setColour('#FF9903');
+//    this.setTooltip('');
+//    this.setHelpUrl('http://www.example.com/');
+//  }
+//};
+//
+//Blockly.Blocks['check_type'] = {
+//  init: function() {
+//    this.appendValueInput("message")
+//        .setCheck("String")
+//        .appendField("Check if inputted message is")
+//        .appendField(new Blockly.FieldDropdown([["Output a microphone signal", "requestForMicrophone"], ["Output a motion signal", "requestForMotion"], ["Motion signal", "motion signal"], ["Microphone signal", "microphone signal"], ["LED signal", "LED signal"], ["Speaker signal", "speaker signal"], ["Secret message", "secret message"], ["Nothing", "Nothing"]]), "different messages");
+//    this.setOutput(true, "Boolean");
+//    this.setColour('#FF9903');
+//    this.setTooltip('');
+//    this.setHelpUrl('http://www.example.com/');
+//  }
+//};
+//
+//
+//
+//// https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#rzpveq
+//
+//Blockly.Blocks['setradioeventtrigger'] = {
+//  init: function() {
+//    this.appendDummyInput()
+//        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_5.1_RadioOnReceive.png", 50, 50, "*"));
+//    this.appendDummyInput()
+//        .appendField("Set Radio Event Trigger");
+//    this.appendValueInput("NAME")
+//        .setCheck("Array");
+//    this.setInputsInline(true);
+//    this.setPreviousStatement(true);
+//    this.setNextStatement(true);
+//    this.setColour('#FF9903');
+//    this.setTooltip('');
+//    this.setHelpUrl('http://www.example.com/');
+//  }
+//};
+//
+//// Read and return range estimate from radio
+//// https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#avt2iz
+//
+//Blockly.Blocks['radiogetrange'] = {
+//  init: function() {
+//    this.appendDummyInput()
+//        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_5.1_RadioOnReceive.png", 50, 50, "*"));
+//    this.appendDummyInput()
+//        .appendField("Get Radio Range");
+//    this.setOutput(true, "Number");
+//    this.setColour('#FF9903');
+//    this.setTooltip('');
+//    this.setHelpUrl('http://www.example.com/');
+//  }
+//};
 
 // **************************************************************************************************
 // HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  HUB  
