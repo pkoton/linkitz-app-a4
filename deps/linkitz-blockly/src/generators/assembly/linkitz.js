@@ -342,7 +342,8 @@ Blockly.Assembly['radio_on_receive_data'] = function(block) {
   return code;
 };
 
-Blockly.JavaScript['radio_transmit'] = function(block) {
+ Blockly.Assembly['radio_transmit'] = function(block) { // this is corrrect
+// Blockly.Javascript['radio_transmit'] = function(block) {  // this is deliberately introducing an error to test error pop-up
   var dropdown_msg_type = block.getFieldValue('MSG_TYPE');
   var value_message = Blockly.JavaScript.valueToCode(block, 'MESSAGE', Blockly.JavaScript.ORDER_ATOMIC);
   // TODO: Assemble JavaScript into code variable.
