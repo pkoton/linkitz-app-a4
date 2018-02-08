@@ -888,9 +888,18 @@ Blockly.Block.prototype.setCollapsed = function(collapsed) {
  */
 Blockly.Block.prototype.toString = function(opt_maxLength) {
   var text = [];
+  // console.log("in toString, creating a name for a collapsed block");
   if (this.collapsed_) {
+    // console.log("already have generated a name" + this.getInput('_TEMP_COLLAPSED_INPUT'));
     text.push(this.getInput('_TEMP_COLLAPSED_INPUT').fieldRow[0].text_);
-  } else {
+  }
+  else if (this.getCommentText()){
+      var collapsed_name = this.getCommentText();
+      // console.log("use comment as collapsed_name = " + collapsed_name);
+      text.push(collapsed_name);
+  }
+  else {
+      // console.log("no comment to use as name, generate a name");
     for (var i = 0, input; input = this.inputList[i]; i++) {
       for (var j = 0, field; field = input.fieldRow[j]; j++) {
         text.push(field.getText());
