@@ -48,7 +48,7 @@
       <i class="fa fa-2x" ng-class="connectTransitioning ? 'fa-spinner fa-spin': 'fa-share-square-o'"></i>
   </a>
 </div>
- <div class="navbar-text">
+ <div class="navbar-status-text">
        <div ng-show="isAttached" ng-hide="hideAttached" style="color: #ADAFB1;">A hub is attached</div>
        <div ng-show="notAttached" ng-hide="isAttached" style="color: #ADAFB1;">No hub detected</div>
        <div ng-show="isGeneratingAssembly" ng-hide="notGeneratingAssembly" style="color: #ADAFB1;">Generating Assembly Code</div>
@@ -58,7 +58,7 @@
 
 <!-- right side of toolbar, markup in RTL order -->
 
-<div class="navbar-text btn-group navbar-right">
+<div class="navbar-text">
   <a class="btn btn-default" href="#" ng-click="modals.about.open()" tooltip-placement="bottom" uib-tooltip="About"><i class="fa fa-info-circle fa-2x"></i></a>
 </div>
 

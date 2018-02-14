@@ -266,7 +266,7 @@ Blockly.Assembly['math_binary'] = function(block) {
     if (is_scalar(arg1) || (get_list_desc (arg1, [])[1].length == 0)) { // and arg1 is scalar
     var argument1 = Blockly.Assembly.valueToCode(block, 'B', order);  
     } else { //it's not scalar
-      throw 'Error in math_binary: input2 to math_binary block can\'t be alist';
+      throw 'Error in math_binary: input2 to math_binary block can\'t be a list';
       }
   }
     code += argument0 + 'loadR1to R' + save + '\n' + argument1 + operator + ' R' + save + ' R1 R1\n'; 
