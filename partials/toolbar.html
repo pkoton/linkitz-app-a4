@@ -49,16 +49,16 @@
   </a>
 </div>
  <div class="navbar-text">
-       <div ng-show="isAttached" ng-hide="hideAttached" style="color: #ADAFB1;">A hub is attached</div>
-       <div ng-show="notAttached" ng-hide="isAttached" style="color: #ADAFB1;">No hub detected</div>
-       <div ng-show="isGeneratingAssembly" ng-hide="notGeneratingAssembly" style="color: #ADAFB1;">Generating Assembly Code</div>
-       <div ng-show="isSigning" ng-hide="notSigning" style="color: #ADAFB1;">Signing Code</div>
-       &nbsp; &nbsp; &nbsp; &nbsp;
+       <div ng-show="isAttached" ng-hide="hideAttached" style="color: #ADAFB1;width: 300px">A hub is attached.</div>
+       <div ng-show="notAttached" ng-hide="isAttached" style="color: #ADAFB1;width: 300px">No hub detected!</div>
+       <div ng-show="isProgrammingDevice" ng-hide="hideProgrammingDevice" style="color: #ADAFB1;width: 300px">Generating code from blocks...</div>
+       <div ng-show="isSigning" ng-hide="notSigning" style="color: #ADAFB1;width: 300px">Signing code...</div>
+       <div ng-show="programmingComplete" ng-hide="hideProgrammingComplete" style="color: #ADAFB1;width: 300px">Programming is complete.</div>
 </div>
 
 <!-- right side of toolbar, markup in RTL order -->
 
-<div class="navbar-text btn-group navbar-right">
+<div class="navbar-text btn-group">
   <a class="btn btn-default" href="#" ng-click="modals.about.open()" tooltip-placement="bottom" uib-tooltip="About"><i class="fa fa-info-circle fa-2x"></i></a>
 </div>
 

@@ -15,6 +15,14 @@ linkitzApp.controller('ToolbarController', [
     function($scope, $timeout, LogService, LinkitzToy, Messager, errorCatcher, ChromeBrowser, minimumFirmwareVersion) {
 
 	$scope.savedProgramList = null;
+    // status flags >> means used for status messages
+    // >> $scope.isAttached 
+    //$scope.isGeneratingAssembly 
+    //$scope.isProcessingAssembly 
+    //  >> $scope.isProgrammingDevice 
+    //$scope.isVerifying 
+    // >> $scope.isSigning 
+    // >> $scope.programmingComplete 
 
 	$scope.notAttached = !$scope.isAttached;
     $scope.notGeneratingAssembly = !$scope.isGeneratingAssembly;
@@ -23,14 +31,47 @@ linkitzApp.controller('ToolbarController', [
     $scope.notSigning = !$scope.isSigning;
     
     $scope.hideAttached = function() {
-		if ($scope.notAttached || $scope.isGeneratingAssembly || $scope.isSigning) {
+		if ($scope.isProgrammingDevice || $scope.isSigning || $scope.programmingComplete) {
 			return true;
 			}
 		else return false;
 	}
     
+    $scope.showAttached = function() {
+//        console.log("in showAttached, isAttached is " + $scope.isAttached);
+//		if ($scope.isProgrammingDevice || $scope.isSigning || $scope.programmingComplete) {
+//            return false;
+//            }
+//        else
+        //if ($scope.isAttached) {
+			return true;
+			//}
+		//else return false;
+	}
+    
     $scope.hideNotAttached = function() {
-		if ($scope.isAttached || $scope.isGeneratingAssembly || $scope.isSigning) {
+		if ($scope.isAttached) {
+			return true;
+			}
+		else return false;
+	}
+    
+    $scope.hideProgrammingDevice = function() {
+		if ($scope.isAttached || $scope.notAttached || $scope.isSigning || $scope.programmingComplete) {
+			return true;
+			}
+		else return false;
+	}
+    
+    $scope.hideIsSigning = function() {
+		if ($scope.isAttached || $scope.notAttached || $scope.isProgrammingDevice || $scope.programmingComplete) {
+			return true;
+			}
+		else return false;
+	}
+    
+    $scope.hideProgrammingComplete = function() {
+		if (!$scope.programmingComplete || $scope.notAttached || $scope.isProgrammingDevice || $scope.isSigning || $scope.editor.dirty) {
 			return true;
 			}
 		else return false;

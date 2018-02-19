@@ -107,6 +107,21 @@ linkitzApp.controller('LinkitzAppController', [
     $scope.editor.blocklyXML = AlmostEmptyBlocklyXML;
     $scope.editor.dirty = false;
     $scope.editor.noOverwrite = false; // this flag is set to true if editor contains a builtIn program, which users are not alowed ot modify
+    $scope.isConnected = false;
+    
+    // the following flags are used to set status messages in the toolbar
+    
+    $scope.isAttached = false;
+    $scope.isGeneratingAssembly = false;
+    $scope.isProcessingAssembly = false;
+    $scope.isProgrammingDevice = false;
+    $scope.isVerifying = false;
+    $scope.isSigning = false;
+    $scope.programmingComplete = false;
+    $scope.pingCount = 0;
+    //
+    
+    
     
     $scope.setHubID = function setHubID(connectedHubId) { // connectedHubId  is array [32]
         var temp= '';
@@ -142,41 +157,47 @@ linkitzApp.controller('LinkitzAppController', [
     }
     
     function linkitzPing(){
-		if (!$scope.connectTransitioning){ //don't ping if we are already connected 
-		LinkitzToy.connect()
-			.then(function () {
-			    return LinkitzToy.verifyDevice();
-			   })
-			.then(function (querybytes) {
-			       $scope.setConnected(true);
-			       $scope.setAttached(true);
-			       return LinkitzToy.readID();
-			   })
-			.then(function (connectedID) {
-			    $scope.setHubID(connectedID);
-                //console.log("Pinging hub " + connectedID);
-			    if ($scope.devMode == true) {
-				console.log("Pinging hub " + padhex(connectedID[0]) + ':' +
-				     						 padhex(connectedID[1]) + ':' +
-				     						 padhex(connectedID[2]) + ':' +
-				     						 padhex(connectedID[3]) );
-			    } else
-			    {console.log("Ping: A hub is connected");
-			    }
-			   })
-			.then(LinkitzToy.disconnect)
-			.then(function () {
-                $scope.setConnected(false);
-                if (!$scope.savedDropdownOpen) { // don't refresh program list if dropdown is open (makes it flash)
-                    //$scope.queryPrograms();
-                    $scope.queryProgramsNoThrottle();
-                }
-                })
-		    .catch(function (reason) {
-                console.log("Ping: No hub detected");
-                $scope.setAttached(false);
-		    });
-	}
+		if (!$scope.connectTransitioning){ //don't ping if we are already connected
+            LinkitzToy.connect()
+                .then(function () {
+                    return LinkitzToy.verifyDevice();
+                   })
+                .then(function (querybytes) {
+                        $scope.setConnected(true);
+                        $scope.setAttached(true);
+                       return LinkitzToy.readID();
+                   })
+                .then(function (connectedID) {
+                    $scope.setHubID(connectedID);
+                    //console.log("Pinging hub " + connectedID);
+                    if ($scope.devMode == true) {
+                    console.log("Pinging hub " + padhex(connectedID[0]) + ':' +
+                                                 padhex(connectedID[1]) + ':' +
+                                                 padhex(connectedID[2]) + ':' +
+                                                 padhex(connectedID[3]) );
+                    } else
+                    {
+                        console.log("Ping: A hub is connected");
+                    }
+                   })
+                .then(LinkitzToy.disconnect)
+                .then(function () {
+                    $scope.setConnected(false);
+                    if (!$scope.savedDropdownOpen) { // don't refresh program list if dropdown is open (makes it flash)
+                        //$scope.queryPrograms();
+                        $scope.queryProgramsNoThrottle();
+                    }
+                    })
+                .catch(function (reason) {
+                        console.log("Ping: No hub detected " + $scope.pingCount);
+                        $scope.pingCount += 1;
+                        if ($scope.pingCount == 3) {
+                            $scope.setAttached(false);
+                            $scope.programmingComplete = false;
+                            $scope.pingCount = 0;
+                        }
+                });
+        }
     }
     
     setInterval(function(){
@@ -329,6 +350,7 @@ linkitzApp.controller('LinkitzAppController', [
     $scope.loadEditor2 = function loadEditor2 () {
         var prog = $scope.loadInfo.prog;
         var flag = $scope.loadInfo.noOverWriteFlag;
+        $scope.programmingComplete = false;
         $scope.activeProgram = true;
         $scope.editor.blocklyXML = prog.codexml;
         $scope.editor.dirty = false;
@@ -356,6 +378,7 @@ linkitzApp.controller('LinkitzAppController', [
 
 $scope.wipeEditor = function wipeEditor () {    
         // console.log("Wipe editor: Re-initializing Blockly XML");
+        $scope.programmingComplete = false;
         $scope.activeProgram = false;
         $scope.activeProgramHubID = '';
         $scope.activeProgramCodeID = null;
@@ -518,43 +541,48 @@ $scope.wipeEditor = function wipeEditor () {
 	    var catch_msg = "Load code: Error connecting to Linkitz";
 	    LinkitzToy.connect()
 	    .then(function () {
-		return LinkitzToy.verifyDevice();
+            return LinkitzToy.verifyDevice();
 	    })
 	    .then(function (querybytes) {
-        $scope.setConnected(true);
-		return LinkitzToy.readID();
+            $scope.setConnected(true);
+            return LinkitzToy.readID();
 	    })
 	    .then(function (connectedID) {
-		$scope.setHubID(connectedID);
+            $scope.setHubID(connectedID);
 //		console.log("Connected to hub " + connectedID[0].toString(16) + ':' +
 //                         connectedID[1].toString(16) + ':' +
 //                         connectedID[2].toString(16) + ':' +
 //                         connectedID[3].toString(16) );
 	    })
 	    .then(function () {
-		catch_msg = "Load code: Error programming Linkitz";
+            $scope.isProgrammingDevice = true;
+            catch_msg = "Load code: Error programming Linkitz";
 	    })
 	    .then($scope.generateCode)
 	    .then(HexGenerator.processAssembly)
 	    .then(LinkitzToy.programDevice) // in linkitztoy.js line 252 (aliased linkitzProgramDevice)
 	    .then(function programSuccess() {
-		LogService.appLogMsg("Programming Successful. Signing...(according to toggleConnect)");
+            $scope.isProgrammingDevice = false;
+            $scope.isSigning = true;
+            LogService.appLogMsg("Programming Successful. Signing...(according to toggleConnect)");
 	    })
 	    .then(LinkitzToy.signFlash) 
 	    .then(function signSuccess() {
-		LogService.appLogMsg("Signed.");
+            $scope.isSigning = false;
+            LogService.appLogMsg("Signed.");
 	    })
 	    .then(function () {
-		catch_msg = "Load code: Error disconnecting from Linkitz";
+            catch_msg = "Load code: Error disconnecting from Linkitz";
 	    })
 	    .then(LinkitzToy.disconnect)
 	    .then(function () {
-		$scope.setConnected(false);
-		$scope.connectTransitioning = false;
+            $scope.programmingComplete = true;
+            $scope.setConnected(false);
+            $scope.connectTransitioning = false;
 	    })
 	    .catch(function (reason) {
-		$scope.connectTransitioning = false;
-		errorCatcher.handle(catch_msg, reason);
+            $scope.connectTransitioning = false;
+            errorCatcher.handle(catch_msg, reason);
 	    });	
 	};
 
