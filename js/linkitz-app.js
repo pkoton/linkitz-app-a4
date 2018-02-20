@@ -191,8 +191,8 @@ linkitzApp.controller('LinkitzAppController', [
                 .catch(function (reason) {
                         console.log("Ping: No hub detected " + $scope.pingCount);
                         $scope.pingCount += 1;
-                        if ($scope.pingCount == 3) {
-                            $scope.setAttached(false);
+                        $scope.setAttached(false);
+                        if ($scope.pingCount == 6) {
                             $scope.programmingComplete = false;
                             $scope.pingCount = 0;
                         }
