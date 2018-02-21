@@ -16,18 +16,9 @@ linkitzApp.controller('ToolbarController', [
 
 	$scope.savedProgramList = null;
     // status flags >> means used for status messages
-    // >> $scope.isAttached 
-    //$scope.isGeneratingAssembly 
-    //$scope.isProcessingAssembly 
-    //  >> $scope.isProgrammingDevice 
-    //$scope.isVerifying 
-    // >> $scope.isSigning 
-    // >> $scope.programmingComplete 
-
 	$scope.notAttached = !$scope.isAttached;
     $scope.notGeneratingAssembly = !$scope.isGeneratingAssembly;
     $scope.notProgrammingDevice = !$scope.isProgrammingDevice;
-    $scope.notVerifying = !$scope.isVerifying;
     $scope.notSigning = !$scope.isSigning;
     
     $scope.hideAttached = function() {
