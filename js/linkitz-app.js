@@ -115,7 +115,6 @@ linkitzApp.controller('LinkitzAppController', [
     $scope.isGeneratingAssembly = false;
     $scope.isProcessingAssembly = false;
     $scope.isProgrammingDevice = false;
-    $scope.isVerifying = false;
     $scope.isSigning = false;
     $scope.programmingComplete = false;
     $scope.pingCount = 0;
@@ -582,6 +581,9 @@ $scope.wipeEditor = function wipeEditor () {
 	    })
 	    .catch(function (reason) {
             $scope.connectTransitioning = false;
+            $scope.isProgrammingDevice = false;
+            $scope.isSigning = false;
+            $scope.programmingComplete = false;
             errorCatcher.handle(catch_msg, reason);
 	    });	
 	};
