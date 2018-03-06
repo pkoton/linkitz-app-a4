@@ -154,7 +154,6 @@ if (!targetBlock) {
   var blocks = workspace.getAllBlocks();
   var i2 = 0; // index into undefined_vars
   // console.log("In resolve var refs, reviewing " + blocks.length + " blocks");
-  // Iterate through every procedure defreturn block.
     for (var i = 0; i < blocks.length; i++) {
       // console.log("for loop i = " + i);
       //  console.log("undef_vars_prev " + undef_vars_prev);
@@ -167,7 +166,10 @@ if (!targetBlock) {
         add_varname_to_variable_usage(Blockly.Assembly.variableDB_.getName(current_block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE), "set");
       } else
       if ((current_block.type == 'procedures_callreturn') || (current_block.type == 'procedures_callnoreturn')) {
+       // console.log("found a procdure call block");
         add_varname_to_variable_usage(Blockly.Assembly.variableDB_.getName(current_block.getFieldValue('NAME'),Blockly.Procedures.NAME_TYPE), "get");
+        var funcName = Blockly.Assembly.variableDB_.getName(current_block.getFieldValue('NAME'),Blockly.Procedures.NAME_TYPE);
+        proc_types[funcName]=[0,-1];
       } else
       if (current_block.type == 'procedures_defnoreturn') {
         add_varname_to_variable_usage(Blockly.Assembly.variableDB_.getName(current_block.getFieldValue('NAME'),Blockly.Procedures.NAME_TYPE), "set");
@@ -575,7 +577,24 @@ if (!targetBlock) {
         continue;
       }
     } // end for
-     // console.log("undef_vars.length = " + undef_vars.length + ", undef_vars_prev.length = " + undef_vars_prev.length + ", variable_usage " + JSON.stringify(variable_usage)); 
+    // *** now check to see if we are finished ***
+    // console.log("undef_vars.length = " + undef_vars.length + ", undef_vars_prev.length = " + undef_vars_prev.length + ", variable_usage " + JSON.stringify(variable_usage) + ", proc_types " + JSON.stringify(proc_types)); 
+    // check to make sure not procedures are called without being defined
+    // this error case is impossible in basic Blockly, but it is possible in Linkitz blockly
+    // by cutting and pasting a procedure call without also copying and pasting the defn
+    // to do this, for every procedure in proc_list, make sure that it's value in variable_usage is not "get"
+    for (var funcName in proc_types){
+     console.log("examining " + funcName);
+       if (variable_usage.hasOwnProperty(funcName)) {
+         // console.log(variable_usage[key]);
+         if ((variable_usage[funcName] == 'set') || (variable_usage[funcName] == 'both')) { // set but not gotten is ok, both is ok
+           continue;
+         } else { // get but not set is an error
+           var err_str = funcName + " is called but not defined";
+           throw err_str;
+           }
+       }
+    }
     if ((undef_vars.length == 0) && (Object.keys(unknown_lists).length == 0)) { 
       // we win!
       return 1;
