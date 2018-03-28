@@ -82,8 +82,46 @@
       <category id="Sound" class="Sound" colour="#33CC66">
       <block type="get_mic_data"></block>
       <block type="mic_attached"></block>
-      <block type="speaker_play_sound"></block>
-      <block type="speaker_play_data"></block>
+      <block type="speaker_play_note">
+        <value name="duration">
+        <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+      </block>
+      <!--<block type="speaker_play_sound"></block>      
+      <block type="speaker_play_data"></block>-->
+      <block type="math_number"  collapsed="true">
+        <field name="NUM">118</field>
+        <comment pinned="false" h="80" w="160">C4</comment>
+      </block>
+      <block type="math_number"  collapsed="true">
+        <field name="NUM">106</field>
+        <comment pinned="false" h="80" w="160">D4</comment>
+      </block>
+      <block type="math_number"  collapsed="true">
+        <field name="NUM">94</field>
+        <comment pinned="false" h="80" w="160">E4</comment>
+      </block>
+      <block type="math_number"  collapsed="true">
+        <field name="NUM">89</field>
+        <comment pinned="false" h="80" w="160">F4</comment>
+      </block>
+      <block type="math_number"  collapsed="true">
+        <field name="NUM">79</field>
+        <comment pinned="false" h="80" w="160">G4</comment>
+      </block>
+      <block type="math_number"  collapsed="true">
+        <field name="NUM">70</field>
+        <comment pinned="false" h="80" w="160">A4</comment>
+      </block>
+      <block type="math_number"  collapsed="true">
+        <field name="NUM">63</field>
+        <comment pinned="false" h="80" w="160">B4</comment>
+      </block>
+      <block type="math_number"  collapsed="true">
+        <field name="NUM">59</field>
+        <comment pinned="false" h="80" w="160">C5</comment>
+      </block>
       <block type="speaker_attached"></block>
       </category>
       
