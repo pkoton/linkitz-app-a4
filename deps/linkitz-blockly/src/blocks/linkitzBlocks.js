@@ -383,15 +383,39 @@ Blockly.Blocks['speaker_play_data'] = {
   }
 };
 
+// Call for speaker to play a note with specified freqency and duration
+// link: https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#g7vr8s
+
+// https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#ks952z
+Blockly.Blocks['speaker_play_note'] = {
+  init: function() {
+    this.appendDummyInput()
+	.appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_2_Speaker.png", 50, 50, "Play a note"));
+  this.appendDummyInput()
+        .appendField("Play a note");
+    this.appendValueInput("freq")
+        .setCheck("Number")
+        .appendField("Frequency");
+    this.appendValueInput("duration")
+        .setCheck("Number")
+        .appendField("Duration  1/");
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour('#33CC66');
+ this.setTooltip("");
+ this.setHelpUrl("");
+  }
+};
+
 // Call for speaker to play a sound file
 // link: https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#g7vr8s
 
 Blockly.Blocks['speaker_play_sound'] = {
   init: function() {
     this.appendDummyInput()
-	.appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_2_Speaker.png", 50, 50, "GetSpeakerData"));
+	.appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_2_Speaker.png", 50, 50, "Play a sound"));
     this.appendDummyInput()
-        .appendField("Play sound");
+        .appendField("Play a sound");
     this.appendValueInput("NAME")
         .setCheck("Valid_sound_block");
     this.setInputsInline(false);
