@@ -265,13 +265,23 @@ Blockly.Assembly['mic_attached'] = function(block) {
 
 // POSTPONED
 
+// Call for speaker to play a note with specified freqency and duration
+
+Blockly.JavaScript['speaker_play_note'] = function(block) {
+  var value_freq = Blockly.JavaScript.valueToCode(block, 'freq', Blockly.JavaScript.ORDER_ATOMIC);
+  var value_duration = Blockly.JavaScript.valueToCode(block, 'duration', Blockly.JavaScript.ORDER_ATOMIC);
+  // TODO: Assemble JavaScript into code variable.
+  var code = 'syscall Play_note ' + value_freq + ' ' + 'value_duration\n';
+  return code;
+};
+
 // Call for speaker to play a sound file
 
 Blockly.Assembly['speaker_play_sound'] = function(block) {
   var value_name = Blockly.Assembly.valueToCode(block, 'NAME', Blockly.Assembly.ORDER_NONE);
   
-  // TODO: Assemble Dart into code variable.
-  var code = 'syscall Play_sound' + value_name + '\n';
+  // TODO: Assemble  into code variable.
+  var code = 'syscall Play_sound ' + value_name + '\n';
   return code;
 };
 
@@ -279,7 +289,7 @@ Blockly.Assembly['speaker_play_sound'] = function(block) {
 
 Blockly.Assembly['sound_from_file'] = function(block) {
   var dropdown_name = block.getFieldValue('NAME');
-  // TODO: Assemble Dart into code variable.
+  // TODO: Assemble  into code variable.
   var code = '...';
   // TODO: Change ORDER_NONE to the correct strength.
   return [code, Blockly.Assembly.ORDER_NONE];
@@ -289,7 +299,7 @@ Blockly.Assembly['sound_from_file'] = function(block) {
 
 Blockly.Assembly['playdatastream'] = function(block) {
   var value_name = Blockly.Assembly.valueToCode(block, 'NAME', Blockly.Assembly.ORDER_NONE);
-  // TODO: Assemble Dart into code variable.
+  // TODO: Assemble  into code variable.
   var code = '...';
   return code;
 };
