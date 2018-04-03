@@ -130,12 +130,13 @@ Blockly.Generator.prototype.workspaceToCode = function(workspace) {
         if (entrypoint2) {code.push('GOTO on_regular_event');} else {code.push('Syscall exit R0');}
         if (entrypoint3) {code.push('GOTO on_initialization');} else {code.push('Syscall exit R0');}
     }
-    // console.log("passed assembly check");
+     // console.log("passed assembly check");
     
     for (var x = 0, block; block = blocks[x]; x++) {
       blocktype = block.type;
       if (blocktype == 'on_initialization' || blocktype == 'on_regular_event' ||
           blocktype == 'on_motion_trigger' || blocktype == 'procedures_defreturn' || blocktype == 'procedures_defnoreturn') {
+        // console.log("here " + blocktype);
         var line = this.blockToCode(block);
         if (goog.isArray(line)) {
          // Value blocks return tuples of code and operator order.
@@ -148,6 +149,7 @@ Blockly.Generator.prototype.workspaceToCode = function(workspace) {
             // it wants to append a semicolon, or something.
            line = this.scrubNakedValue(line);
           }
+          // console.log(JSON.stringify(line) + "\n");
           code.push(line);
         }
       }
@@ -212,8 +214,8 @@ Blockly.Generator.prototype.blockToCode = function(block) {
   }
 
   var func = this[block.type];
-  //console.log("in " + this.name_ + ".blockToCode, block is " + block + ", block.type is " + block.type);
-  //console.log("in " + this.name_ + ".blockToCode, this is " + this + ", func is " + func);
+  // console.log("in " + this.name_ + ".blockToCode, block is " + block + ", block.type is " + block.type);
+  // console.log("in " + this.name_ + ".blockToCode, func is " + func);
   goog.asserts.assertFunction(func,
       'Language "%s" does not know how to generate code for block type "%s".',
       this.name_, block.type);
@@ -223,6 +225,7 @@ Blockly.Generator.prototype.blockToCode = function(block) {
   // The current prefered method of accessing the block is through the second
   // argument to func.call, which becomes the first parameter to the generator.
   var code = func.call(block, block);
+  // console.log("code: " + code);
   if (goog.isArray(code)) {
     // Value blocks return tuples of code and operator order.
     return [this.scrub_(block, code[0]), code[1]];
@@ -250,6 +253,7 @@ Blockly.Generator.prototype.blockToCode = function(block) {
  *     specified input does not exist.
  */
 Blockly.Generator.prototype.valueToCode = function(block, name, order) {
+  // console.log("in valueToCode");
   if (isNaN(order)) {
     goog.asserts.fail('Expecting valid order from block "%s".', block.type);
   }
