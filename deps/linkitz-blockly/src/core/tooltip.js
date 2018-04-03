@@ -239,13 +239,28 @@ Blockly.Tooltip.show_ = function() {
   while (goog.isFunction(tip)) {
     tip = tip();
   }
-  tip = Blockly.Tooltip.wrap_(tip, Blockly.Tooltip.LIMIT);
-  // Create new text, line by line.
-  var lines = tip.split('\n');
-  for (var i = 0; i < lines.length; i++) {
+  var tooltip_is_image = 0;
+  if (tip.match(/^<img /)) {
     var div = document.createElement('div');
-    div.appendChild(document.createTextNode(lines[i]));
-    Blockly.Tooltip.DIV.appendChild(div);
+    var tmp = document.createElement('div');
+    tmp.innerHTML = tip;
+    var elem = tmp.getElementsByTagName('img')[0];
+    // if elem contains a src attribute I'll guess that it is a valid img
+    if (elem['src']) {
+      div.appendChild(elem);
+      tooltip_is_image = 1;
+      Blockly.Tooltip.DIV.appendChild(div);
+    }
+  }
+  if (!tooltip_is_image) {
+    tip = Blockly.Tooltip.wrap_(tip, Blockly.Tooltip.LIMIT);
+    // Create new text, line by line.
+    var lines = tip.split('\n');
+    for (var i = 0; i < lines.length; i++) {
+      var div = document.createElement('div');
+     div.appendChild(document.createTextNode(lines[i]));
+      Blockly.Tooltip.DIV.appendChild(div);
+    }
   }
   var rtl = Blockly.Tooltip.element_.RTL;
   var windowSize = goog.dom.getViewportSize();

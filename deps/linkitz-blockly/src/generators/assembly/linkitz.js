@@ -263,15 +263,27 @@ Blockly.Assembly['mic_attached'] = function(block) {
 // SPEAKER SPEAKER SPEAKER SPEAKER SPEAKER SPEAKER SPEAKER SPEAKER SPEAKER SPEAKER SPEAKER
 // **************************************************************************************************
 
-// POSTPONED
 
-// Call for speaker to play a note with specified freqency and duration
 
-Blockly.JavaScript['speaker_play_note'] = function(block) {
-  var value_freq = Blockly.JavaScript.valueToCode(block, 'freq', Blockly.JavaScript.ORDER_ATOMIC);
-  var value_duration = Blockly.JavaScript.valueToCode(block, 'duration', Blockly.JavaScript.ORDER_ATOMIC);
-  // TODO: Assemble JavaScript into code variable.
-  var code = 'syscall Play_note ' + value_freq + ' ' + 'value_duration\n';
+// Call for speaker to play a note with specified freqency
+
+Blockly.Assembly['speaker_play_note'] = function(block) {
+  var code = "; starting speaker_play_note\n";
+  var targetBlock = block.getInputTargetBlock('freq');
+  var play_note_arg = Blockly.Assembly.valueToCode(block, 'freq', Blockly.Assembly.ORDER_NONE) || 'None';
+  // console.log("in flash_leds: input is *" + flash_arg +'*');
+  if (play_note_arg == 'None' || play_note_arg =='') {
+    // *****  input is blank or null
+    //alert('input is null');
+    code += "syscall play_note R0\n";
+  }
+  else if (is_scalar(targetBlock)) { // ***** input is a scalar in R1
+      code += play_note_arg + 'syscall play_note R1\n'; //
+    }
+    else {
+      code += "syscall play_note R0\n";
+    }
+  code += "; ending speaker_play_note\n";
   return code;
 };
 

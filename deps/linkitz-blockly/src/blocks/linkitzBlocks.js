@@ -383,27 +383,20 @@ Blockly.Blocks['speaker_play_data'] = {
   }
 };
 
-// Call for speaker to play a note with specified freqency and duration
+// Call for speaker to play a note with specified freqency
 // link: https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#g7vr8s
 
 // https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#ks952z
 Blockly.Blocks['speaker_play_note'] = {
   init: function() {
     this.appendDummyInput()
-	.appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_2_Speaker.png", 50, 50, "Play a note"));
-  this.appendDummyInput()
-        .appendField("Play a note");
+        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_2_Speaker.png", 50, 50, "Play a note"));
     this.appendValueInput("freq")
-        .setCheck("Number")
-        .appendField("Frequency");
-    this.appendValueInput("duration")
-        .setCheck("Number")
-        .appendField("Duration  1/");
+        .appendField("Play a note");
     this.setPreviousStatement(true, null);
-    this.setNextStatement(true, null);
-    this.setColour('#33CC66');
- this.setTooltip("");
- this.setHelpUrl("");
+    this.setNextStatement(true, null);this.setColour('#33CC66');
+    this.setTooltip("<img src='../../images/play_note_tooltip_img_small.png'>");
+    this.setHelpUrl("");
   }
 };
 
@@ -449,7 +442,7 @@ Blockly.Blocks['speaker_attached'] = {
 Blockly.Blocks['radio_transmit'] = {
   init: function() {
     this.appendDummyInput()
-        .appendField(new Blockly.FieldImage("../../images/LZ_Icons_31032016_5.3_RadioTransmit.png", 50, 50, "*"));
+        .appendField(new Blockly.FieldImage("../../images/transmit_animate.gif", 50, 50, "*"));
     this.appendDummyInput()
         .appendField("Transmit ");
     this.appendValueInput("MESSAGE")
