@@ -108,6 +108,7 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
         01: Set_Reg_Event_Speed
         02: FlashHue
         03: Random
+        04: Play_Note
     06:ArglessSyscall (Syscall)
         01: Get_motion_data
         02: FlashRGB
@@ -300,7 +301,8 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
             if( token_list[1].match(/exit/i)||
                 token_list[1].match(/flashHue/i)||
                 token_list[1].match(/set_reg_event_speed/i)||
-                token_list[1].match(/random/i)){
+                token_list[1].match(/random/i)||
+                token_list[1].match(/play_note/i)){
 
                 //console.log("syscall should have one argument")
                 hex_line+=linkitzApp_hexgen_pad_words("05");
@@ -316,6 +318,8 @@ function linkitzApp_hexgen_generate_hex(assembly_code) {
                     hex_line+=linkitzApp_hexgen_pad_words("03");
                 } else if(token_list[1].match(/return/i)){
                     hex_line+=linkitzApp_hexgen_pad_words("04");
+                } else if(token_list[1].match(/play_note/i)){
+                    hex_line+=linkitzApp_hexgen_pad_words("05");
                 } else {
                     throw("Could not match token: \""+token_list[1]+"\" in: "+line);
 
